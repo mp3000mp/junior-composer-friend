@@ -1,0 +1,50 @@
+table {
+  th {
+    text-align: left;
+    border-bottom: 1px $body-color solid !important;
+  }
+
+  tr {
+    &.editable td {
+      transition: background-color 1s ease-out;
+    }
+
+    &.success td {
+      background-color: $green3;
+      box-shadow: none !important;
+    }
+
+    &.error td {
+      background-color: $red3;
+      box-shadow: none !important;
+    }
+  }
+
+  select {
+    option {
+      color: $body-bg-light;
+    }
+  }
+
+  input,
+  select {
+    &.form-control,
+    &.form-select,
+    &.form-select:focus {
+      background-color: $body-bg-light;
+      color: $body-color;
+    }
+  }
+
+  &#sources {
+    td:nth-child(3) {
+      max-width: 750px;
+    }
+  }
+
+  &#stats {
+    td:nth-child(2) {
+      max-width: 700px;
+    }
+  }
+}

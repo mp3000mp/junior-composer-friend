@@ -1,0 +1,32 @@
+$white: #ffeac2;
+$black: #000914;
+$blue: #006ef5;
+$orange: #ffa90a;
+
+$body-color: $white;
+$body-bg: #001229;
+$body-bg-light: #001b3d;
+
+$primary: #a56702;
+
+$link-color: $primary;
+$link-decoration: none;
+$link-hover-color: $orange;
+
+$input-btn-padding-y: 0.2rem;
+$input-btn-padding-x: 0.4rem;
+
+$table-color: $body-color;
+$table-bg: $body-bg-light;
+$table-striped-bg: lighten($body-bg-light, 5%);
+$table-hover-bg: darken($body-bg, 1%);
+//$table-border-color: lighten($table-bg, 50%);
+
+$toast-border-color: $primary;
+
+$btn-padding-y: 1px;
+
+$input-padding-y: 1px;
+
+$alert-padding-x: 6px;
+$alert-padding-y: 4px;

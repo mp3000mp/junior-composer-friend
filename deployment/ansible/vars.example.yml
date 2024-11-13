@@ -1,0 +1,6 @@
+admin_email: me@me.fr
+
+app_directory: /var/www/app
+maintainer_user: user1
+
+app_version: 1.0.0
