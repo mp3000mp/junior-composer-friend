@@ -2,6 +2,8 @@
 /deployment/ansible/vars.yml
 /deployment/ansible/roles/*/vars.yml
 
+todo.txt
+
 # Logs
 logs
 *.log
