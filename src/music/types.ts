@@ -1,8 +1,9 @@
 export type Note = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#' | 'A' | 'A#' | 'B'
-export type Degree = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII'
 export type Chord = Note[]
+export type Degree = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII'
+export type Scale = Note[]
 
-export const CHROMATIC_SCALE: Note[] = [
+export const CHROMATIC_SCALE: Scale = [
   'C',
   'C#',
   'D',

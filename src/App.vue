@@ -9,6 +9,7 @@ const version = config.version
   <header id="nav">
     <h1>Junior Composer Friend</h1>
   </header>
+  <router-view />
   <footer>
     <font-aw icon="magic" /> Invoked from the magic kingdom by
     <a href="https://github.com/mp3000mp">

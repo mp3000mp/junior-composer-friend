@@ -1,18 +1,4 @@
-# junior-cc
-
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+# junior-composer-friend
 
 ## Project Setup
 
@@ -36,6 +22,11 @@ npm run build
 
 ```sh
 npm run test:unit
+# summary report
+npm run test:cov
+# full report
+npm run test:cov:html
+ff coverage/index.html
 ```
 
 ### Run End-to-End Tests with [Playwright](https://playwright.dev)
@@ -55,6 +46,12 @@ npm run test:e2e -- --project=chromium
 npm run test:e2e -- tests/example.spec.ts
 # Runs the tests in debug mode
 npm run test:e2e -- --debug
+```
+
+### Format with prettier
+
+```sh
+npm run format
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
