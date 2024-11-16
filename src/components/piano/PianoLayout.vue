@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import PianoKey from '@/components/PianoKey.vue'
+import PianoKey from '@/components/piano/PianoKey.vue'
 import { type Chord, CHROMATIC_SCALE, type Note, type Scale } from '@/music/types'
 import { computed } from 'vue'
 
 const props = defineProps<{
-  tonic: Note
+  chordRoot: Note
   scale: Scale
   chord: Chord
 }>()
@@ -12,7 +12,8 @@ const props = defineProps<{
 type KeyNote = {
   isHighlighted: boolean
   isPlayed: boolean
-  isTonic: boolean
+  isChordRoot: boolean
+  isScaleRoot: boolean
   note: Note
   octave: number
 }
@@ -30,7 +31,8 @@ const twoOctavesNotes = computed(() => {
       notes.push({
         isHighlighted: props.scale.includes(note),
         isPlayed,
-        isTonic: note === props.tonic,
+        isChordRoot: note === props.chordRoot,
+        isScaleRoot: note === props.scale[0],
         note,
         octave: i,
       })
@@ -44,10 +46,11 @@ const twoOctavesNotes = computed(() => {
   <div class="piano-layout">
     <piano-key
       v-for="keyNote in twoOctavesNotes"
-      :key="keyNote.note+keyNote.octave"
+      :key="keyNote.note + keyNote.octave"
       :is-highlighted="keyNote.isHighlighted"
       :is-played="keyNote.isPlayed"
-      :is-tonic="keyNote.isTonic"
+      :is-chord-root="keyNote.isChordRoot"
+      :is-scale-root="keyNote.isScaleRoot"
       :is-black="keyNote.note.includes('#')"
       :note="keyNote.note"
     />
@@ -59,7 +62,7 @@ const twoOctavesNotes = computed(() => {
 @import 'src/assets/style/bootstrap/vars-override';
 
 $whiteKeyWidth: 35px;
-$blackKeyWidth: $whiteKeyWidth*0.75;
+$blackKeyWidth: $whiteKeyWidth * 0.75;
 $highlightedColor: color.adjust($white, $lightness: -15%, $space: hsl);
 
 .piano-layout {
@@ -67,7 +70,7 @@ $highlightedColor: color.adjust($white, $lightness: -15%, $space: hsl);
 
   .key {
     width: $whiteKeyWidth;
-    height: $whiteKeyWidth*3;
+    height: $whiteKeyWidth * 3;
     border: 1px solid #333;
     position: relative;
     margin: 0 1px;
@@ -80,12 +83,15 @@ $highlightedColor: color.adjust($white, $lightness: -15%, $space: hsl);
     &.black {
       background-color: $black;
       color: $white;
-      height: $whiteKeyWidth*2;
+      height: $whiteKeyWidth * 2;
       width: $blackKeyWidth;
       margin: 0 $blackKeyWidth/-2;
       z-index: 1;
       &.highlighted {
         background-color: color.adjust($highlightedColor, $lightness: -50%, $space: hsl);
+      }
+      &.scale-root {
+        background-color: color.adjust($red, $lightness: -15%, $space: hsl) !important;
       }
       &.played {
         color: $white;
@@ -98,10 +104,13 @@ $highlightedColor: color.adjust($white, $lightness: -15%, $space: hsl);
       &.highlighted {
         background-color: $highlightedColor;
       }
+      &.scale-root {
+        background-color: color.adjust($red, $lightness: 60%, $space: hsl) !important;
+      }
     }
 
-    &.tonic {
-      color: color.adjust($red, $lightness: 20%, $space: hsl)!important;
+    &.chord-root {
+      color: color.adjust($red, $lightness: 20%, $space: hsl) !important;
     }
   }
 }

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import Component from '@/components/Mp3000Button.vue'
+import Component from '@/components/mp3000/Mp3000Button.vue'
 import { mount } from '@vue/test-utils'
 
 describe('Mp3000Button.vue', () => {

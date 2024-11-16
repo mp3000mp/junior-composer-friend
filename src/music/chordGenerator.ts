@@ -3,6 +3,7 @@ import {
   type Chord,
   CHORD_STRUCTURE_DEFINITIONS,
   ChordStructure,
+  CHROMATIC_SCALE,
   Interval,
   MODE_INTERVALS,
   ORDERED_DEGREES,
@@ -33,7 +34,7 @@ function getScaleInterval(
 }
 
 export function generateChordFromModeDegree(
-  root: Note,
+  modeRoot: Note,
   mode: Mode,
   degree: Degree,
   chordStructure: ChordStructure,
@@ -41,22 +42,30 @@ export function generateChordFromModeDegree(
   const degreeIndex = ORDERED_DEGREES.indexOf(degree)
   const scaleIntervals = MODE_INTERVALS[mode]
   const rootInterval = getScaleInterval(scaleIntervals, 0, degreeIndex)
-  const tonic = transposeNote(root, rootInterval)
+  const chordRoot = transposeNote(modeRoot, rootInterval)
 
   const chordStructureDefinition = CHORD_STRUCTURE_DEFINITIONS[chordStructure]
   const chord: Chord = []
   for (const orderedNote of chordStructureDefinition) {
-    chord.push(transposeNote(tonic, getScaleInterval(scaleIntervals, 0, orderedNote)))
+    chord.push(transposeNote(chordRoot, getScaleInterval(scaleIntervals, 0, orderedNote)))
+  }
+
+  return chord
+}
+
+export function generateChordFromIntervals(chordRoot: Note, intervals: Interval[]): Chord {
+  const chord: Chord = []
+  for (const interval of intervals) {
+    chord.push(transposeNote(chordRoot, interval))
   }
 
   return chord
 }
 
 /**
- * @param root
- * @param customQuality
+ * customQuality without root
  */
-export function generateIntervalsFromCustomQuality(root: Note, customQuality: string): Interval[] {
+export function generateIntervalsFromCustomQuality(customQuality: string): Interval[] {
   const chordDefinition = [Interval.Tonic]
 
   // todo replace triangle => chéplu
@@ -143,15 +152,17 @@ export function generateIntervalsFromCustomQuality(root: Note, customQuality: st
   return chordDefinition
 }
 
-export function generateChordFromIntervals(root: Note, intervals: Interval[]): Chord {
-  const chord: Chord = []
-  for (const interval of intervals) {
-    chord.push(transposeNote(root, interval))
+export function generateChordFromCustomQuality(customQuality: string): Chord {
+  const arrQuality = Array.from(customQuality)
+  if (arrQuality.length === 0) {
+    return []
   }
-
-  return chord
-}
-
-export function generateChordFromCustomQuality(root: Note, customQuality: string): Chord {
-  return generateChordFromIntervals(root, generateIntervalsFromCustomQuality(root, customQuality))
+  const chordRoot = arrQuality[0]
+  if (!CHROMATIC_SCALE.includes(chordRoot)) {
+    return []
+  }
+  return generateChordFromIntervals(
+    chordRoot,
+    generateIntervalsFromCustomQuality(arrQuality.slice(1).join('')),
+  )
 }

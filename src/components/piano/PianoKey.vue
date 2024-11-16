@@ -5,7 +5,8 @@ defineProps<{
   isBlack: boolean
   isHighlighted: boolean
   isPlayed: boolean
-  isTonic: boolean
+  isChordRoot: boolean
+  isScaleRoot: boolean
   note: Note
 }>()
 </script>
@@ -16,10 +17,12 @@ defineProps<{
     :class="{
       highlighted: isHighlighted,
       played: isPlayed,
-      tonic: isTonic,
+      'chord-root': isChordRoot,
+      'scale-root': isScaleRoot,
       black: isBlack,
       white: !isBlack,
-    }">
+    }"
+  >
     {{ isPlayed ? note : '' }}
   </div>
 </template>

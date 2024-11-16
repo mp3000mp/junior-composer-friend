@@ -4,19 +4,19 @@ import { Mode, Note, Scale } from '../types'
 
 describe('music/scaleGenerator.ts', () => {
   const generateScaleFromModeTestCases: {
-    tonic: Note
+    modeRoot: Note
     mode: Mode
     expected: Scale
   }[] = [
     {
-      tonic: 'A',
+      modeRoot: 'A',
       mode: Mode.Aeolian,
       expected: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
     },
   ]
-  generateScaleFromModeTestCases.forEach(({ tonic, mode, expected }) => {
-    test('generateScaleFromMode with ' + tonic + ' ' + mode, () => {
-      const result = generateScaleFromMode(tonic, mode)
+  generateScaleFromModeTestCases.forEach(({ modeRoot, mode, expected }) => {
+    test('generateScaleFromMode with ' + modeRoot + ' ' + mode, () => {
+      const result = generateScaleFromMode(modeRoot, mode)
       expect(result).toEqual(expected)
     })
   })

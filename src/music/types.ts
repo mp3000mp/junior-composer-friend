@@ -32,6 +32,7 @@ export enum Mode {
   Locrian = 'Locrian',
 }
 
+// todo générer en décalant depuis major ?
 export const MODE_INTERVALS: Record<Mode, ScaleIntervals> = {
   [Mode.Ionian]: [2, 2, 1, 2, 2, 2, 1],
   [Mode.Dorian]: [2, 1, 2, 2, 2, 1, 2],
@@ -55,7 +56,7 @@ export enum OrderedNote {
 export enum ChordStructure {
   Power = 'Power',
   Triad = 'Triad',
-  Tetrad = 'Seventh',
+  Tetrad = 'Tetrad',
   Ninth = 'Ninth',
   AddedNinth = 'AddedNinth',
   SuspendedSecond = 'SuspendedSecond',

@@ -3,31 +3,31 @@ import { transposeChord, transposeNote } from '../utils'
 import { Chord, Note } from '../types'
 
 describe('music/utils.ts', () => {
-  const transposeNoteTestCases: { root: Note; interval: number; expected: Note }[] = [
+  const transposeNoteTestCases: { baseNote: Note; interval: number; expected: Note }[] = [
     {
-      root: 'C',
+      baseNote: 'C',
       interval: 1,
       expected: 'C#',
     },
     {
-      root: 'B',
+      baseNote: 'B',
       interval: 2,
       expected: 'C#',
     },
     {
-      root: 'C#',
+      baseNote: 'C#',
       interval: -1,
       expected: 'C',
     },
     {
-      root: 'C',
+      baseNote: 'C',
       interval: 25,
       expected: 'C#',
     },
   ]
-  transposeNoteTestCases.forEach(({ root, interval, expected }) => {
-    test('transposeNote with ' + root + ' and ' + interval, () => {
-      const result = transposeNote(root, interval)
+  transposeNoteTestCases.forEach(({ baseNote, interval, expected }) => {
+    test('transposeNote with ' + baseNote + ' and ' + interval, () => {
+      const result = transposeNote(baseNote, interval)
       expect(result).toBe(expected)
     })
   })

@@ -9,21 +9,21 @@ import { Chord, ChordQuality, ChordStructure, Degree, Interval, Mode, Note } fro
 
 describe('music/chordGenerator.ts', () => {
   const generateChordFromModeDegreeTestCases: {
-    root: Note
+    modeRoot: Note
     mode: Mode
     degree: Degree
     chordStructure: ChordStructure
     expected: Chord
   }[] = [
     {
-      root: 'C',
+      modeRoot: 'C',
       mode: Mode.Ionian,
       degree: 'I',
       chordStructure: ChordStructure.Triad,
       expected: ['C', 'E', 'G'],
     },
     {
-      root: 'A',
+      modeRoot: 'A',
       mode: Mode.Aeolian,
       degree: 'V',
       chordStructure: ChordStructure.Triad,
@@ -31,104 +31,95 @@ describe('music/chordGenerator.ts', () => {
     },
   ]
   generateChordFromModeDegreeTestCases.forEach(
-    ({ root, mode, degree, chordStructure, expected }) => {
-      test('generateChordFromModeDegree with ' + root + ' and ' + degree, () => {
-        const result = generateChordFromModeDegree(root, mode, degree, chordStructure)
+    ({ modeRoot, mode, degree, chordStructure, expected }) => {
+      test('generateChordFromModeDegree with ' + modeRoot + ' and ' + degree, () => {
+        const result = generateChordFromModeDegree(modeRoot, mode, degree, chordStructure)
         expect(result).toEqual(expected)
       })
     },
   )
 
   const generateChordFromIntervalsTestCases: {
-    root: Note
+    chordRoot: Note
     intervals: Interval[]
     expected: Chord
   }[] = [
     {
-      root: 'C',
+      chordRoot: 'C',
       intervals: [0, 4, 7],
       expected: ['C', 'E', 'G'],
     },
   ]
-  generateChordFromIntervalsTestCases.forEach(({ root, intervals, expected }) => {
-    test('generateChordFromIntervals with ' + root + ' and [' + intervals.join(' ') + ']', () => {
-      const result = generateChordFromIntervals(root, intervals)
-      expect(result).toEqual(expected)
-    })
+  generateChordFromIntervalsTestCases.forEach(({ chordRoot, intervals, expected }) => {
+    test(
+      'generateChordFromIntervals with ' + chordRoot + ' and [' + intervals.join(' ') + ']',
+      () => {
+        const result = generateChordFromIntervals(chordRoot, intervals)
+        expect(result).toEqual(expected)
+      },
+    )
   })
 
   const generateChordFromCustomQualityTestCases: {
-    root: Note
     customQuality: string
     expected: Chord
   }[] = [
     {
-      root: 'C',
-      customQuality: 'sus2b5',
+      customQuality: 'Csus2b5',
       expected: ['C', 'D', 'F#'],
     },
     {
-      root: 'C',
-      customQuality: 'sus4',
+      customQuality: 'Csus4',
       expected: ['C', 'F', 'G'],
     },
     {
-      root: 'C',
-      customQuality: 'm6',
+      customQuality: 'Cm6',
       expected: ['C', 'D#', 'G', 'A'],
     },
     {
-      root: 'C',
-      customQuality: 'm7',
+      customQuality: 'Cm7',
       expected: ['C', 'D#', 'G', 'A#'],
     },
     {
-      root: 'C',
-      customQuality: 'maj7',
+      customQuality: 'Cmaj7',
       expected: ['C', 'E', 'G', 'B'],
     },
     {
-      root: 'C',
-      customQuality: '#5b9',
+      customQuality: 'C#5b9',
       expected: ['C', 'G#', 'C#'],
     },
     {
-      root: 'C',
-      customQuality: '6/9',
+      customQuality: 'C6/9',
       expected: ['C', 'E', 'G', 'A', 'D'],
     },
     {
-      root: 'C',
-      customQuality: '#11',
+      customQuality: 'C#11',
       expected: ['C', 'E', 'G', 'F#'],
     },
     {
-      root: 'C',
-      customQuality: '13',
+      customQuality: 'C13',
       expected: ['C', 'E', 'G', 'A'],
     },
   ]
-  generateChordFromCustomQualityTestCases.forEach(({ root, customQuality, expected }) => {
-    test('generateChordFromCustomQuality with ' + root + ' and ' + customQuality, () => {
-      const result = generateChordFromCustomQuality(root, customQuality)
+  generateChordFromCustomQualityTestCases.forEach(({ customQuality, expected }) => {
+    test('generateChordFromCustomQuality with ' + customQuality, () => {
+      const result = generateChordFromCustomQuality(customQuality)
       expect(result).toEqual(expected)
     })
   })
 
   const generateIntervalsFromCustomQualityTestCases: {
-    root: Note
     customQuality: string
     expected: ChordQuality[]
   }[] = [
     {
-      root: 'C',
       customQuality: 'm',
       expected: [Interval.Tonic, Interval.MinorThird, Interval.Fifth],
     },
   ]
-  generateIntervalsFromCustomQualityTestCases.forEach(({ root, customQuality, expected }) => {
-    test('generateIntervalsFromCustomQuality with ' + root + customQuality, () => {
-      const result = generateIntervalsFromCustomQuality(root, customQuality)
+  generateIntervalsFromCustomQualityTestCases.forEach(({ customQuality, expected }) => {
+    test('generateIntervalsFromCustomQuality with ' + customQuality, () => {
+      const result = generateIntervalsFromCustomQuality(customQuality)
       expect(result).toEqual(expected)
     })
   })
