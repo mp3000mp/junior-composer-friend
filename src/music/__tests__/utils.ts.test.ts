@@ -3,7 +3,7 @@ import { computeFrequency, transposeChord, transposeNote } from '../utils'
 import { Chord, Note } from '../types'
 
 describe('music/utils.ts', () => {
-  const computeFrequencyTestCases: { note: Note, octave: number, expected: number }[] = [
+  const computeFrequencyTestCases: { note: Note; octave: number; expected: number }[] = [
     {
       note: 'A',
       octave: 4,

@@ -1,17 +1,29 @@
-import { describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 import Component from '@/components/piano/PianoKey.vue'
 import { mount } from '@vue/test-utils'
 
-const defaultProps = {
-  isBlack: false,
-  isHighlighted: false,
-  isPlayed: false,
-  isChordRoot: false,
-  isScaleRoot: false,
-  note: 'C',
-}
+let playerMock
+vi.mock('@/music/player', () => ({
+  usePlayer: () => playerMock,
+}))
 
 describe('PianoKey.vue', () => {
+  let defaultProps
+  beforeEach(() => {
+    defaultProps = {
+      isBlack: false,
+      isHighlighted: false,
+      isPlayed: false,
+      isChordRoot: false,
+      isScaleRoot: false,
+      note: 'C',
+      octave: 4,
+    }
+    playerMock = {
+      play: vi.fn(),
+    }
+  })
+
   test('should not show note', () => {
     const wrapper = mount(Component, {
       props: { ...defaultProps },
@@ -24,5 +36,15 @@ describe('PianoKey.vue', () => {
       props: { ...defaultProps, isPlayed: true },
     })
     expect(wrapper.text()).toBe('C')
+  })
+
+  test('should play note', async () => {
+    const wrapper = mount(Component, {
+      props: { ...defaultProps },
+    })
+    const parent = wrapper.find('div')
+    await parent.trigger('click')
+    await parent.trigger('click')
+    expect(playerMock.play).toHaveBeenCalledTimes(2)
   })
 })

@@ -97,17 +97,28 @@ export function generateIntervalsFromCustomQuality(customQuality: string): Inter
     second = ''
   }
   // third
-  if (customQuality.substring(0, 3) !== 'maj' && ['m', '-', '°', 'o', 'ø', 'Ø', 'd'].includes(arrQuality[0])) {
+  if (
+    customQuality.substring(0, 3) !== 'maj' &&
+    ['m', '-', '°', 'o', 'ø', 'Ø', 'd'].includes(arrQuality[0])
+  ) {
     third = 'b'
   } else if (arrQuality[0] === '5' || multiIncludes(customQuality, ['sus', 'no3'])) {
     third = null
   }
   // fourth
-  if (arrQuality.includes('4') || (customQuality.includes('sus') && !customQuality.includes('sus2') && !customQuality.includes('13sus'))) {
+  if (
+    arrQuality.includes('4') ||
+    (customQuality.includes('sus') &&
+      !customQuality.includes('sus2') &&
+      !customQuality.includes('13sus'))
+  ) {
     fourth = ''
   }
   // fifth
-  if (['°', 'o', 'ø', 'Ø'].includes(arrQuality[0]) || multiIncludes(customQuality, ['dim', '-5', 'b5', '°5', 'o5'])) {
+  if (
+    ['°', 'o', 'ø', 'Ø'].includes(arrQuality[0]) ||
+    multiIncludes(customQuality, ['dim', '-5', 'b5', '°5', 'o5'])
+  ) {
     fifth = 'b'
   } else if (arrQuality[0] === '+' || multiIncludes(customQuality, ['aug', '+5', '#5', 'm+'])) {
     fifth = '#'
@@ -119,27 +130,32 @@ export function generateIntervalsFromCustomQuality(customQuality: string): Inter
   // seventh
   if (multiIncludes(customQuality, ['maj', 'M', 'Δ'])) {
     seventh = ''
-  } else if (multiIncludes(customQuality, ['7', 'ø', 'Ø'])
-    || (customQuality.includes('9') && !customQuality.includes('add9') && !customQuality.includes('6/9'))
-    || (customQuality.includes('11') && !customQuality.includes('add11'))
-    || (customQuality.includes('13') && !customQuality.includes('add13'))
+  } else if (
+    multiIncludes(customQuality, ['7', 'ø', 'Ø']) ||
+    (customQuality.includes('9') &&
+      !customQuality.includes('add9') &&
+      !customQuality.includes('6/9')) ||
+    (customQuality.includes('11') && !customQuality.includes('add11')) ||
+    (customQuality.includes('13') && !customQuality.includes('add13'))
   ) {
     seventh = 'b'
   }
   // ninth
   if (multiIncludes(customQuality, ['b9'])) {
     ninth = 'b'
-  } else if (customQuality.includes('9')
-    || (customQuality.includes('11') && !customQuality.includes('add11'))
-    || (customQuality.includes('13') && !customQuality.includes('add13'))
+  } else if (
+    customQuality.includes('9') ||
+    (customQuality.includes('11') && !customQuality.includes('add11')) ||
+    (customQuality.includes('13') && !customQuality.includes('add13'))
   ) {
     ninth = ''
   }
   // eleventh
   if (multiIncludes(customQuality, ['#11', '+11'])) {
     eleventh = '#'
-  } else if (customQuality.includes('11')
-    || (customQuality.includes('13') && !customQuality.includes('add13'))
+  } else if (
+    customQuality.includes('11') ||
+    (customQuality.includes('13') && !customQuality.includes('add13'))
   ) {
     eleventh = ''
   }

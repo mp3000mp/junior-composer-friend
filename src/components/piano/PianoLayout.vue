@@ -21,7 +21,7 @@ type KeyNote = {
 const pianoNotes = computed(() => {
   const notes: KeyNote[] = []
   let chordCursor = 0
-  for (let i = BASE_OCTAVE-1; i < BASE_OCTAVE + 2; i++) {
+  for (let i = BASE_OCTAVE - 1; i < BASE_OCTAVE + 2; i++) {
     for (const note of CHROMATIC_SCALE) {
       let isPlayed = false
       if (chordCursor < props.chord.length && props.chord[chordCursor] === note) {
@@ -80,6 +80,8 @@ $highlightedColor: color.adjust($white, $lightness: -15%, $space: hsl);
     align-items: end;
     justify-content: center;
     font-weight: bold;
+    cursor: pointer;
+    user-select: none;
 
     &.black {
       background-color: $black;

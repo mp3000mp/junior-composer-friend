@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Note } from '@/music/types'
-import { computeFrequency } from '@/music/utils'
+import { usePlayer } from '@/music/player'
+
+const player = usePlayer()
 
 const props = defineProps<{
   isBlack: boolean
@@ -13,19 +15,7 @@ const props = defineProps<{
 }>()
 
 function play() {
-  const context = new AudioContext();
-
-  const volume = context.createGain();
-  volume.connect(context.destination);
-  volume.gain.value = 0.2; // todo slider volume
-
-  const oscillator = context.createOscillator();
-  oscillator.type = "sawtooth";
-  oscillator.frequency.value = computeFrequency(props.note, props.octave)
-
-  oscillator.connect(volume);
-  oscillator.start();
-  oscillator.stop(context.currentTime + 1);
+  player.play(props.note, props.octave, 500)
 }
 </script>
 
