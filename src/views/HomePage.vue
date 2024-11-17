@@ -4,8 +4,8 @@ import CustomChordForm from '@/views/CustomChordForm.vue'
 </script>
 
 <template>
-  <main>
-    <mode-degree-form />
-    <custom-chord-form />
+  <main class="py-3">
+    <mode-degree-form class="app-block mb-3" />
+    <custom-chord-form class="app-block" />
   </main>
 </template>

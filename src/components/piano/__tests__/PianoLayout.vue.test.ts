@@ -4,7 +4,7 @@ import PianoKey from '@/components/piano/PianoKey.vue'
 import { mount } from '@vue/test-utils'
 
 describe('PianoLayout.vue', () => {
-  test('should show two octaves', () => {
+  test('should show three octaves', () => {
     const wrapper = mount(Component, {
       props: {
         chordRoot: 'C',
@@ -13,6 +13,6 @@ describe('PianoLayout.vue', () => {
       },
     })
     const pianoKeys = wrapper.findAllComponents(PianoKey)
-    expect(pianoKeys.length).toBe(24)
+    expect(pianoKeys.length).toBe(36)
   })
 })

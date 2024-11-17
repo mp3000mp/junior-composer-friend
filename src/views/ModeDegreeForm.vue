@@ -21,11 +21,24 @@ const chord = computed(() =>
 </script>
 
 <template>
-  <div>
-    <note-selector v-model="modeRoot" />
-    <mode-selector v-model="mode" />
-    <degree-selector v-model="degree" />
-    <chord-structure-selector v-model="chordStructure" />
-    <piano-layout :chord="chord" :scale="scale" :chord-root="chord[0]" />
+  <div class="container py-2">
+    <h3>Chord from mode degree</h3>
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <note-selector v-model="modeRoot" />
+      </div>
+      <div class="col-auto">
+        <mode-selector v-model="mode" />
+      </div>
+      <div class="col-auto">
+        <degree-selector v-model="degree" />
+      </div>
+      <div class="col-auto">
+        <chord-structure-selector v-model="chordStructure" />
+      </div>
+    </div>
+    <div class="row mt-3 justify-content-center">
+      <piano-layout class="col-auto" :chord="chord" :scale="scale" :chord-root="chord[0]" />
+    </div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PianoKey from '@/components/piano/PianoKey.vue'
-import { type Chord, CHROMATIC_SCALE, type Note, type Scale } from '@/music/types'
+import { BASE_OCTAVE, type Chord, CHROMATIC_SCALE, type Note, type Scale } from '@/music/types'
 import { computed } from 'vue'
 
 const props = defineProps<{
@@ -18,10 +18,10 @@ type KeyNote = {
   octave: number
 }
 
-const twoOctavesNotes = computed(() => {
+const pianoNotes = computed(() => {
   const notes: KeyNote[] = []
   let chordCursor = 0
-  for (let i = 0; i < 2; i++) {
+  for (let i = BASE_OCTAVE-1; i < BASE_OCTAVE + 2; i++) {
     for (const note of CHROMATIC_SCALE) {
       let isPlayed = false
       if (chordCursor < props.chord.length && props.chord[chordCursor] === note) {
@@ -45,7 +45,7 @@ const twoOctavesNotes = computed(() => {
 <template>
   <div class="piano-layout">
     <piano-key
-      v-for="keyNote in twoOctavesNotes"
+      v-for="keyNote in pianoNotes"
       :key="keyNote.note + keyNote.octave"
       :is-highlighted="keyNote.isHighlighted"
       :is-played="keyNote.isPlayed"
@@ -53,6 +53,7 @@ const twoOctavesNotes = computed(() => {
       :is-scale-root="keyNote.isScaleRoot"
       :is-black="keyNote.note.includes('#')"
       :note="keyNote.note"
+      :octave="keyNote.octave"
     />
   </div>
 </template>

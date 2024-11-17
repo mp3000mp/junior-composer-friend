@@ -17,6 +17,10 @@ export const CHROMATIC_SCALE: Scale = [
   'A#',
   'B',
 ]
+
+export const BASE_OCTAVE = 4
+export const BASE_A_FREQUENCY = 440
+
 export const ORDERED_DEGREES: Degree[] = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
 
 type ScaleInterval = 1 | 2

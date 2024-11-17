@@ -62,91 +62,124 @@ export function generateChordFromIntervals(chordRoot: Note, intervals: Interval[
   return chord
 }
 
+type noteQuality = null | '' | 'b' | '#'
+
+function multiIncludes(str: string, includes: string[]): boolean {
+  for (const include of includes) {
+    if (str.includes(include)) {
+      return true
+    }
+  }
+  return false
+}
+
 /**
  * customQuality without root
+ *
+ * todo: bass
  */
 export function generateIntervalsFromCustomQuality(customQuality: string): Interval[] {
   const chordDefinition = [Interval.Tonic]
+  const arrQuality = Array.from(customQuality)
 
-  // todo replace triangle => chéplu
-  // todo replace rond => chéplu
-  // todo replace rond barré => m7b5
+  let second: noteQuality = null
+  let third: noteQuality = ''
+  let fourth: noteQuality = null
+  let fifth: noteQuality = ''
+  let sixth: noteQuality = null
+  let seventh: noteQuality = null
+  let ninth: noteQuality = null
+  let eleventh: noteQuality = null
+  let thirteenth: noteQuality = null
 
   // second
-  if (customQuality.includes('2')) {
+  if (arrQuality.includes('2')) {
+    second = ''
+  }
+  // third
+  if (customQuality.substring(0, 3) !== 'maj' && ['m', '-', '°', 'o', 'ø', 'Ø', 'd'].includes(arrQuality[0])) {
+    third = 'b'
+  } else if (arrQuality[0] === '5' || multiIncludes(customQuality, ['sus', 'no3'])) {
+    third = null
+  }
+  // fourth
+  if (arrQuality.includes('4') || (customQuality.includes('sus') && !customQuality.includes('sus2') && !customQuality.includes('13sus'))) {
+    fourth = ''
+  }
+  // fifth
+  if (['°', 'o', 'ø', 'Ø'].includes(arrQuality[0]) || multiIncludes(customQuality, ['dim', '-5', 'b5', '°5', 'o5'])) {
+    fifth = 'b'
+  } else if (arrQuality[0] === '+' || multiIncludes(customQuality, ['aug', '+5', '#5', 'm+'])) {
+    fifth = '#'
+  }
+  // sixth
+  if (arrQuality.includes('6')) {
+    sixth = ''
+  }
+  // seventh
+  if (multiIncludes(customQuality, ['maj', 'M', 'Δ'])) {
+    seventh = ''
+  } else if (multiIncludes(customQuality, ['7', 'ø', 'Ø'])
+    || (customQuality.includes('9') && !customQuality.includes('add9') && !customQuality.includes('6/9'))
+    || (customQuality.includes('11') && !customQuality.includes('add11'))
+    || (customQuality.includes('13') && !customQuality.includes('add13'))
+  ) {
+    seventh = 'b'
+  }
+  // ninth
+  if (multiIncludes(customQuality, ['b9'])) {
+    ninth = 'b'
+  } else if (customQuality.includes('9')
+    || (customQuality.includes('11') && !customQuality.includes('add11'))
+    || (customQuality.includes('13') && !customQuality.includes('add13'))
+  ) {
+    ninth = ''
+  }
+  // eleventh
+  if (multiIncludes(customQuality, ['#11', '+11'])) {
+    eleventh = '#'
+  } else if (customQuality.includes('11')
+    || (customQuality.includes('13') && !customQuality.includes('add13'))
+  ) {
+    eleventh = ''
+  }
+  // thirteenth
+  if (customQuality.includes('b13')) {
+    thirteenth = 'b'
+  } else if (customQuality.includes('13')) {
+    thirteenth = ''
+  }
+
+  if (second !== null) {
     chordDefinition.push(Interval.Second)
   }
-
-  // third
-  if (customQuality.includes('5') || customQuality.includes('sus')) {
-    // no third
-  } else if (customQuality.indexOf('maj') !== 0 && Array.from(customQuality)[0] === 'm') {
-    chordDefinition.push(Interval.MinorThird)
-  } else {
-    // todo toujours ?
-    chordDefinition.push(Interval.MajorThird)
+  if (third !== null) {
+    chordDefinition.push(third === 'b' ? Interval.MinorThird : Interval.MajorThird)
   }
-
-  // fourth
-  if (customQuality.includes('4')) {
+  if (fourth !== null) {
     chordDefinition.push(Interval.Fourth)
   }
-
-  // fifth
-  if (
-    customQuality.includes('b5') ||
-    customQuality.includes('dim') ||
-    customQuality.includes('-')
-  ) {
+  if (fifth === 'b') {
     chordDefinition.push(Interval.DiminishedFifth)
-  } else if (
-    customQuality.includes('#5') ||
-    customQuality.includes('aug') ||
-    customQuality.includes('+')
-  ) {
+  } else if (fifth === '#') {
     chordDefinition.push(Interval.MinorSixth) // AugmentedFifth
   } else {
-    // todo pas toujours
     chordDefinition.push(Interval.Fifth)
   }
-
-  // sixth
-  // todo sixth mineur ?
-  if (customQuality.includes('6')) {
+  if (sixth !== null) {
     chordDefinition.push(Interval.MajorSixth)
   }
-
-  // seventh
-  if (customQuality.includes('add')) {
-    // no seventh
-  } else if (customQuality.includes('maj7') || customQuality.includes('7M')) {
-    chordDefinition.push(Interval.MajorSeventh)
-  } else if (customQuality.includes('7')) {
-    chordDefinition.push(Interval.MinorSeventh)
+  if (seventh !== null) {
+    chordDefinition.push(seventh === 'b' ? Interval.MinorSeventh : Interval.MajorSeventh)
   }
-
-  // ninth
-  if (customQuality.includes('b9')) {
-    chordDefinition.push(Interval.DiminishedSecond)
-  } else if (customQuality.includes('#9')) {
-    chordDefinition.push(Interval.MinorThird) // AugmentedSecond
-  } else if (customQuality.includes('9')) {
-    chordDefinition.push(Interval.Second)
+  if (ninth !== null) {
+    chordDefinition.push(ninth === 'b' ? Interval.DiminishedSecond : Interval.Second)
   }
-
-  // eleventh
-  if (customQuality.includes('b11')) {
-    chordDefinition.push(Interval.MajorThird) // DiminishedFourth
-  } else if (customQuality.includes('#11')) {
-    chordDefinition.push(Interval.DiminishedFifth) // AugmentedFourth
-  } else if (customQuality.includes('11')) {
-    chordDefinition.push(Interval.Fourth)
+  if (eleventh !== null) {
+    chordDefinition.push(eleventh === '#' ? Interval.DiminishedFifth : Interval.Fourth)
   }
-
-  // thirteenth
-  // todo sixth mineur ?
-  if (customQuality.includes('13')) {
-    chordDefinition.push(Interval.MajorSixth)
+  if (thirteenth !== null) {
+    chordDefinition.push(thirteenth === 'b' ? Interval.MinorSixth : Interval.MajorSixth)
   }
 
   return chordDefinition
@@ -157,12 +190,19 @@ export function generateChordFromCustomQuality(customQuality: string): Chord {
   if (arrQuality.length === 0) {
     return []
   }
-  const chordRoot = arrQuality[0]
+
+  let chordRoot = arrQuality[0]
+  let arrQualityRootLess = arrQuality.slice(1)
+  if (arrQualityRootLess.length > 0 && ['b', '#'].includes(arrQualityRootLess[0])) {
+    chordRoot += arrQualityRootLess[0]
+    arrQualityRootLess = arrQualityRootLess.slice(1)
+  }
+
   if (!CHROMATIC_SCALE.includes(chordRoot)) {
     return []
   }
   return generateChordFromIntervals(
     chordRoot,
-    generateIntervalsFromCustomQuality(arrQuality.slice(1).join('')),
+    generateIntervalsFromCustomQuality(arrQualityRootLess.join('')),
   )
 }
