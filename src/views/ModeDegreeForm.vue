@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ChordStructure, Mode, type Degree, type Note } from '@/music/types'
+import { ChordStructure, Mode, type Degree, type SharpNote } from '@/music/types'
 import PianoLayout from '@/components/piano/PianoLayout.vue'
 import NoteSelector from '@/components/form/NoteSelector.vue'
 import ModeSelector from '@/components/form/ModeSelector.vue'
@@ -9,7 +9,7 @@ import { generateChordFromModeDegree } from '@/music/chordGenerator'
 import ChordStructureSelector from '@/components/form/ChordStructureSelector.vue'
 import DegreeSelector from '@/components/form/DegreeSelector.vue'
 
-const modeRoot = ref<Note>('E')
+const modeRoot = ref<SharpNote>('E')
 const mode = ref<Mode>(Mode.Mixolydian)
 const degree = ref<Degree>('I')
 const chordStructure = ref<ChordStructure>(ChordStructure.Tetrad)

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import PianoKey from '@/components/piano/PianoKey.vue'
-import { BASE_OCTAVE, type Chord, CHROMATIC_SCALE, type Note, type Scale } from '@/music/types'
+import { BASE_OCTAVE, type Chord, CHROMATIC_SCALE, type SharpNote, type Scale } from '@/music/types'
 import { computed } from 'vue'
 
 const props = defineProps<{
-  chordRoot: Note
+  chordRoot: SharpNote
   scale: Scale
   chord: Chord
 }>()
@@ -14,7 +14,7 @@ type KeyNote = {
   isPlayed: boolean
   isChordRoot: boolean
   isScaleRoot: boolean
-  note: Note
+  note: SharpNote
   octave: number
 }
 

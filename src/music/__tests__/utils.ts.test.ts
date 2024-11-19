@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest'
-import { computeFrequency, transposeChord, transposeNote } from '../utils'
-import { Chord, Note } from '../types'
+import { computeFrequency, getSharpNote, getFullChromaticNote, transposeChord, transposeNote } from '../utils'
+import { Chord, FullChromaticNote, SharpNote } from '../types'
 
 describe('music/utils.ts', () => {
-  const computeFrequencyTestCases: { note: Note; octave: number; expected: number }[] = [
+  const computeFrequencyTestCases: { note: SharpNote; octave: number; expected: number }[] = [
     {
       note: 'A',
       octave: 4,
@@ -32,7 +32,57 @@ describe('music/utils.ts', () => {
     })
   })
 
-  const transposeNoteTestCases: { baseNote: Note; interval: number; expected: Note }[] = [
+  const getFullChromaticNoteTestCases: { scaleRoot: SharpNote, note: SharpNote, expected: SharpNote }[] = [
+    {
+      scaleRoot: 'C',
+      note: 'C',
+      expected: 'C',
+    },
+    {
+      scaleRoot: 'C',
+      note: 'A#',
+      expected: 'Bb',
+    },
+    {
+      scaleRoot: 'C#',
+      note: 'C#',
+      expected: 'C#',
+    },
+    {
+      scaleRoot: 'C#',
+      note: 'D#',
+      expected: 'D#',
+    },
+  ]
+  getFullChromaticNoteTestCases.forEach(({ scaleRoot, note, expected }) => {
+    test('getFullChromaticNote with ' + scaleRoot + ' ' + note, () => {
+      const result = getFullChromaticNote(scaleRoot, note)
+      expect(result).toEqual(expected)
+    })
+  })
+
+  const getSharpNoteTestCases: { note: FullChromaticNote; expected: SharpNote }[] = [
+    {
+      note: 'C',
+      expected: 'C',
+    },
+    {
+      note: 'C#',
+      expected: 'C#',
+    },
+    {
+      note: 'Db',
+      expected: 'C#',
+    },
+  ]
+  getSharpNoteTestCases.forEach(({ note, expected }) => {
+    test('getSharpNote with ' + note, () => {
+      const result = getSharpNote(note)
+      expect(result).toEqual(expected)
+    })
+  })
+
+  const transposeNoteTestCases: { baseNote: SharpNote; interval: number; expected: SharpNote }[] = [
     {
       baseNote: 'C',
       interval: 1,

@@ -1,9 +1,10 @@
-export type Note = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#' | 'A' | 'A#' | 'B'
-export type Chord = Note[]
+export type SharpNote = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#' | 'A' | 'A#' | 'B'
+export type FullChromaticNote = 'C' | 'C#' | 'Db' | 'D' | 'D#' | 'Eb' | 'E' | 'F' | 'F#' | 'Gb' | 'G' | 'G#' | 'Ab' | 'A' | 'A#' | 'Bb' | 'B'
+export type Chord = FullChromaticNote[]
 export type Degree = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII'
-export type Scale = Note[]
+export type Scale = FullChromaticNote[]
 
-export const CHROMATIC_SCALE: Scale = [
+export const CHROMATIC_SCALE: SharpNote[] = [
   'C',
   'C#',
   'D',
@@ -17,13 +18,41 @@ export const CHROMATIC_SCALE: Scale = [
   'A#',
   'B',
 ]
+export const CHROMATIC_NOTES_INDICES: Record<FullChromaticNote, number> = {
+  'C': 0,
+  'C#': 1,
+  'Db': 1,
+  'D': 2,
+  'D#': 3,
+  'Eb': 3,
+  'E': 4,
+  'F': 5,
+  'F#': 6,
+  'Gb': 6,
+  'G': 7,
+  'G#': 8,
+  'Ab': 8,
+  'A': 9,
+  'A#': 10,
+  'Bb': 10,
+  'B': 11,
+}
+
+export const ENHARMONIC_EQUIVALENTS: Record<FullChromaticNote, FullChromaticNote> = {
+  'C#': 'Db', 'D#': 'Eb', 'F#': 'Gb', 'G#': 'Ab', 'A#': 'Bb',
+  'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#',
+};
 
 export const BASE_OCTAVE = 4
 export const BASE_A_FREQUENCY = 440
 
 export const ORDERED_DEGREES: Degree[] = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
 
-type ScaleInterval = 1 | 2
+type Alteration = 'flat' | '' | 'sharp'
+export type ScaleInterval = {
+  semitones: number
+  alteration?: Alteraion
+}
 export type ScaleIntervals = ScaleInterval[]
 
 export enum Mode {
@@ -36,9 +65,8 @@ export enum Mode {
   Locrian = 'Locrian',
 }
 
-// todo générer en décalant depuis major ?
 export const MODE_INTERVALS: Record<Mode, ScaleIntervals> = {
-  [Mode.Ionian]: [2, 2, 1, 2, 2, 2, 1],
+  [Mode.Ionian]: [{semitones: 2}, {semitones: 2}, {semitones: 1}, {semitones: 2}, {semitones: 2}, {semitones: 2}, {semitones: 1}],
   [Mode.Dorian]: [2, 1, 2, 2, 2, 1, 2],
   [Mode.Phrygian]: [1, 2, 2, 2, 1, 2, 2],
   [Mode.Lydian]: [2, 2, 2, 1, 2, 2, 1],

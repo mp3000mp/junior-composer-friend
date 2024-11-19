@@ -1,4 +1,4 @@
-import type { Degree, Mode, Note, ScaleIntervals } from '@/music/types'
+import type { Degree, Mode, SharpNote, ScaleIntervals } from '@/music/types'
 import {
   type Chord,
   CHORD_STRUCTURE_DEFINITIONS,
@@ -34,7 +34,7 @@ function getScaleInterval(
 }
 
 export function generateChordFromModeDegree(
-  modeRoot: Note,
+  modeRoot: SharpNote,
   mode: Mode,
   degree: Degree,
   chordStructure: ChordStructure,
@@ -53,7 +53,7 @@ export function generateChordFromModeDegree(
   return chord
 }
 
-export function generateChordFromIntervals(chordRoot: Note, intervals: Interval[]): Chord {
+export function generateChordFromIntervals(chordRoot: SharpNote, intervals: Interval[]): Chord {
   const chord: Chord = []
   for (const interval of intervals) {
     chord.push(transposeNote(chordRoot, interval))

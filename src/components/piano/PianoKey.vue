@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Note } from '@/music/types'
+import type { SharpNote } from '@/music/types'
 import { usePlayer } from '@/music/player'
 
 const player = usePlayer()
@@ -10,7 +10,7 @@ const props = defineProps<{
   isPlayed: boolean
   isChordRoot: boolean
   isScaleRoot: boolean
-  note: Note
+  note: SharpNote
   octave: number
 }>()
 

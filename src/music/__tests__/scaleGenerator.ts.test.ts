@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest'
 import { generateScaleFromMode } from '../scaleGenerator'
-import { Mode, Note, Scale } from '../types'
+import { Mode, SharpNote, Scale } from '../types'
 
 describe('music/scaleGenerator.ts', () => {
   const generateScaleFromModeTestCases: {
-    modeRoot: Note
+    modeRoot: SharpNote
     mode: Mode
     expected: Scale
   }[] = [
@@ -12,6 +12,11 @@ describe('music/scaleGenerator.ts', () => {
       modeRoot: 'A',
       mode: Mode.Aeolian,
       expected: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+    },
+    {
+      modeRoot: 'F',
+      mode: Mode.Ionian,
+      expected: ["F", "G", "A", "Bb", "C", "D", "E"],
     },
   ]
   generateScaleFromModeTestCases.forEach(({ modeRoot, mode, expected }) => {

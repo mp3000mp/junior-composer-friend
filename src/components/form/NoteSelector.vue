@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { CHROMATIC_SCALE, type Note } from '@/music/types'
+import { CHROMATIC_SCALE, type SharpNote } from '@/music/types'
 import { computed } from 'vue'
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps<{
-  modelValue: Note
+  modelValue: SharpNote
 }>()
 
 const localValue = computed({
   get: () => props.modelValue,
-  set: (value: Note) => emit('update:modelValue', value),
+  set: (value: SharpNote) => emit('update:modelValue', value),
 })
 </script>
 

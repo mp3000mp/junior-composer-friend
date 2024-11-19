@@ -3,10 +3,10 @@ import {
   CHORD_QUALITY_DEFINITIONS,
   ChordQuality,
   CHROMATIC_SCALE,
-  Note,
+  SharpNote,
 } from '@/music/types'
 
-function getNoteInterval(fromNote: Note, toNote: Note): number {
+function getNoteInterval(fromNote: SharpNote, toNote: SharpNote): number {
   const fromIndex = CHROMATIC_SCALE.indexOf(fromNote)
   const toIndex = CHROMATIC_SCALE.indexOf(toNote)
   if (fromIndex <= toIndex) {

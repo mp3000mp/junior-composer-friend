@@ -5,11 +5,11 @@ import {
   generateChordFromIntervals,
   generateChordFromCustomQuality,
 } from '../chordGenerator'
-import { Chord, ChordQuality, ChordStructure, Degree, Interval, Mode, Note } from '../types'
+import { Chord, ChordQuality, ChordStructure, Degree, Interval, Mode, SharpNote } from '../types'
 
 describe('music/chordGenerator.ts', () => {
   const generateChordFromModeDegreeTestCases: {
-    modeRoot: Note
+    modeRoot: SharpNote
     mode: Mode
     degree: Degree
     chordStructure: ChordStructure
@@ -40,7 +40,7 @@ describe('music/chordGenerator.ts', () => {
   )
 
   const generateChordFromIntervalsTestCases: {
-    chordRoot: Note
+    chordRoot: SharpNote
     intervals: Interval[]
     expected: Chord
   }[] = [
