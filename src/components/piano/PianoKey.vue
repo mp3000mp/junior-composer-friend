@@ -15,7 +15,7 @@ const props = defineProps<{
 }>()
 
 function play() {
-  player.play(props.note, props.octave, 500)
+  player.playNote(props.note, props.octave, 500)
 }
 </script>
 

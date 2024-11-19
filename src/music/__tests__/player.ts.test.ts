@@ -21,11 +21,18 @@ describe('player.ts', () => {
     }))
   })
 
-  test('should trigger sound', () => {
+  test('should play notes', () => {
     const player = usePlayer()
-    player.play('A', 4, 100)
-    player.play('A', 4, 100)
+    player.playNote('A', 4, 100)
+    player.playNote('A', 4, 100)
     expect(window.OscillatorNode.start).toHaveBeenCalled(2)
     expect(window.OscillatorNode.stop).toHaveBeenCalled(2)
+  })
+
+  test('should play chord', () => {
+    const player = usePlayer()
+    player.playChord(['A', 'C', 'E'], 100)
+    expect(window.OscillatorNode.start).toHaveBeenCalled(3)
+    expect(window.OscillatorNode.stop).toHaveBeenCalled(3)
   })
 })

@@ -1,19 +1,23 @@
 import { computeFrequency } from '@/music/utils'
+import { BASE_OCTAVE, type Chord, CHROMATIC_SCALE } from '@/music/types'
 
 class Player {
   context: AudioContext
-  gainNode: GainNode
   isInitialized: boolean = false
+  startTime: number | null = null
   volume: number
 
   constructor() {
-    this.volume = 0.2
+    this.volume = 0.1
   }
 
   private createOscillator(type: OscillatorType): OscillatorNode {
+    const gainNode = this.context.createGain()
+    gainNode.connect(this.context.destination)
+    gainNode.gain.value = this.volume
     const oscillatorNode = this.context.createOscillator()
     oscillatorNode.type = type
-    oscillatorNode.connect(this.gainNode)
+    oscillatorNode.connect(gainNode)
     return oscillatorNode
   }
 
@@ -22,26 +26,64 @@ class Player {
       return
     }
     this.context = new AudioContext()
-    this.gainNode = this.context.createGain()
-    this.gainNode.connect(this.context.destination)
     this.setVolume(this.volume)
     this.isInitialized = true
   }
 
   public setVolume(volume: number) {
-    this.gainNode.gain.value = volume
+    this.volume = volume
+    // todo update all active gains ?
   }
 
-  public play(note: number, octave: number, durationMs: number) {
+  private resetStartTime() {
+    this.startTime = null
+  }
+
+  private play(note: number, octave: number, durationMs: number, delayMs: number = 0) {
     this.initialize()
+
+    if (this.startTime === null) {
+      this.startTime = this.context.currentTime
+    }
+
     const oscillatorNode = this.createOscillator('sawtooth')
     oscillatorNode.frequency.setTargetAtTime(
       computeFrequency(note, octave),
       this.context.currentTime,
       0,
     )
-    oscillatorNode.start(0)
-    oscillatorNode.stop(this.context.currentTime + durationMs / 1000)
+
+    const startTime = this.startTime + delayMs / 1000
+    oscillatorNode.start(startTime)
+    oscillatorNode.stop(startTime + durationMs / 1000)
+  }
+
+  public playNote(note: number, octave: number, durationMs: number, delayMs: number = 0) {
+    this.initialize()
+    this.resetStartTime()
+    this.play(note, octave, durationMs, delayMs)
+  }
+
+  public playChord(chord: Chord, delayMs: number = 0) {
+    if (chord.length === 0) {
+      return
+    }
+    this.initialize()
+
+    const platedChordDurationMs = 0 === delayMs ? 1000 : delayMs
+    const totalDurationMs = chord.length * delayMs + platedChordDurationMs
+
+    this.resetStartTime()
+    let currentOctave = BASE_OCTAVE
+    let previousNoteIndex = CHROMATIC_SCALE.indexOf(chord[0])
+    for (let i = 0; i < chord.length; i++) {
+      const currentNoteIndex = CHROMATIC_SCALE.indexOf(chord[i])
+      if (currentNoteIndex < previousNoteIndex) {
+        currentOctave++
+      }
+      this.play(chord[i], currentOctave, totalDurationMs - delayMs * i, delayMs * i)
+      previousNoteIndex = currentNoteIndex
+    }
   }
 }
 

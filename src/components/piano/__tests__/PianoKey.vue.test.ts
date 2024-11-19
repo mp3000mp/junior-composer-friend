@@ -20,7 +20,7 @@ describe('PianoKey.vue', () => {
       octave: 4,
     }
     playerMock = {
-      play: vi.fn(),
+      playNote: vi.fn(),
     }
   })
 
@@ -45,6 +45,6 @@ describe('PianoKey.vue', () => {
     const parent = wrapper.find('div')
     await parent.trigger('click')
     await parent.trigger('click')
-    expect(playerMock.play).toHaveBeenCalledTimes(2)
+    expect(playerMock.playNote).toHaveBeenCalledTimes(2)
   })
 })

@@ -2,6 +2,9 @@
 import PianoKey from '@/components/piano/PianoKey.vue'
 import { BASE_OCTAVE, type Chord, CHROMATIC_SCALE, type SharpNote, type Scale } from '@/music/types'
 import { computed } from 'vue'
+import { usePlayer } from '@/music/player'
+
+const player = usePlayer()
 
 const props = defineProps<{
   chordRoot: SharpNote
@@ -40,21 +43,34 @@ const pianoNotes = computed(() => {
   }
   return notes
 })
+
+function playPlatedChord() {
+  player.playChord(props.chord)
+}
+function playArpeggiatedChord() {
+  player.playChord(props.chord, 400)
+}
 </script>
 
 <template>
   <div class="piano-layout">
-    <piano-key
-      v-for="keyNote in pianoNotes"
-      :key="keyNote.note + keyNote.octave"
-      :is-highlighted="keyNote.isHighlighted"
-      :is-played="keyNote.isPlayed"
-      :is-chord-root="keyNote.isChordRoot"
-      :is-scale-root="keyNote.isScaleRoot"
-      :is-black="keyNote.note.includes('#')"
-      :note="keyNote.note"
-      :octave="keyNote.octave"
-    />
+    <div class="piano-keyboard">
+      <piano-key
+        v-for="keyNote in pianoNotes"
+        :key="keyNote.note + keyNote.octave"
+        :is-highlighted="keyNote.isHighlighted"
+        :is-played="keyNote.isPlayed"
+        :is-chord-root="keyNote.isChordRoot"
+        :is-scale-root="keyNote.isScaleRoot"
+        :is-black="keyNote.note.includes('#')"
+        :note="keyNote.note"
+        :octave="keyNote.octave"
+      />
+    </div>
+    <div class="cp text-center">
+      <font-aw icon="play" @click="playPlatedChord" title="plated" />
+      <font-aw icon="music" @click="playArpeggiatedChord" title="arpeggiated" />
+    </div>
   </div>
 </template>
 
@@ -66,7 +82,7 @@ $whiteKeyWidth: 35px;
 $blackKeyWidth: $whiteKeyWidth * 0.75;
 $highlightedColor: color.adjust($white, $lightness: -15%, $space: hsl);
 
-.piano-layout {
+.piano-keyboard {
   display: flex;
 
   .key {
