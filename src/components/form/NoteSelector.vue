@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CHROMATIC_SCALE, type SharpNote } from '@/music/types'
+import { SHARP_CHROMATIC_SCALE, type SharpNote } from '@/music/types'
 import { computed } from 'vue'
 
 const emit = defineEmits(['update:modelValue'])
@@ -15,6 +15,6 @@ const localValue = computed({
 
 <template>
   <select class="form-select" v-model="localValue">
-    <option v-for="note in CHROMATIC_SCALE" :key="note" :value="note">{{ note }}</option>
+    <option v-for="note in SHARP_CHROMATIC_SCALE" :key="note" :value="note">{{ note }}</option>
   </select>
 </template>

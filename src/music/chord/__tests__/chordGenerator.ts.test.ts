@@ -5,26 +5,28 @@ import {
   generateChordFromIntervals,
   generateChordFromCustomQuality,
 } from '../chordGenerator'
-import { Chord, ChordQuality, ChordStructure, Degree, Interval, Mode, SharpNote } from '../types'
+import { Chord, ChordQuality, ChordStructure } from '@/music/chord/types'
+import { ModeEnum, type Degree } from '@/music/scale/types'
+import { Interval, type SharpNote } from '@/music/types'
 
 describe('music/chordGenerator.ts', () => {
   const generateChordFromModeDegreeTestCases: {
     modeRoot: SharpNote
-    mode: Mode
+    mode: ModeEnum
     degree: Degree
     chordStructure: ChordStructure
     expected: Chord
   }[] = [
     {
       modeRoot: 'C',
-      mode: Mode.Ionian,
+      mode: ModeEnum.Ionian,
       degree: 'I',
       chordStructure: ChordStructure.Triad,
       expected: ['C', 'E', 'G'],
     },
     {
       modeRoot: 'A',
-      mode: Mode.Aeolian,
+      mode: ModeEnum.Eolian,
       degree: 'V',
       chordStructure: ChordStructure.Triad,
       expected: ['E', 'G', 'B'],
@@ -32,7 +34,7 @@ describe('music/chordGenerator.ts', () => {
   ]
   generateChordFromModeDegreeTestCases.forEach(
     ({ modeRoot, mode, degree, chordStructure, expected }) => {
-      test('generateChordFromModeDegree with ' + modeRoot + ' and ' + degree, () => {
+      test(`generateChordFromModeDegree with ${modeRoot} and ${degree}`, () => {
         const result = generateChordFromModeDegree(modeRoot, mode, degree, chordStructure)
         expect(result).toEqual(expected)
       })
@@ -51,13 +53,10 @@ describe('music/chordGenerator.ts', () => {
     },
   ]
   generateChordFromIntervalsTestCases.forEach(({ chordRoot, intervals, expected }) => {
-    test(
-      'generateChordFromIntervals with ' + chordRoot + ' and [' + intervals.join(' ') + ']',
-      () => {
-        const result = generateChordFromIntervals(chordRoot, intervals)
-        expect(result).toEqual(expected)
-      },
-    )
+    test(`generateChordFromIntervals with ${chordRoot} and [ ${intervals.join(' ')} ]`, () => {
+      const result = generateChordFromIntervals(chordRoot, intervals)
+      expect(result).toEqual(expected)
+    })
   })
 
   // see https://fr.wikipedia.org/wiki/Chiffrage_des_accords
@@ -148,7 +147,7 @@ describe('music/chordGenerator.ts', () => {
     { customQuality: 'Cm11b9b13', expected: ['C', 'D#', 'G', 'A#', 'C#', 'F', 'G#'] }, // G optional
   ]
   generateChordFromCustomQualityTestCases.forEach(({ customQuality, expected }) => {
-    test('generateChordFromCustomQuality with ' + customQuality, () => {
+    test(`generateChordFromCustomQuality with ${customQuality}`, () => {
       const result = generateChordFromCustomQuality(customQuality)
       expect(result).toEqual(expected)
     })
@@ -164,7 +163,7 @@ describe('music/chordGenerator.ts', () => {
     },
   ]
   generateIntervalsFromCustomQualityTestCases.forEach(({ customQuality, expected }) => {
-    test('generateIntervalsFromCustomQuality with ' + customQuality, () => {
+    test(`generateIntervalsFromCustomQuality with ${customQuality}`, () => {
       const result = generateIntervalsFromCustomQuality(customQuality)
       expect(result).toEqual(expected)
     })

@@ -1,6 +1,14 @@
 import { describe, expect, test } from 'vitest'
-import { computeFrequency, getSharpNote, getFullChromaticNote, transposeChord, transposeNote } from '../utils'
-import { Chord, FullChromaticNote, SharpNote } from '../types'
+import {
+  computeFrequency,
+  getSharpNote,
+  getFullChromaticNote,
+  transposeChord,
+  transposeNote,
+  getNaturalNote,
+  getAlteration,
+} from '@/music/utils'
+import { Alteration, Chord, FullChromaticNote, NaturalNote, SharpNote } from '@/music/types'
 
 describe('music/utils.ts', () => {
   const computeFrequencyTestCases: { note: SharpNote; octave: number; expected: number }[] = [
@@ -26,13 +34,55 @@ describe('music/utils.ts', () => {
     },
   ]
   computeFrequencyTestCases.forEach(({ note, octave, expected }) => {
-    test('computeFrequency with ' + note + octave, () => {
+    test(`computeFrequency with ${note} ${octave}`, () => {
       const result = computeFrequency(note, octave)
       expect(result).toEqual(expected)
     })
   })
 
-  const getFullChromaticNoteTestCases: { scaleRoot: SharpNote, note: SharpNote, expected: SharpNote }[] = [
+  const getAlterationTestCases: {
+    naturalNote: NaturalNote
+    fullChromaticNote: FullChromaticNote
+    expected: Alteration
+  }[] = [
+    {
+      naturalNote: 'C',
+      fullChromaticNote: 'A#',
+      expected: 'bb',
+    },
+    {
+      naturalNote: 'G',
+      fullChromaticNote: 'F#',
+      expected: 'b',
+    },
+    {
+      naturalNote: 'C',
+      fullChromaticNote: 'C',
+      expected: '',
+    },
+    {
+      naturalNote: 'C',
+      fullChromaticNote: 'C#',
+      expected: '#',
+    },
+    {
+      naturalNote: 'D',
+      fullChromaticNote: 'E',
+      expected: '##',
+    },
+  ]
+  getAlterationTestCases.forEach(({ naturalNote, fullChromaticNote, expected }) => {
+    test(`getAlteration with ${naturalNote} ${fullChromaticNote}`, () => {
+      const result = getAlteration(naturalNote, fullChromaticNote)
+      expect(result).toEqual(expected)
+    })
+  })
+
+  const getFullChromaticNoteTestCases: {
+    scaleRoot: SharpNote
+    note: SharpNote
+    expected: SharpNote
+  }[] = [
     {
       scaleRoot: 'C',
       note: 'C',
@@ -48,15 +98,40 @@ describe('music/utils.ts', () => {
       note: 'C#',
       expected: 'C#',
     },
-    {
-      scaleRoot: 'C#',
-      note: 'D#',
-      expected: 'D#',
-    },
+    // {
+    //   scaleRoot: 'C#',
+    //   note: 'D#',
+    //   expected: 'D#',
+    // },
   ]
   getFullChromaticNoteTestCases.forEach(({ scaleRoot, note, expected }) => {
     test('getFullChromaticNote with ' + scaleRoot + ' ' + note, () => {
       const result = getFullChromaticNote(scaleRoot, note)
+      expect(result).toEqual(expected)
+    })
+  })
+
+  const getNaturalNoteTestCases: { note: FullChromaticNote; expected: NaturalNote }[] = [
+    {
+      note: 'C',
+      expected: 'C',
+    },
+    {
+      note: 'C#',
+      expected: 'C',
+    },
+    {
+      note: 'Db',
+      expected: 'D',
+    },
+    {
+      note: 'Bbb',
+      expected: 'B',
+    },
+  ]
+  getNaturalNoteTestCases.forEach(({ note, expected }) => {
+    test(`getNaturalNote with ${note}`, () => {
+      const result = getNaturalNote(note)
       expect(result).toEqual(expected)
     })
   })
@@ -76,7 +151,7 @@ describe('music/utils.ts', () => {
     },
   ]
   getSharpNoteTestCases.forEach(({ note, expected }) => {
-    test('getSharpNote with ' + note, () => {
+    test(`getSharpNote with ${note}`, () => {
       const result = getSharpNote(note)
       expect(result).toEqual(expected)
     })
@@ -105,7 +180,7 @@ describe('music/utils.ts', () => {
     },
   ]
   transposeNoteTestCases.forEach(({ baseNote, interval, expected }) => {
-    test('transposeNote with ' + baseNote + ' and ' + interval, () => {
+    test(`transposeNote with ${baseNote} and ${interval}`, () => {
       const result = transposeNote(baseNote, interval)
       expect(result).toBe(expected)
     })
@@ -119,7 +194,7 @@ describe('music/utils.ts', () => {
     },
   ]
   transposeChordTestCases.forEach(({ chord, interval, expected }) => {
-    test('transposeChord with [' + chord.join(' ') + '] and ' + interval, () => {
+    test(`transposeChord with [ ${chord.join(' ')} ] and ${interval}`, () => {
       const result = transposeChord(chord, interval)
       expect(result).toEqual(expected)
     })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChordStructure } from '@/music/types'
+import { ChordStructure } from '@/music/chord/types'
 import { computed } from 'vue'
 
 const emit = defineEmits(['update:modelValue'])

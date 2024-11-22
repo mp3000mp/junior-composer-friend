@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ChordStructure, Mode, type Degree, type SharpNote } from '@/music/types'
+import { type SharpNote } from '@/music/types'
+import { ChordStructure } from '@/music/chord/types'
+import { ModeEnum, type Degree, MODE_INTERVALS } from '@/music/scale/types'
 import PianoLayout from '@/components/piano/PianoLayout.vue'
 import NoteSelector from '@/components/form/NoteSelector.vue'
 import ModeSelector from '@/components/form/ModeSelector.vue'
-import { generateScaleFromMode } from '@/music/scaleGenerator'
-import { generateChordFromModeDegree } from '@/music/chordGenerator'
+import { generateScaleFromIntervals } from '@/music/scale/scaleGenerator'
+import { generateChordFromModeDegree } from '@/music/chord/chordGenerator'
 import ChordStructureSelector from '@/components/form/ChordStructureSelector.vue'
 import DegreeSelector from '@/components/form/DegreeSelector.vue'
 
 const modeRoot = ref<SharpNote>('E')
-const mode = ref<Mode>(Mode.Mixolydian)
+const mode = ref<ModeEnum>(ModeEnum.Mixolydian)
 const degree = ref<Degree>('I')
 const chordStructure = ref<ChordStructure>(ChordStructure.Tetrad)
 
-const scale = computed(() => generateScaleFromMode(modeRoot.value, mode.value))
+const scale = computed(() => generateScaleFromIntervals(modeRoot.value, MODE_INTERVALS[mode.value]))
 const chord = computed(() =>
   generateChordFromModeDegree(modeRoot.value, mode.value, degree.value, chordStructure.value),
 )

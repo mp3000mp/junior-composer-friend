@@ -1,5 +1,5 @@
 import { computeFrequency } from '@/music/utils'
-import { BASE_OCTAVE, type Chord, CHROMATIC_SCALE } from '@/music/types'
+import { BASE_OCTAVE, type Chord, SHARP_CHROMATIC_SCALE } from '@/music/types'
 
 class Player {
   context: AudioContext
@@ -75,9 +75,9 @@ class Player {
 
     this.resetStartTime()
     let currentOctave = BASE_OCTAVE
-    let previousNoteIndex = CHROMATIC_SCALE.indexOf(chord[0])
+    let previousNoteIndex = SHARP_CHROMATIC_SCALE.indexOf(chord[0])
     for (let i = 0; i < chord.length; i++) {
-      const currentNoteIndex = CHROMATIC_SCALE.indexOf(chord[i])
+      const currentNoteIndex = SHARP_CHROMATIC_SCALE.indexOf(chord[i])
       if (currentNoteIndex < previousNoteIndex) {
         currentOctave++
       }

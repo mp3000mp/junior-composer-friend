@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
-import { getEligibleChordQualities } from '../chordAnalyzer'
-import { Chord, ChordQuality } from '../types'
+import { getEligibleChordQualities } from '@/music/chord/chordAnalyzer'
+import { Chord, ChordQuality } from '@/music/chord/types'
 
 describe('music/chordAnalyzer.ts', () => {
   const getEligibleChordQualitiesTestCases: {
@@ -21,7 +21,7 @@ describe('music/chordAnalyzer.ts', () => {
     },
   ]
   getEligibleChordQualitiesTestCases.forEach(({ chord, expected }) => {
-    test('getEligibleChordQualities with ' + chord.join(' '), () => {
+    test(`getEligibleChordQualities with ${chord.join(' ')}`, () => {
       const result = getEligibleChordQualities(chord)
       expect(result).toEqual(expected)
     })

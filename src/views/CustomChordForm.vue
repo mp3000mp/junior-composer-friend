@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { type SharpNote } from '@/music/types'
 import PianoLayout from '@/components/piano/PianoLayout.vue'
-import { generateChordFromCustomQuality } from '@/music/chordGenerator'
+import { generateChordFromCustomQuality } from '@/music/chord/chordGenerator'
 
 const customQuality = ref('')
 

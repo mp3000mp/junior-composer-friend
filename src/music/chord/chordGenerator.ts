@@ -1,14 +1,8 @@
 import type { Degree, Mode, SharpNote, ScaleIntervals } from '@/music/types'
-import {
-  type Chord,
-  CHORD_STRUCTURE_DEFINITIONS,
-  ChordStructure,
-  CHROMATIC_SCALE,
-  Interval,
-  MODE_INTERVALS,
-  ORDERED_DEGREES,
-} from '@/music/types'
+import { SHARP_CHROMATIC_SCALE, Interval } from '@/music/types'
 import { transposeNote } from '@/music/utils'
+import { MODE_INTERVALS, ORDERED_DEGREES } from '@/music/scale/types'
+import { type Chord, CHORD_STRUCTURE_DEFINITIONS, ChordStructure } from '@/music/chord/types'
 
 function getScaleInterval(
   scaleIntervals: ScaleIntervals,
@@ -214,7 +208,7 @@ export function generateChordFromCustomQuality(customQuality: string): Chord {
     arrQualityRootLess = arrQualityRootLess.slice(1)
   }
 
-  if (!CHROMATIC_SCALE.includes(chordRoot)) {
+  if (!SHARP_CHROMATIC_SCALE.includes(chordRoot)) {
     return []
   }
   return generateChordFromIntervals(

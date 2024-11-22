@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import PianoKey from '@/components/piano/PianoKey.vue'
-import { BASE_OCTAVE, type Chord, CHROMATIC_SCALE, type SharpNote, type Scale } from '@/music/types'
+import { BASE_OCTAVE, SHARP_CHROMATIC_SCALE, type SharpNote } from '@/music/types'
+import { type Chord } from '@/music/chord/types'
+import { type Scale } from '@/music/scale/types'
 import { computed } from 'vue'
 import { usePlayer } from '@/music/player'
 
@@ -25,7 +27,7 @@ const pianoNotes = computed(() => {
   const notes: KeyNote[] = []
   let chordCursor = 0
   for (let i = BASE_OCTAVE - 1; i < BASE_OCTAVE + 2; i++) {
-    for (const note of CHROMATIC_SCALE) {
+    for (const note of SHARP_CHROMATIC_SCALE) {
       let isPlayed = false
       if (chordCursor < props.chord.length && props.chord[chordCursor] === note) {
         isPlayed = true
@@ -79,19 +81,19 @@ function playArpeggiatedChord() {
 @import 'src/assets/style/bootstrap/vars-override';
 
 $whiteKeyWidth: 35px;
-$blackKeyWidth: $whiteKeyWidth * 0.75;
-$highlightedColor: color.adjust($white, $lightness: -15%, $space: hsl);
+$blackKeyWidth: $whiteKeyWidth * 0.66;
+$highlightedColor: color.adjust($white, $lightness: -5%, $space: hsl);
 
 .piano-keyboard {
   display: flex;
 
   .key {
     width: $whiteKeyWidth;
-    height: $whiteKeyWidth * 3;
+    height: $whiteKeyWidth * 3.5;
     border: 1px solid #333;
     position: relative;
     margin: 0 1px;
-    padding-bottom: 5px;
+    padding-bottom: 3px;
     display: flex;
     align-items: end;
     justify-content: center;
@@ -100,32 +102,35 @@ $highlightedColor: color.adjust($white, $lightness: -15%, $space: hsl);
     user-select: none;
 
     &.black {
-      background-color: $black;
+      background-color: black;
       color: $white;
-      height: $whiteKeyWidth * 2;
+      height: $blackKeyWidth * 3.5;
       width: $blackKeyWidth;
       margin: 0 $blackKeyWidth/-2;
       z-index: 1;
-      &.highlighted {
-        background-color: color.adjust($highlightedColor, $lightness: -50%, $space: hsl);
-      }
-      &.scale-root {
-        background-color: color.adjust($red, $lightness: -15%, $space: hsl) !important;
-      }
+
       &.played {
         color: $white;
+        &.highlighted,
+        &:hover {
+          color: $black;
+        }
       }
     }
 
     &.white {
-      background-color: $white;
+      background-color: white;
       color: $black;
-      &.highlighted {
-        background-color: $highlightedColor;
-      }
-      &.scale-root {
-        background-color: color.adjust($red, $lightness: 60%, $space: hsl) !important;
-      }
+    }
+
+    &.highlighted {
+      background-color: $highlightedColor;
+    }
+    &.scale-root {
+      background-color: color.adjust($red, $lightness: 60%, $space: hsl);
+    }
+    &:hover {
+      background-color: $highlightedColor;
     }
 
     &.chord-root {

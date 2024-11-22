@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { usePlayer } from '../player'
+import { usePlayer } from '@/music/player'
 
 describe('player.ts', () => {
   beforeEach(() => {

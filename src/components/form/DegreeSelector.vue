@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ORDERED_DEGREES, type Degree } from '@/music/types'
+import { ORDERED_DEGREES, type Degree } from '@/music/scale/types'
 import { computed } from 'vue'
 
 const emit = defineEmits(['update:modelValue'])
