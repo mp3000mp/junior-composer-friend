@@ -2,7 +2,6 @@ import { describe, expect, test } from 'vitest'
 import {
   computeFrequency,
   getSharpNote,
-  getFullChromaticNote,
   transposeChord,
   transposeNote,
   getNaturalNote,
@@ -78,39 +77,6 @@ describe('music/utils.ts', () => {
     })
   })
 
-  const getFullChromaticNoteTestCases: {
-    scaleRoot: SharpNote
-    note: SharpNote
-    expected: SharpNote
-  }[] = [
-    {
-      scaleRoot: 'C',
-      note: 'C',
-      expected: 'C',
-    },
-    {
-      scaleRoot: 'C',
-      note: 'A#',
-      expected: 'Bb',
-    },
-    {
-      scaleRoot: 'C#',
-      note: 'C#',
-      expected: 'C#',
-    },
-    // {
-    //   scaleRoot: 'C#',
-    //   note: 'D#',
-    //   expected: 'D#',
-    // },
-  ]
-  getFullChromaticNoteTestCases.forEach(({ scaleRoot, note, expected }) => {
-    test('getFullChromaticNote with ' + scaleRoot + ' ' + note, () => {
-      const result = getFullChromaticNote(scaleRoot, note)
-      expect(result).toEqual(expected)
-    })
-  })
-
   const getNaturalNoteTestCases: { note: FullChromaticNote; expected: NaturalNote }[] = [
     {
       note: 'C',
@@ -157,7 +123,7 @@ describe('music/utils.ts', () => {
     })
   })
 
-  const transposeNoteTestCases: { baseNote: SharpNote; interval: number; expected: SharpNote }[] = [
+  const transposeNoteTestCases: { baseNote: FullChromaticNote; interval: number; expected: SharpNote }[] = [
     {
       baseNote: 'C',
       interval: 1,
@@ -172,6 +138,11 @@ describe('music/utils.ts', () => {
       baseNote: 'C#',
       interval: -1,
       expected: 'C',
+    },
+    {
+      baseNote: 'Db',
+      interval: 1,
+      expected: 'D',
     },
     {
       baseNote: 'C',

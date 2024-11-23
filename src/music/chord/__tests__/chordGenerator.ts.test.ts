@@ -1,19 +1,19 @@
 import { describe, expect, test } from 'vitest'
 import {
-  generateIntervalsFromCustomQuality,
+  generateChromaticDegreesFromCustomQuality,
   generateChordFromModeDegree,
-  generateChordFromIntervals,
-  generateChordFromCustomQuality,
+  generateChordFromDegrees,
+  generateChordFromCustomQuality, getChromaticNoteFromDegree
 } from '../chordGenerator'
 import { Chord, ChordQuality, ChordStructure } from '@/music/chord/types'
-import { ModeEnum, type Degree } from '@/music/scale/types'
-import { Interval, type SharpNote } from '@/music/types'
+import { FullChromaticDegree, ModeEnum, type NaturalDegree } from '@/music/scale/types'
+import { FullChromaticNote, Interval, type SharpNote } from '@/music/types'
 
 describe('music/chordGenerator.ts', () => {
   const generateChordFromModeDegreeTestCases: {
     modeRoot: SharpNote
     mode: ModeEnum
-    degree: Degree
+    degree: NaturalDegree
     chordStructure: ChordStructure
     expected: Chord
   }[] = [
@@ -41,20 +41,20 @@ describe('music/chordGenerator.ts', () => {
     },
   )
 
-  const generateChordFromIntervalsTestCases: {
+  const generateChordFromDegreesTestCases: {
     chordRoot: SharpNote
-    intervals: Interval[]
+    degrees: FullChromaticDegree[]
     expected: Chord
   }[] = [
     {
       chordRoot: 'C',
-      intervals: [0, 4, 7],
+      degrees: ['I', 'III', 'V'],
       expected: ['C', 'E', 'G'],
     },
   ]
-  generateChordFromIntervalsTestCases.forEach(({ chordRoot, intervals, expected }) => {
-    test(`generateChordFromIntervals with ${chordRoot} and [ ${intervals.join(' ')} ]`, () => {
-      const result = generateChordFromIntervals(chordRoot, intervals)
+  generateChordFromDegreesTestCases.forEach(({ chordRoot, degrees, expected }) => {
+    test(`generateChordFromDegrees with ${chordRoot} and [ ${degrees.join(' ')} ]`, () => {
+      const result = generateChordFromDegrees(chordRoot, degrees)
       expect(result).toEqual(expected)
     })
   })
@@ -70,81 +70,83 @@ describe('music/chordGenerator.ts', () => {
     { customQuality: 'C5', expected: ['C', 'G'] },
     // triads
     { customQuality: 'C', expected: ['C', 'E', 'G'] },
-    { customQuality: 'C#', expected: ['C#', 'F', 'G#'] },
-    // { customQuality: 'Bb', expected: ['Bb', 'D', 'F'] }, // todo
-    { customQuality: 'Cm', expected: ['C', 'D#', 'G'] },
-    { customQuality: 'C-', expected: ['C', 'D#', 'G'] },
-    { customQuality: 'Cmin', expected: ['C', 'D#', 'G'] },
+    { customQuality: 'E', expected: ['E', 'G#', 'B'] },
+    { customQuality: 'C#', expected: ['C#', 'E#', 'G#'] },
+    { customQuality: 'Cb', expected: ['Cb', 'Eb', 'Gb'] },
+    { customQuality: 'Bb', expected: ['Bb', 'D', 'F'] },
+    { customQuality: 'Cm', expected: ['C', 'Eb', 'G'] },
+    { customQuality: 'C-', expected: ['C', 'Eb', 'G'] },
+    { customQuality: 'Cmin', expected: ['C', 'Eb', 'G'] },
     { customQuality: 'C+', expected: ['C', 'E', 'G#'] },
     { customQuality: 'Caug', expected: ['C', 'E', 'G#'] },
-    { customQuality: 'C°', expected: ['C', 'D#', 'F#'] },
-    { customQuality: 'Co', expected: ['C', 'D#', 'F#'] },
-    { customQuality: 'Cdim', expected: ['C', 'D#', 'F#'] },
+    { customQuality: 'C°', expected: ['C', 'Eb', 'Gb'] },
+    { customQuality: 'Co', expected: ['C', 'Eb', 'Gb'] },
+    { customQuality: 'Cdim', expected: ['C', 'Eb', 'Gb'] },
     { customQuality: 'Csus2', expected: ['C', 'D', 'G'] },
     { customQuality: 'Csus4', expected: ['C', 'F', 'G'] },
     { customQuality: 'Csus', expected: ['C', 'F', 'G'] },
     { customQuality: 'C5add9', expected: ['C', 'G', 'D'] },
-    { customQuality: 'Csus2b5', expected: ['C', 'D', 'F#'] },
-    { customQuality: 'C7no3', expected: ['C', 'G', 'A#'] }, // pk pas sus7 ?
+    { customQuality: 'Csus2b5', expected: ['C', 'D', 'Gb'] },
+    { customQuality: 'C7no3', expected: ['C', 'G', 'Bb'] }, // pk pas sus7 ?
     // tetrads
     { customQuality: 'CΔ', expected: ['C', 'E', 'G', 'B'] },
     { customQuality: 'CΔ7', expected: ['C', 'E', 'G', 'B'] },
     { customQuality: 'Cmaj7', expected: ['C', 'E', 'G', 'B'] },
     { customQuality: 'CM7', expected: ['C', 'E', 'G', 'B'] },
-    { customQuality: 'CmΔ', expected: ['C', 'D#', 'G', 'B'] },
-    { customQuality: 'CmM7', expected: ['C', 'D#', 'G', 'B'] },
-    { customQuality: 'C-maj7', expected: ['C', 'D#', 'G', 'B'] },
-    { customQuality: 'C7', expected: ['C', 'E', 'G', 'A#'] },
-    { customQuality: 'C-7', expected: ['C', 'D#', 'G', 'A#'] },
-    { customQuality: 'C+7', expected: ['C', 'E', 'G#', 'A#'] },
-    { customQuality: 'Cmin7', expected: ['C', 'D#', 'G', 'A#'] },
-    { customQuality: 'Cø', expected: ['C', 'D#', 'F#', 'A#'] },
-    { customQuality: 'CØ7', expected: ['C', 'D#', 'F#', 'A#'] },
-    { customQuality: 'C°7', expected: ['C', 'D#', 'F#', 'A#'] },
-    { customQuality: 'C°maj7', expected: ['C', 'D#', 'F#', 'B'] },
-    { customQuality: 'Cm+7', expected: ['C', 'D#', 'G#', 'A#'] },
+    { customQuality: 'CmΔ', expected: ['C', 'Eb', 'G', 'B'] },
+    { customQuality: 'CmM7', expected: ['C', 'Eb', 'G', 'B'] },
+    { customQuality: 'C-maj7', expected: ['C', 'Eb', 'G', 'B'] },
+    { customQuality: 'C7', expected: ['C', 'E', 'G', 'Bb'] },
+    { customQuality: 'C-7', expected: ['C', 'Eb', 'G', 'Bb'] },
+    { customQuality: 'C+7', expected: ['C', 'E', 'G#', 'Bb'] },
+    { customQuality: 'Cmin7', expected: ['C', 'Eb', 'G', 'Bb'] },
+    { customQuality: 'Cø', expected: ['C', 'Eb', 'Gb', 'Bb'] },
+    { customQuality: 'CØ7', expected: ['C', 'Eb', 'Gb', 'Bb'] },
+    { customQuality: 'C°7', expected: ['C', 'Eb', 'Gb', 'Bb'] },
+    { customQuality: 'C°maj7', expected: ['C', 'Eb', 'Gb', 'B'] },
+    { customQuality: 'Cm+7', expected: ['C', 'Eb', 'G#', 'Bb'] },
     { customQuality: 'C+Δ7', expected: ['C', 'E', 'G#', 'B'] },
-    { customQuality: 'Cm7b5', expected: ['C', 'D#', 'F#', 'A#'] },
+    { customQuality: 'Cm7b5', expected: ['C', 'Eb', 'Gb', 'Bb'] },
     { customQuality: 'Cmaj7+5', expected: ['C', 'E', 'G#', 'B'] },
     { customQuality: 'Cmaj7#5', expected: ['C', 'E', 'G#', 'B'] },
     { customQuality: 'Cmaj7aug5', expected: ['C', 'E', 'G#', 'B'] },
-    { customQuality: 'Cmaj7-5', expected: ['C', 'E', 'F#', 'B'] },
-    { customQuality: 'Cmaj7b5', expected: ['C', 'E', 'F#', 'B'] },
-    { customQuality: 'Cmaj7dim5', expected: ['C', 'E', 'F#', 'B'] },
-    { customQuality: 'Cmaj7°5', expected: ['C', 'E', 'F#', 'B'] },
+    { customQuality: 'Cmaj7-5', expected: ['C', 'E', 'Gb', 'B'] },
+    { customQuality: 'Cmaj7b5', expected: ['C', 'E', 'Gb', 'B'] },
+    { customQuality: 'Cmaj7dim5', expected: ['C', 'E', 'Gb', 'B'] },
+    { customQuality: 'Cmaj7°5', expected: ['C', 'E', 'Gb', 'B'] },
     { customQuality: 'C6', expected: ['C', 'E', 'G', 'A'] },
-    { customQuality: 'Cm6', expected: ['C', 'D#', 'G', 'A'] },
+    { customQuality: 'Cm6', expected: ['C', 'Eb', 'G', 'A'] },
     { customQuality: 'C2', expected: ['C', 'D', 'E', 'G'] },
     { customQuality: 'C4', expected: ['C', 'E', 'F', 'G'] },
-    { customQuality: 'C7sus2', expected: ['C', 'D', 'G', 'A#'] },
-    { customQuality: 'C7sus4', expected: ['C', 'F', 'G', 'A#'] },
+    { customQuality: 'C7sus2', expected: ['C', 'D', 'G', 'Bb'] },
+    { customQuality: 'C7sus4', expected: ['C', 'F', 'G', 'Bb'] },
     { customQuality: 'Cadd2', expected: ['C', 'D', 'E', 'G'] },
     { customQuality: 'Cadd4', expected: ['C', 'E', 'F', 'G'] },
     { customQuality: 'Cadd9', expected: ['C', 'E', 'G', 'D'] },
     // experimental
     { customQuality: 'C6/9', expected: ['C', 'E', 'G', 'A', 'D'] },
-    { customQuality: 'C7add2', expected: ['C', 'D', 'E', 'G', 'A#'] },
-    { customQuality: 'C7/9', expected: ['C', 'E', 'G', 'A#', 'D'] },
-    { customQuality: 'C7add11', expected: ['C', 'E', 'G', 'A#', 'F'] },
-    { customQuality: 'C7add13', expected: ['C', 'E', 'G', 'A#', 'A'] },
-    { customQuality: 'C9', expected: ['C', 'E', 'G', 'A#', 'D'] },
+    { customQuality: 'C7add2', expected: ['C', 'D', 'E', 'G', 'Bb'] },
+    { customQuality: 'C7/9', expected: ['C', 'E', 'G', 'Bb', 'D'] },
+    { customQuality: 'C7add11', expected: ['C', 'E', 'G', 'Bb', 'F'] },
+    { customQuality: 'C7add13', expected: ['C', 'E', 'G', 'Bb', 'A'] },
+    { customQuality: 'C9', expected: ['C', 'E', 'G', 'Bb', 'D'] },
     { customQuality: 'Cmaj9', expected: ['C', 'E', 'G', 'B', 'D'] },
     { customQuality: 'CΔ9', expected: ['C', 'E', 'G', 'B', 'D'] },
-    { customQuality: 'C7b9', expected: ['C', 'E', 'G', 'A#', 'C#'] },
+    { customQuality: 'C7b9', expected: ['C', 'E', 'G', 'Bb', 'Db'] },
     { customQuality: 'C+M9', expected: ['C', 'E', 'G#', 'B', 'D'] },
-    { customQuality: 'C9sus4', expected: ['C', 'F', 'G', 'A#', 'D'] },
-    { customQuality: 'C11', expected: ['C', 'E', 'G', 'A#', 'D', 'F'] }, // G optional
+    { customQuality: 'C9sus4', expected: ['C', 'F', 'G', 'Bb', 'D'] },
+    { customQuality: 'C11', expected: ['C', 'E', 'G', 'Bb', 'D', 'F'] }, // G optional
     { customQuality: 'Cmaj11', expected: ['C', 'E', 'G', 'B', 'D', 'F'] },
-    { customQuality: 'C9#11', expected: ['C', 'E', 'G', 'A#', 'D', 'F#'] },
-    { customQuality: 'Cmaj9#11', expected: ['C', 'E', 'G', 'B', 'D', 'F#'] },
-    { customQuality: 'C13', expected: ['C', 'E', 'G', 'A#', 'D', 'F', 'A'] }, // G,D,F optional
+    { customQuality: 'C9#11', expected: ['C', 'E', 'G', 'Bb', 'D', 'Gb'] },
+    { customQuality: 'Cmaj9#11', expected: ['C', 'E', 'G', 'B', 'D', 'Gb'] },
+    { customQuality: 'C13', expected: ['C', 'E', 'G', 'Bb', 'D', 'F', 'A'] }, // G,D,F optional
     { customQuality: 'Cmaj13', expected: ['C', 'E', 'G', 'B', 'D', 'F', 'A'] }, // G,D,F optional
-    { customQuality: 'Cm13b9', expected: ['C', 'D#', 'G', 'A#', 'C#', 'F', 'A'] }, // G,F optional
-    { customQuality: 'Cm13+11b9', expected: ['C', 'D#', 'G', 'A#', 'C#', 'F#', 'A'] }, // G optional
-    { customQuality: 'C13sus', expected: ['C', 'G', 'A#', 'D', 'F', 'A'] }, // G,D,F optional
-    { customQuality: 'C13b5', expected: ['C', 'E', 'F#', 'A#', 'D', 'F', 'A'] }, // D,F optional
-    { customQuality: 'C11b13', expected: ['C', 'E', 'G', 'A#', 'D', 'F', 'G#'] }, // G,D optional
-    { customQuality: 'Cm11b9b13', expected: ['C', 'D#', 'G', 'A#', 'C#', 'F', 'G#'] }, // G optional
+    { customQuality: 'Cm13b9', expected: ['C', 'Eb', 'G', 'Bb', 'Db', 'F', 'A'] }, // G,F optional
+    { customQuality: 'Cm13+11b9', expected: ['C', 'Eb', 'G', 'Bb', 'Db', 'Gb', 'A'] }, // G optional,
+    { customQuality: 'C13sus', expected: ['C', 'G', 'Bb', 'D', 'F', 'A'] }, // G,D,F optional
+    { customQuality: 'C13b5', expected: ['C', 'E', 'Gb', 'Bb', 'D', 'F', 'A'] }, // D,F optional
+    { customQuality: 'C11b13', expected: ['C', 'E', 'G', 'Bb', 'D', 'F', 'Ab'] }, // G,D optional
+    { customQuality: 'Cm11b9b13', expected: ['C', 'Eb', 'G', 'Bb', 'Db', 'F', 'Ab'] }, // G optional
   ]
   generateChordFromCustomQualityTestCases.forEach(({ customQuality, expected }) => {
     test(`generateChordFromCustomQuality with ${customQuality}`, () => {
@@ -153,18 +155,66 @@ describe('music/chordGenerator.ts', () => {
     })
   })
 
-  const generateIntervalsFromCustomQualityTestCases: {
+  const generateChromaticDegreesFromCustomQualityTestCases: {
     customQuality: string
-    expected: ChordQuality[]
+    expected: FullChromaticDegree[]
   }[] = [
     {
       customQuality: 'm',
-      expected: [Interval.Tonic, Interval.MinorThird, Interval.Fifth],
+      expected: ['I', 'IIIb', 'V'],
     },
   ]
-  generateIntervalsFromCustomQualityTestCases.forEach(({ customQuality, expected }) => {
+  generateChromaticDegreesFromCustomQualityTestCases.forEach(({ customQuality, expected }) => {
     test(`generateIntervalsFromCustomQuality with ${customQuality}`, () => {
-      const result = generateIntervalsFromCustomQuality(customQuality)
+      const result = generateChromaticDegreesFromCustomQuality(customQuality)
+      expect(result).toEqual(expected)
+    })
+  })
+
+  const getChromaticNoteFromDegreeTestCases: {
+    rootNote: FullChromaticNote
+    chromaticDegree: FullChromaticDegree
+    expected: FullChromaticNote
+  }[] = [
+    {
+      rootNote: 'C',
+      chromaticDegree: 'III',
+      expected: 'E',
+    },
+    {
+      rootNote: 'A#',
+      chromaticDegree: 'III',
+      expected: 'C##', // todo D ?
+    },
+    {
+      rootNote: 'Bb',
+      chromaticDegree: 'III',
+      expected: 'D',
+    },
+    {
+      rootNote: 'C',
+      chromaticDegree: 'IIIb',
+      expected: 'Eb',
+    },
+    {
+      rootNote: 'A',
+      chromaticDegree: 'IV#',
+      expected: 'D#',
+    },
+    {
+      rootNote: 'A',
+      chromaticDegree: 'IVb',
+      expected: 'Db',
+    },
+    {
+      rootNote: 'Eb',
+      chromaticDegree: 'V#',
+      expected: 'B',
+    },
+  ]
+  getChromaticNoteFromDegreeTestCases.forEach(({ rootNote, chromaticDegree, expected }) => {
+    test(`getChromaticNoteFromDegree with ${rootNote} and ${chromaticDegree}`, () => {
+      const result = getChromaticNoteFromDegree(rootNote, chromaticDegree)
       expect(result).toEqual(expected)
     })
   })

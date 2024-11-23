@@ -1,8 +1,21 @@
-import type { Degree, Mode, SharpNote, ScaleIntervals } from '@/music/types'
-import { SHARP_CHROMATIC_SCALE, Interval } from '@/music/types'
-import { transposeNote } from '@/music/utils'
-import { MODE_INTERVALS, ORDERED_DEGREES } from '@/music/scale/types'
-import { type Chord, CHORD_STRUCTURE_DEFINITIONS, ChordStructure } from '@/music/chord/types'
+import {
+  type Degree,
+  type Mode,
+  type SharpNote,
+  type ScaleIntervals,
+  type FullChromaticNote,
+  NATURAL_CHROMATIC_SCALE
+} from '@/music/types'
+import { SHARP_CHROMATIC_SCALE, Interval, FULL_CHROMATIC_NOTES_INDICES } from '@/music/types'
+import { getAlteration, getNaturalNote, getSharpNote, transposeNote } from '@/music/utils'
+import {
+  FULL_CHROMATIC_DEGREE_SEMITONES,
+  type FullChromaticDegree,
+  MODE_INTERVALS, NATURAL_DEGREE_SEMITONES,
+  type NaturalDegree,
+  ORDERED_DEGREES
+} from '@/music/scale/types'
+import { type Chord, CHORD_STRUCTURE_DEFINITIONS, ChordStructure, type StructuredChord } from '@/music/chord/types'
 
 function getScaleInterval(
   scaleIntervals: ScaleIntervals,
@@ -47,10 +60,22 @@ export function generateChordFromModeDegree(
   return chord
 }
 
-export function generateChordFromIntervals(chordRoot: SharpNote, intervals: Interval[]): Chord {
+export function getChromaticNoteFromDegree(rootNote: FullChromaticNote, chromaticDegree: FullChromaticDegree): FullChromaticNote {
+  const rootNoteIndex = NATURAL_CHROMATIC_SCALE.indexOf(getNaturalNote(rootNote))
+  const naturalDegreeIndex = ORDERED_DEGREES.indexOf(getNaturalDegree(chromaticDegree))
+  const naturalNote = NATURAL_CHROMATIC_SCALE[(rootNoteIndex+naturalDegreeIndex) % 7]
+
+  const chromaticDegreeInterval = FULL_CHROMATIC_DEGREE_SEMITONES[chromaticDegree]
+  const fullChromaticNote = transposeNote(rootNote, chromaticDegreeInterval)
+  const alteration = getAlteration(naturalNote, fullChromaticNote)
+
+  return naturalNote+alteration
+}
+
+export function generateChordFromDegrees(chordRoot: FullChromaticNote, degrees: FullChromaticDegree[]): Chord {
   const chord: Chord = []
-  for (const interval of intervals) {
-    chord.push(transposeNote(chordRoot, interval))
+  for (const degree of degrees) {
+    chord.push(getChromaticNoteFromDegree(chordRoot, degree))
   }
 
   return chord
@@ -67,13 +92,17 @@ function multiIncludes(str: string, includes: string[]): boolean {
   return false
 }
 
+export function getNaturalDegree(fullChromaticDegree: FullChromaticDegree): NaturalDegree {
+  return fullChromaticDegree.replace('b', '').replace('#', '')
+}
+
 /**
  * customQuality without root
  *
  * todo: bass
  */
-export function generateIntervalsFromCustomQuality(customQuality: string): Interval[] {
-  const chordDefinition = [Interval.Tonic]
+export function generateChromaticDegreesFromCustomQuality(customQuality: string): FullChromaticDegree[] {
+  const chordDefinition = ['I']
   const arrQuality = Array.from(customQuality)
 
   let second: noteQuality = null
@@ -161,35 +190,35 @@ export function generateIntervalsFromCustomQuality(customQuality: string): Inter
   }
 
   if (second !== null) {
-    chordDefinition.push(Interval.Second)
+    chordDefinition.push('II')
   }
   if (third !== null) {
-    chordDefinition.push(third === 'b' ? Interval.MinorThird : Interval.MajorThird)
+    chordDefinition.push(third === 'b' ? 'IIIb' : 'III')
   }
   if (fourth !== null) {
-    chordDefinition.push(Interval.Fourth)
+    chordDefinition.push('IV')
   }
   if (fifth === 'b') {
-    chordDefinition.push(Interval.DiminishedFifth)
+    chordDefinition.push('Vb')
   } else if (fifth === '#') {
-    chordDefinition.push(Interval.MinorSixth) // AugmentedFifth
+    chordDefinition.push('V#')
   } else {
-    chordDefinition.push(Interval.Fifth)
+    chordDefinition.push('V')
   }
   if (sixth !== null) {
-    chordDefinition.push(Interval.MajorSixth)
+    chordDefinition.push('VI')
   }
   if (seventh !== null) {
-    chordDefinition.push(seventh === 'b' ? Interval.MinorSeventh : Interval.MajorSeventh)
+    chordDefinition.push(seventh === 'b' ? 'VIIb' : 'VII')
   }
   if (ninth !== null) {
-    chordDefinition.push(ninth === 'b' ? Interval.DiminishedSecond : Interval.Second)
+    chordDefinition.push(ninth === 'b' ? 'IIb' : 'II')
   }
   if (eleventh !== null) {
-    chordDefinition.push(eleventh === '#' ? Interval.DiminishedFifth : Interval.Fourth)
+    chordDefinition.push(eleventh === '#' ? 'IV#' : 'IV')
   }
   if (thirteenth !== null) {
-    chordDefinition.push(thirteenth === 'b' ? Interval.MinorSixth : Interval.MajorSixth)
+    chordDefinition.push(thirteenth === 'b' ? 'VIb' : 'VI')
   }
 
   return chordDefinition
@@ -208,11 +237,11 @@ export function generateChordFromCustomQuality(customQuality: string): Chord {
     arrQualityRootLess = arrQualityRootLess.slice(1)
   }
 
-  if (!SHARP_CHROMATIC_SCALE.includes(chordRoot)) {
+  if (!Object.keys(FULL_CHROMATIC_NOTES_INDICES).includes(chordRoot)) {
     return []
   }
-  return generateChordFromIntervals(
+  return generateChordFromDegrees(
     chordRoot,
-    generateIntervalsFromCustomQuality(arrQualityRootLess.join('')),
+    generateChromaticDegreesFromCustomQuality(arrQualityRootLess.join('')),
   )
 }

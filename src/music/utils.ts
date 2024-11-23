@@ -36,25 +36,6 @@ export function getAlteration(
   return ['bb', 'b', '', '#', '##'][interval + 2]
 }
 
-export function getFullChromaticNote(modeRoot: SharpNote, note: SharpNote): FullChromaticNote {
-  // todo marche pas
-  const sharpScale = SHARP_CHROMATIC_SCALE
-  const flatScale = [...SHARP_CHROMATIC_SCALE].map((n) =>
-    ENHARMONIC_EQUIVALENTS[n] ? ENHARMONIC_EQUIVALENTS[n] : n,
-  )
-
-  const rootIndexSharp = sharpScale.indexOf(modeRoot)
-  const rootIndexFlat = flatScale.indexOf(modeRoot)
-
-  const noteIndexSharp = sharpScale.indexOf(note)
-  const noteIndexFlat = flatScale.indexOf(note)
-
-  const sharpDistance = Math.abs(noteIndexSharp - rootIndexSharp)
-  const flatDistance = Math.abs(noteIndexFlat - rootIndexFlat)
-
-  return sharpDistance <= flatDistance ? note : flatScale[noteIndexSharp]
-}
-
 export function getNaturalNote(note: FullChromaticNote): NaturalNote {
   return Array.from(note).splice(0, 1)[0]
 }
@@ -66,8 +47,8 @@ export function getSharpNote(note: FullChromaticNote): SharpNote {
   return ENHARMONIC_EQUIVALENTS[note]
 }
 
-export function transposeNote(baseNote: SharpNote, interval: number): SharpNote {
-  const rootIndex = SHARP_CHROMATIC_SCALE.indexOf(baseNote)
+export function transposeNote(baseNote: FullChromaticNote, interval: number): SharpNote {
+  const rootIndex = FULL_CHROMATIC_NOTES_INDICES[baseNote]
   const newIndex = (rootIndex + interval) % SHARP_CHROMATIC_SCALE.length
   return SHARP_CHROMATIC_SCALE[newIndex]
 }

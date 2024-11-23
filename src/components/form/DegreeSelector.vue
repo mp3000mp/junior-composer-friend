@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ORDERED_DEGREES, type Degree } from '@/music/scale/types'
+import { ORDERED_DEGREES, type NaturalDegree } from '@/music/scale/types'
 import { computed } from 'vue'
 
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps<{
-  modelValue: Degree
+  modelValue: NaturalDegree
 }>()
 
 const localValue = computed({
   get: () => props.modelValue,
-  set: (value: Degree) => emit('update:modelValue', value),
+  set: (value: NaturalDegree) => emit('update:modelValue', value),
 })
 </script>
 

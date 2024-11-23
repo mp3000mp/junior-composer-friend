@@ -109,6 +109,7 @@ export const BASE_A_FREQUENCY = 440
 
 export type Alteration = 'bb' | 'b' | '' | '#' | '##'
 
+// todo replace by NATURAL_DEGREE_SEMITONES
 export enum OrderedNote {
   Tonic = 0,
   Second = 1,

@@ -7,8 +7,8 @@ export function generateScaleFromIntervals(
   intervals: ScaleIntervals,
 ): Scale {
   const scale: Scale = [modeRoot]
-  let currentNaturalNoteIndex = NATURAL_CHROMATIC_SCALE.indexOf(getNaturalNote(modeRoot))
-  let currentNaturalNote = NATURAL_CHROMATIC_SCALE[currentNaturalNoteIndex]
+  let currentNaturalNote = getNaturalNote(modeRoot)
+  let currentNaturalNoteIndex = NATURAL_CHROMATIC_SCALE.indexOf(currentNaturalNote)
   let currentFullChromaticNote = getSharpNote(modeRoot)
   for (let i = 0; i < intervals.length - 1; i++) {
     const interval = intervals[i]

@@ -21,7 +21,7 @@ export enum ChordStructure {
   SixthNinth = 'SixthNinth',
 }
 
-export const CHORD_STRUCTURE_DEFINITIONS: Record<ChordStructure, OrderedNote[]> = {
+export const CHORD_STRUCTURE_DEFINITIONS: Record<ChordStructure, StructuredChord> = {
   [ChordStructure.Power]: [OrderedNote.Tonic, OrderedNote.Fifth],
   [ChordStructure.Triad]: [OrderedNote.Tonic, OrderedNote.Third, OrderedNote.Fifth],
   [ChordStructure.Tetrad]: [

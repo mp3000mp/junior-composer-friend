@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { type SharpNote } from '@/music/types'
 import { ChordStructure } from '@/music/chord/types'
-import { ModeEnum, type Degree, MODE_INTERVALS } from '@/music/scale/types'
+import { ModeEnum, type NaturalDegree, MODE_INTERVALS } from '@/music/scale/types'
 import PianoLayout from '@/components/piano/PianoLayout.vue'
 import NoteSelector from '@/components/form/NoteSelector.vue'
 import ModeSelector from '@/components/form/ModeSelector.vue'
@@ -13,7 +13,7 @@ import DegreeSelector from '@/components/form/DegreeSelector.vue'
 
 const modeRoot = ref<SharpNote>('E')
 const mode = ref<ModeEnum>(ModeEnum.Mixolydian)
-const degree = ref<Degree>('I')
+const degree = ref<NaturalDegree>('I')
 const chordStructure = ref<ChordStructure>(ChordStructure.Tetrad)
 
 const scale = computed(() => generateScaleFromIntervals(modeRoot.value, MODE_INTERVALS[mode.value]))
