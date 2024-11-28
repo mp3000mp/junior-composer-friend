@@ -2,10 +2,10 @@ import { describe, expect, test } from 'vitest'
 import { generateScaleFromIntervals } from '@/music/scale/scaleGenerator'
 import { NaturalNote } from '@/music/types'
 import {
-  ModeEnum,
+  ScaleEnum,
   type Scale,
   ScaleIntervals,
-  MODE_INTERVALS,
+  SCALE_INTERVALS,
   SCALE_INTERVALS,
   ScaleEnum,
 } from '@/music/scale/types'
@@ -18,22 +18,22 @@ describe('music/scaleGenerator.ts', () => {
   }[] = [
     {
       modeRoot: 'A',
-      intervals: MODE_INTERVALS[ModeEnum.Eolian],
+      intervals: SCALE_INTERVALS[ScaleEnum.Eolian],
       expected: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
     },
     {
       modeRoot: 'C',
-      intervals: MODE_INTERVALS[ModeEnum.Lydian],
+      intervals: SCALE_INTERVALS[ScaleEnum.Lydian],
       expected: ['C', 'D', 'E', 'F#', 'G', 'A', 'B'],
     },
     {
       modeRoot: 'F',
-      intervals: MODE_INTERVALS[ModeEnum.Ionian],
+      intervals: SCALE_INTERVALS[ScaleEnum.Ionian],
       expected: ['F', 'G', 'A', 'Bb', 'C', 'D', 'E'],
     },
     {
       modeRoot: 'Fb',
-      intervals: MODE_INTERVALS[ModeEnum.Ionian],
+      intervals: SCALE_INTERVALS[ScaleEnum.Ionian],
       expected: ['Fb', 'Gb', 'Ab', 'Bbb', 'Cb', 'Db', 'Eb'],
     },
     {

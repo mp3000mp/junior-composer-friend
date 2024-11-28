@@ -38,35 +38,45 @@ export const FULL_CHROMATIC_DEGREE_SEMITONES = {
 }
 
 export enum ScaleEnum {
-  HarmonicMinor = 'harmonicMinor',
   Major = 'major',
-  MelodicMinor = 'melodicMinor',
   NaturalMinor = 'naturalMinor',
+  MelodicMinor = 'melodicMinor',
+  HarmonicMinor = 'harmonicMinor',
+  Ionian = 'ionian',
+  Dorian = 'dorian',
+  Phrygian = 'phrygian',
+  Lydian = 'lydian',
+  Mixolydian = 'mixolydian',
+  Eolian = 'eolian',
+  Locrian = 'locrian',
 }
 
+export const ScaleLabels = {
+  [ScaleEnum.Major]: 'major',
+  [ScaleEnum.NaturalMinor]: 'minor',
+  [ScaleEnum.MelodicMinor]: 'melodic minor',
+  [ScaleEnum.HarmonicMinor]: 'harmonic minor',
+  [ScaleEnum.Ionian]: 'ionian',
+  [ScaleEnum.Dorian]: 'dorian',
+  [ScaleEnum.Phrygian]: 'phrygian',
+  [ScaleEnum.Lydian]: 'lydian',
+  [ScaleEnum.Mixolydian]: 'mixolydian',
+  [ScaleEnum.Eolian]: 'eolian',
+  [ScaleEnum.Locrian]: 'locrian',
+}
+
+const majorIntervals = [2, 2, 1, 2, 2, 2, 1]
+const minorIntervals = [2, 1, 2, 2, 1, 2, 2]
 export const SCALE_INTERVALS: Record<ScaleEnum, ScaleIntervals> = {
-  [ScaleEnum.HarmonicMinor]: [2, 1, 2, 2, 1, 3, 1],
-  [ScaleEnum.Major]: [2, 2, 1, 2, 2, 2, 1],
+  [ScaleEnum.Major]: majorIntervals,
+  [ScaleEnum.NaturalMinor]: minorIntervals,
   [ScaleEnum.MelodicMinor]: [2, 1, 2, 2, 2, 2, 1],
-  [ScaleEnum.NaturalMinor]: [2, 1, 2, 2, 1, 2, 2],
-}
-
-export enum ModeEnum {
-  Ionian = 'Ionian',
-  Dorian = 'Dorian',
-  Phrygian = 'Phrygian',
-  Lydian = 'Lydian',
-  Mixolydian = 'Mixolydian',
-  Eolian = 'Eolian',
-  Locrian = 'Locrian',
-}
-
-export const MODE_INTERVALS: Record<ModeEnum, ScaleIntervals> = {
-  [ModeEnum.Ionian]: SCALE_INTERVALS[ScaleEnum.Major],
-  [ModeEnum.Dorian]: [2, 1, 2, 2, 2, 1, 2],
-  [ModeEnum.Phrygian]: [1, 2, 2, 2, 1, 2, 2],
-  [ModeEnum.Lydian]: [2, 2, 2, 1, 2, 2, 1],
-  [ModeEnum.Mixolydian]: [2, 2, 1, 2, 2, 1, 2],
-  [ModeEnum.Eolian]: SCALE_INTERVALS[ScaleEnum.NaturalMinor],
-  [ModeEnum.Locrian]: [1, 2, 2, 1, 2, 2, 2],
+  [ScaleEnum.HarmonicMinor]: [2, 1, 2, 2, 1, 3, 1],
+  [ScaleEnum.Ionian]: majorIntervals,
+  [ScaleEnum.Dorian]: [2, 1, 2, 2, 2, 1, 2],
+  [ScaleEnum.Phrygian]: [1, 2, 2, 2, 1, 2, 2],
+  [ScaleEnum.Lydian]: [2, 2, 2, 1, 2, 2, 1],
+  [ScaleEnum.Mixolydian]: [2, 2, 1, 2, 2, 1, 2],
+  [ScaleEnum.Eolian]: minorIntervals,
+  [ScaleEnum.Locrian]: [1, 2, 2, 1, 2, 2, 2],
 }

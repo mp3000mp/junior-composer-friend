@@ -1,11 +1,11 @@
 import { describe, expect, test } from 'vitest'
 import { getEligibleModesFromIntervals } from '@/music/scale/scaleAnalyzer'
-import { ModeEnum, type ScaleIntervals } from '@/music/scale/types'
+import { ScaleEnum, type ScaleIntervals } from '@/music/scale/types'
 
 describe('music/scaleAnalyzer.ts', () => {
   const getEligibleModesFromIntervalsTestCases: {
     intervals: ScaleIntervals
-    expected: ModeEnum[]
+    expected: ScaleEnum[]
   }[] = [
     {
       intervals: [1, 1],
@@ -13,7 +13,7 @@ describe('music/scaleAnalyzer.ts', () => {
     },
     {
       intervals: [2, 2, 1, 2, 2, 2, 1],
-      expected: [ModeEnum.Ionian],
+      expected: [ScaleEnum.Major, ScaleEnum.Ionian],
     },
   ]
   getEligibleModesFromIntervalsTestCases.forEach(({ intervals, expected }) => {

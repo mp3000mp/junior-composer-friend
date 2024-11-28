@@ -6,27 +6,27 @@ import {
   generateChordFromCustomQuality, getChromaticNoteFromDegree
 } from '../chordGenerator'
 import { Chord, ChordQuality, ChordStructure } from '@/music/chord/types'
-import { FullChromaticDegree, ModeEnum, type NaturalDegree } from '@/music/scale/types'
+import { FullChromaticDegree, ScaleEnum, type NaturalDegree } from '@/music/scale/types'
 import { FullChromaticNote, Interval, type SharpNote } from '@/music/types'
 
 describe('music/chordGenerator.ts', () => {
   const generateChordFromModeDegreeTestCases: {
     modeRoot: SharpNote
-    mode: ModeEnum
+    mode: ScaleEnum
     degree: NaturalDegree
     chordStructure: ChordStructure
     expected: Chord
   }[] = [
     {
       modeRoot: 'C',
-      mode: ModeEnum.Ionian,
+      mode: ScaleEnum.Ionian,
       degree: 'I',
       chordStructure: ChordStructure.Triad,
       expected: ['C', 'E', 'G'],
     },
     {
       modeRoot: 'A',
-      mode: ModeEnum.Eolian,
+      mode: ScaleEnum.Eolian,
       degree: 'V',
       chordStructure: ChordStructure.Triad,
       expected: ['E', 'G', 'B'],
@@ -137,12 +137,12 @@ describe('music/chordGenerator.ts', () => {
     { customQuality: 'C9sus4', expected: ['C', 'F', 'G', 'Bb', 'D'] },
     { customQuality: 'C11', expected: ['C', 'E', 'G', 'Bb', 'D', 'F'] }, // G optional
     { customQuality: 'Cmaj11', expected: ['C', 'E', 'G', 'B', 'D', 'F'] },
-    { customQuality: 'C9#11', expected: ['C', 'E', 'G', 'Bb', 'D', 'Gb'] },
-    { customQuality: 'Cmaj9#11', expected: ['C', 'E', 'G', 'B', 'D', 'Gb'] },
+    { customQuality: 'C9#11', expected: ['C', 'E', 'G', 'Bb', 'D', 'F#'] },
+    { customQuality: 'Cmaj9#11', expected: ['C', 'E', 'G', 'B', 'D', 'F#'] },
     { customQuality: 'C13', expected: ['C', 'E', 'G', 'Bb', 'D', 'F', 'A'] }, // G,D,F optional
     { customQuality: 'Cmaj13', expected: ['C', 'E', 'G', 'B', 'D', 'F', 'A'] }, // G,D,F optional
     { customQuality: 'Cm13b9', expected: ['C', 'Eb', 'G', 'Bb', 'Db', 'F', 'A'] }, // G,F optional
-    { customQuality: 'Cm13+11b9', expected: ['C', 'Eb', 'G', 'Bb', 'Db', 'Gb', 'A'] }, // G optional,
+    { customQuality: 'Cm13+11b9', expected: ['C', 'Eb', 'G', 'Bb', 'Db', 'F#', 'A'] }, // G optional,
     { customQuality: 'C13sus', expected: ['C', 'G', 'Bb', 'D', 'F', 'A'] }, // G,D,F optional
     { customQuality: 'C13b5', expected: ['C', 'E', 'Gb', 'Bb', 'D', 'F', 'A'] }, // D,F optional
     { customQuality: 'C11b13', expected: ['C', 'E', 'G', 'Bb', 'D', 'F', 'Ab'] }, // G,D optional

@@ -119,11 +119,11 @@ export enum ChordQuality {
   MinorSixth = 'm6',
   MajorSixthNinth = '6/9',
   MajorNinth = '9',
-  MinorNinth = '?9',
+  MinorNinth = 'b9',
   MajorEleventh = '11',
-  MinorEleventh = '?11',
+  AugmentedEleventh = '#11',
   MajorThirteenth = '13',
-  MinorThirteenth = '?13',
+  MinorThirteenth = 'b13',
 }
 
 export const CHORD_QUALITY_DEFINITIONS: Record<ChordQuality, Interval[]> = {
@@ -205,13 +205,13 @@ export const CHORD_QUALITY_DEFINITIONS: Record<ChordQuality, Interval[]> = {
     Interval.Second,
     Interval.Fourth,
   ],
-  [ChordQuality.MinorEleventh]: [
+  [ChordQuality.AugmentedEleventh]: [
     Interval.Tonic,
     Interval.MinorThird,
     Interval.Fifth,
     Interval.MinorSeventh,
     Interval.Second,
-    Interval.Fourth,
+    Interval.Fourth, // todo augmented fourth
   ],
   [ChordQuality.MajorThirteenth]: [
     Interval.Tonic,

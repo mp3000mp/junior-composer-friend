@@ -1,21 +1,20 @@
 import {
   type Degree,
-  type Mode,
   type SharpNote,
   type ScaleIntervals,
   type FullChromaticNote,
   NATURAL_CHROMATIC_SCALE
 } from '@/music/types'
-import { SHARP_CHROMATIC_SCALE, Interval, FULL_CHROMATIC_NOTES_INDICES } from '@/music/types'
-import { getAlteration, getNaturalNote, getSharpNote, transposeNote } from '@/music/utils'
+import { FULL_CHROMATIC_NOTES_INDICES } from '@/music/types'
+import { getAlteration, getNaturalNote, transposeNote } from '@/music/utils'
 import {
   FULL_CHROMATIC_DEGREE_SEMITONES,
   type FullChromaticDegree,
-  MODE_INTERVALS, NATURAL_DEGREE_SEMITONES,
+  SCALE_INTERVALS,
   type NaturalDegree,
-  ORDERED_DEGREES
+  ORDERED_DEGREES, ScaleEnum
 } from '@/music/scale/types'
-import { type Chord, CHORD_STRUCTURE_DEFINITIONS, ChordStructure, type StructuredChord } from '@/music/chord/types'
+import { type Chord, CHORD_STRUCTURE_DEFINITIONS, ChordStructure } from '@/music/chord/types'
 
 function getScaleInterval(
   scaleIntervals: ScaleIntervals,
@@ -42,12 +41,12 @@ function getScaleInterval(
 
 export function generateChordFromModeDegree(
   modeRoot: SharpNote,
-  mode: Mode,
+  scale: ScaleEnum,
   degree: Degree,
   chordStructure: ChordStructure,
 ): Chord {
   const degreeIndex = ORDERED_DEGREES.indexOf(degree)
-  const scaleIntervals = MODE_INTERVALS[mode]
+  const scaleIntervals = SCALE_INTERVALS[scale]
   const rootInterval = getScaleInterval(scaleIntervals, 0, degreeIndex)
   const chordRoot = transposeNote(modeRoot, rootInterval)
 

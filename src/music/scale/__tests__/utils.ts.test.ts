@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { chooseScaleAlteration } from '@/music/scale/utils'
 import { Alteration, FullChromaticNote } from '@/music/types'
-import { MODE_INTERVALS, ScaleIntervals } from '@/music/scale/types'
+import { SCALE_INTERVALS, ScaleIntervals } from '@/music/scale/types'
 
 describe('music/scale/utils.ts', () => {
   const chooseScaleAlterationTestCases: {
@@ -21,12 +21,12 @@ describe('music/scale/utils.ts', () => {
     // },
     // {
     //   scaleRoot: 'C',
-    //   scaleIntervals: [MODE_INTERVALS.Lydian],
+    //   scaleIntervals: [SCALE_INTERVALS.Lydian],
     //   expected: '#',
     // },
     {
       scaleRoot: 'C',
-      scaleIntervals: [MODE_INTERVALS.Eolian],
+      scaleIntervals: [SCALE_INTERVALS.Eolian],
       expected: 'b',
     },
   ]
