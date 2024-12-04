@@ -5,6 +5,7 @@ import { type Chord } from '@/music/chord/types'
 import { type Scale } from '@/music/scale/types'
 import { computed } from 'vue'
 import { usePlayer } from '@/music/player'
+import { getSharpNote } from '@/music/utils'
 
 const player = usePlayer()
 
@@ -23,6 +24,8 @@ type KeyNote = {
   octave: number
 }
 
+const sharpScale = computed(() => props.scale.map(note => getSharpNote(note)))
+
 const pianoNotes = computed(() => {
   const notes: KeyNote[] = []
   let chordCursor = 0
@@ -34,7 +37,7 @@ const pianoNotes = computed(() => {
         chordCursor++
       }
       notes.push({
-        isHighlighted: props.scale.includes(note),
+        isHighlighted: sharpScale.value.includes(note),
         isPlayed,
         isChordRoot: note === props.chordRoot,
         isScaleRoot: note === props.scale[0],

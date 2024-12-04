@@ -145,6 +145,7 @@ describe('music/chordGenerator.ts', () => {
     { customQuality: 'Cm13+11b9', expected: ['C', 'Eb', 'G', 'Bb', 'Db', 'F#', 'A'] }, // G optional,
     { customQuality: 'C13sus', expected: ['C', 'G', 'Bb', 'D', 'F', 'A'] }, // G,D,F optional
     { customQuality: 'C13b5', expected: ['C', 'E', 'Gb', 'Bb', 'D', 'F', 'A'] }, // D,F optional
+    { customQuality: 'C7♯9♭13', expected: ['C', 'E', 'G', 'Bb', 'D#', 'F', 'Ab'] }, // G F optional
     { customQuality: 'C11b13', expected: ['C', 'E', 'G', 'Bb', 'D', 'F', 'Ab'] }, // G,D optional
     { customQuality: 'Cm11b9b13', expected: ['C', 'Eb', 'G', 'Bb', 'Db', 'F', 'Ab'] }, // G optional
   ]
