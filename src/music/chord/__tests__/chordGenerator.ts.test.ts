@@ -3,13 +3,41 @@ import {
   generateChromaticDegreesFromCustomQuality,
   generateChordFromModeDegree,
   generateChordFromDegrees,
-  generateChordFromCustomQuality, getChromaticNoteFromDegree
+  generateChordFromCustomQuality, getChromaticNoteFromDegree, generateTritonicSubstitution, getScaleInterval
 } from '../chordGenerator'
-import { Chord, ChordQuality, ChordStructure } from '@/music/chord/types'
-import { FullChromaticDegree, ScaleEnum, type NaturalDegree } from '@/music/scale/types'
-import { FullChromaticNote, Interval, type SharpNote } from '@/music/types'
+import { Chord, ChordStructure } from '@/music/chord/types'
+import { FullChromaticDegree, ScaleEnum, type NaturalDegree, ScaleIntervals } from '@/music/scale/types'
+import { FullChromaticNote, type SharpNote } from '@/music/types'
 
 describe('music/chordGenerator.ts', () => {
+  const getScaleIntervalTestCases: {
+    scaleIntervals: ScaleIntervals
+    fromIndex: number
+    toIndex: number
+    expected: number
+  }[] = [
+    {
+      scaleIntervals: [2, 2, 1],
+      fromIndex: 0,
+      toIndex: 1,
+      expected: 2,
+    },
+    {
+      scaleIntervals: [2, 2, 1],
+      fromIndex: 2,
+      toIndex: 0,
+      expected: 1,
+    }
+  ]
+  getScaleIntervalTestCases.forEach(
+    ({ scaleIntervals, fromIndex, toIndex, expected }) => {
+      test(`getScaleInterval with [${scaleIntervals.join(',')}] and [${fromIndex},${toIndex}]`, () => {
+        const result = getScaleInterval(scaleIntervals, fromIndex, toIndex)
+        expect(result).toEqual(expected)
+      })
+    },
+  )
+
   const generateChordFromModeDegreeTestCases: {
     modeRoot: SharpNote
     mode: ScaleEnum
@@ -23,6 +51,13 @@ describe('music/chordGenerator.ts', () => {
       degree: 'I',
       chordStructure: ChordStructure.Triad,
       expected: ['C', 'E', 'G'],
+    },
+    {
+      modeRoot: 'C',
+      mode: ScaleEnum.Ionian,
+      degree: 'II',
+      chordStructure: ChordStructure.Tetrad,
+      expected: ['D', 'F', 'A', 'C'],
     },
     {
       modeRoot: 'A',
@@ -72,8 +107,9 @@ describe('music/chordGenerator.ts', () => {
     { customQuality: 'C', expected: ['C', 'E', 'G'] },
     { customQuality: 'E', expected: ['E', 'G#', 'B'] },
     { customQuality: 'C#', expected: ['C#', 'E#', 'G#'] },
+    { customQuality: 'D♯', expected: ['D#', 'F##', 'A#'] },
     { customQuality: 'Cb', expected: ['Cb', 'Eb', 'Gb'] },
-    { customQuality: 'Bb', expected: ['Bb', 'D', 'F'] },
+    { customQuality: 'B♭', expected: ['Bb', 'D', 'F'] },
     { customQuality: 'Cm', expected: ['C', 'Eb', 'G'] },
     { customQuality: 'C-', expected: ['C', 'Eb', 'G'] },
     { customQuality: 'Cmin', expected: ['C', 'Eb', 'G'] },
@@ -145,7 +181,7 @@ describe('music/chordGenerator.ts', () => {
     { customQuality: 'Cm13+11b9', expected: ['C', 'Eb', 'G', 'Bb', 'Db', 'F#', 'A'] }, // G optional,
     { customQuality: 'C13sus', expected: ['C', 'G', 'Bb', 'D', 'F', 'A'] }, // G,D,F optional
     { customQuality: 'C13b5', expected: ['C', 'E', 'Gb', 'Bb', 'D', 'F', 'A'] }, // D,F optional
-    { customQuality: 'C7♯9♭13', expected: ['C', 'E', 'G', 'Bb', 'D#', 'F', 'Ab'] }, // G F optional
+    { customQuality: 'C7#9b13', expected: ['C', 'E', 'G', 'Bb', 'D#', 'F', 'Ab'] }, // G F optional
     { customQuality: 'C11b13', expected: ['C', 'E', 'G', 'Bb', 'D', 'F', 'Ab'] }, // G,D optional
     { customQuality: 'Cm11b9b13', expected: ['C', 'Eb', 'G', 'Bb', 'Db', 'F', 'Ab'] }, // G optional
   ]
@@ -216,6 +252,27 @@ describe('music/chordGenerator.ts', () => {
   getChromaticNoteFromDegreeTestCases.forEach(({ rootNote, chromaticDegree, expected }) => {
     test(`getChromaticNoteFromDegree with ${rootNote} and ${chromaticDegree}`, () => {
       const result = getChromaticNoteFromDegree(rootNote, chromaticDegree)
+      expect(result).toEqual(expected)
+    })
+  })
+
+  const generateTritonicSubstitutionTestCases: {
+    chord: Chord
+    expected: Chord
+  }[] = [
+    {
+      chord: ['C', 'E', 'G', 'Bb'],
+      expected: ['F#', 'A#', 'C#', 'E'],
+    },
+    {
+      chord: ['G', 'B', 'D', 'F'],
+      expected: ['C#', 'F', 'G#', 'B'],
+      // expected: ['Db', 'F', 'Ab', 'Cb'], why not, see: https://fr.wikipedia.org/wiki/Substitution_tritonique
+    },
+  ]
+  generateTritonicSubstitutionTestCases.forEach(({ chord, expected }) => {
+    test(`generateTritonicSubstitution with [${chord.join(',')}]`, () => {
+      const result = generateTritonicSubstitution(chord)
       expect(result).toEqual(expected)
     })
   })

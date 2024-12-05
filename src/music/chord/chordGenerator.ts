@@ -6,7 +6,7 @@ import {
   NATURAL_CHROMATIC_SCALE
 } from '@/music/types'
 import { FULL_CHROMATIC_NOTES_INDICES } from '@/music/types'
-import { getAlteration, getNaturalNote, transposeNote } from '@/music/utils'
+import { getAlteration, getNaturalNote, transposeChord, transposeNote } from '@/music/utils'
 import {
   FULL_CHROMATIC_DEGREE_SEMITONES,
   type FullChromaticDegree,
@@ -16,7 +16,7 @@ import {
 } from '@/music/scale/types'
 import { type Chord, CHORD_STRUCTURE_DEFINITIONS, ChordStructure } from '@/music/chord/types'
 
-function getScaleInterval(
+export function getScaleInterval(
   scaleIntervals: ScaleIntervals,
   fromIndex: number,
   toIndex: number,
@@ -24,16 +24,10 @@ function getScaleInterval(
   const scaleLength = scaleIntervals.length
   const sevenFrom = fromIndex % scaleLength
   const sevenTo = toIndex % scaleLength
-  let semiToneSum = 0
 
-  if (sevenFrom < sevenTo) {
-    for (let i = sevenFrom; i < sevenTo; i++) {
-      semiToneSum += scaleIntervals[i]
-    }
-  } else if (sevenFrom > sevenTo) {
-    for (let i = sevenTo; i > sevenFrom; i--) {
-      semiToneSum += scaleIntervals[i]
-    }
+  let semiToneSum = 0
+  for (let i = sevenFrom; i !== sevenTo; i = (i+1) % scaleLength) {
+    semiToneSum += scaleIntervals[i]
   }
 
   return semiToneSum
@@ -53,7 +47,7 @@ export function generateChordFromModeDegree(
   const chordStructureDefinition = CHORD_STRUCTURE_DEFINITIONS[chordStructure]
   const chord: Chord = []
   for (const orderedNote of chordStructureDefinition) {
-    chord.push(transposeNote(chordRoot, getScaleInterval(scaleIntervals, 0, orderedNote)))
+    chord.push(transposeNote(chordRoot, getScaleInterval(scaleIntervals, degreeIndex, degreeIndex+orderedNote)))
   }
 
   return chord
@@ -139,10 +133,10 @@ export function generateChromaticDegreesFromCustomQuality(customQuality: string)
   // fifth
   if (
     ['°', 'o', 'ø', 'Ø'].includes(arrQuality[0]) ||
-    multiIncludes(customQuality, ['dim', '-5', 'b5', '°5', 'o5'])
+    multiIncludes(customQuality, ['dim', '-5', 'b5', '♭5', '°5', 'o5'])
   ) {
     fifth = 'b'
-  } else if (arrQuality[0] === '+' || multiIncludes(customQuality, ['aug', '+5', '#5', 'm+'])) {
+  } else if (arrQuality[0] === '+' || multiIncludes(customQuality, ['aug', '+5', '#5', '♯5', 'm+'])) {
     fifth = '#'
   }
   // sixth
@@ -163,8 +157,10 @@ export function generateChromaticDegreesFromCustomQuality(customQuality: string)
     seventh = 'b'
   }
   // ninth
-  if (multiIncludes(customQuality, ['b9'])) {
+  if (multiIncludes(customQuality, ['b9','♭9'])) {
     ninth = 'b'
+  } else if (multiIncludes(customQuality, ['#9','♯9'])) {
+    ninth = '#'
   } else if (
     customQuality.includes('9') ||
     (customQuality.includes('11') && !customQuality.includes('add11')) ||
@@ -173,7 +169,7 @@ export function generateChromaticDegreesFromCustomQuality(customQuality: string)
     ninth = ''
   }
   // eleventh
-  if (multiIncludes(customQuality, ['#11', '+11'])) {
+  if (multiIncludes(customQuality, ['#11', '♯11', '+11'])) {
     eleventh = '#'
   } else if (
     customQuality.includes('11') ||
@@ -182,7 +178,7 @@ export function generateChromaticDegreesFromCustomQuality(customQuality: string)
     eleventh = ''
   }
   // thirteenth
-  if (customQuality.includes('b13')) {
+  if (multiIncludes(customQuality, ['b13','♭13'])) {
     thirteenth = 'b'
   } else if (customQuality.includes('13')) {
     thirteenth = ''
@@ -211,7 +207,13 @@ export function generateChromaticDegreesFromCustomQuality(customQuality: string)
     chordDefinition.push(seventh === 'b' ? 'VIIb' : 'VII')
   }
   if (ninth !== null) {
-    chordDefinition.push(ninth === 'b' ? 'IIb' : 'II')
+    if (ninth === 'b') {
+      chordDefinition.push('IIb')
+    } else if (ninth === '#') {
+      chordDefinition.push('II#')
+    } else {
+      chordDefinition.push('II')
+    }
   }
   if (eleventh !== null) {
     chordDefinition.push(eleventh === '#' ? 'IV#' : 'IV')
@@ -224,6 +226,7 @@ export function generateChromaticDegreesFromCustomQuality(customQuality: string)
 }
 
 export function generateChordFromCustomQuality(customQuality: string): Chord {
+  customQuality = customQuality.replace('♭', 'b').replace('♯', '#')
   const arrQuality = Array.from(customQuality)
   if (arrQuality.length === 0) {
     return []
@@ -243,4 +246,8 @@ export function generateChordFromCustomQuality(customQuality: string): Chord {
     chordRoot,
     generateChromaticDegreesFromCustomQuality(arrQualityRootLess.join('')),
   )
+}
+
+export function generateTritonicSubstitution(chord: Chord): Chord {
+  return transposeChord(chord, 6)
 }

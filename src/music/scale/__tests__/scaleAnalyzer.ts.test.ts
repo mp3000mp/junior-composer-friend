@@ -13,7 +13,7 @@ describe('music/scaleAnalyzer.ts', () => {
     },
     {
       intervals: [2, 2, 1, 2, 2, 2, 1],
-      expected: [ScaleEnum.Major, ScaleEnum.Ionian],
+      expected: [ScaleEnum.Ionian],
     },
   ]
   getEligibleModesFromIntervalsTestCases.forEach(({ intervals, expected }) => {
