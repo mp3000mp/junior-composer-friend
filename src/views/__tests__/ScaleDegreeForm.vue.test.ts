@@ -1,11 +1,11 @@
 import { describe, expect, test } from 'vitest'
-import Component from '@/views/ModeDegreeForm.vue'
+import Component from '@/views/ScaleDegreeForm.vue'
 import { mount } from '@vue/test-utils'
 
 const stubs = ['font-aw']
 
-describe('ModeDegreeForm.vue', () => {
-  test('should show ModeDegreeForm component', () => {
+describe('ScaleDegreeForm.vue', () => {
+  test('should show ScaleDegreeForm component', () => {
     const wrapper = mount(Component, {
       global: {
         stubs,

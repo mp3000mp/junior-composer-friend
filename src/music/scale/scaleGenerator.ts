@@ -1,15 +1,15 @@
-import { type Scale, type FullChromaticNote, NATURAL_CHROMATIC_SCALE } from '@/music/types'
-import { type ScaleIntervals } from '@/music/scale/types'
+import { type FullChromaticNote, NATURAL_CHROMATIC_SCALE } from '@/music/types'
+import { type Scale, type ScaleIntervals } from '@/music/scale/types'
 import { getAlteration, getNaturalNote, getSharpNote, transposeNote } from '@/music/utils'
 
 export function generateScaleFromIntervals(
-  modeRoot: FullChromaticNote,
+  scaleRoot: FullChromaticNote,
   intervals: ScaleIntervals,
 ): Scale {
-  const scale: Scale = [modeRoot]
-  let currentNaturalNote = getNaturalNote(modeRoot)
+  const scale: Scale = [scaleRoot]
+  let currentNaturalNote = getNaturalNote(scaleRoot)
   let currentNaturalNoteIndex = NATURAL_CHROMATIC_SCALE.indexOf(currentNaturalNote)
-  let currentFullChromaticNote = getSharpNote(modeRoot)
+  let currentFullChromaticNote = getSharpNote(scaleRoot)
   for (let i = 0; i < intervals.length - 1; i++) {
     const interval = intervals[i]
     currentFullChromaticNote = transposeNote(currentFullChromaticNote, interval)

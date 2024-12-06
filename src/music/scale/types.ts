@@ -1,7 +1,22 @@
 import type { FullChromaticNote } from '@/music/types'
 
 export type NaturalDegree = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII'
-export type FullChromaticDegree = 'I' | 'IIb' | 'II' | 'II#' | 'IIIb' | 'III' | 'IV' | 'IV#' | 'Vb' | 'V' | 'V#' | 'VIb' | 'VI' | 'VIIb' | 'VII'
+export type FullChromaticDegree =
+  | 'I'
+  | 'IIb'
+  | 'II'
+  | 'II#'
+  | 'IIIb'
+  | 'III'
+  | 'IV'
+  | 'IV#'
+  | 'Vb'
+  | 'V'
+  | 'V#'
+  | 'VIb'
+  | 'VI'
+  | 'VIIb'
+  | 'VII'
 
 export type Scale = FullChromaticNote[]
 export type Interval = 1 | 2 | 3

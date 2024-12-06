@@ -24,7 +24,7 @@ type KeyNote = {
   octave: number
 }
 
-const sharpScale = computed(() => props.scale.map(note => getSharpNote(note)))
+const sharpScale = computed(() => props.scale.map((note) => getSharpNote(note)))
 
 const pianoNotes = computed(() => {
   const notes: KeyNote[] = []

@@ -3,7 +3,7 @@ import {
   type SharpNote,
   type ScaleIntervals,
   type FullChromaticNote,
-  NATURAL_CHROMATIC_SCALE
+  NATURAL_CHROMATIC_SCALE,
 } from '@/music/types'
 import { FULL_CHROMATIC_NOTES_INDICES } from '@/music/types'
 import { getAlteration, getNaturalNote, transposeChord, transposeNote } from '@/music/utils'
@@ -12,7 +12,8 @@ import {
   type FullChromaticDegree,
   SCALE_INTERVALS,
   type NaturalDegree,
-  ORDERED_DEGREES, ScaleEnum
+  ORDERED_DEGREES,
+  ScaleEnum,
 } from '@/music/scale/types'
 import { type Chord, CHORD_STRUCTURE_DEFINITIONS, ChordStructure } from '@/music/chord/types'
 
@@ -26,15 +27,15 @@ export function getScaleInterval(
   const sevenTo = toIndex % scaleLength
 
   let semiToneSum = 0
-  for (let i = sevenFrom; i !== sevenTo; i = (i+1) % scaleLength) {
+  for (let i = sevenFrom; i !== sevenTo; i = (i + 1) % scaleLength) {
     semiToneSum += scaleIntervals[i]
   }
 
   return semiToneSum
 }
 
-export function generateChordFromModeDegree(
-  modeRoot: SharpNote,
+export function generateChordFromScaleDegree(
+  scaleRoot: SharpNote,
   scale: ScaleEnum,
   degree: Degree,
   chordStructure: ChordStructure,
@@ -42,30 +43,41 @@ export function generateChordFromModeDegree(
   const degreeIndex = ORDERED_DEGREES.indexOf(degree)
   const scaleIntervals = SCALE_INTERVALS[scale]
   const rootInterval = getScaleInterval(scaleIntervals, 0, degreeIndex)
-  const chordRoot = transposeNote(modeRoot, rootInterval)
+  const chordRoot = transposeNote(scaleRoot, rootInterval)
 
   const chordStructureDefinition = CHORD_STRUCTURE_DEFINITIONS[chordStructure]
   const chord: Chord = []
   for (const orderedNote of chordStructureDefinition) {
-    chord.push(transposeNote(chordRoot, getScaleInterval(scaleIntervals, degreeIndex, degreeIndex+orderedNote)))
+    chord.push(
+      transposeNote(
+        chordRoot,
+        getScaleInterval(scaleIntervals, degreeIndex, degreeIndex + orderedNote),
+      ),
+    )
   }
 
   return chord
 }
 
-export function getChromaticNoteFromDegree(rootNote: FullChromaticNote, chromaticDegree: FullChromaticDegree): FullChromaticNote {
+export function getChromaticNoteFromDegree(
+  rootNote: FullChromaticNote,
+  chromaticDegree: FullChromaticDegree,
+): FullChromaticNote {
   const rootNoteIndex = NATURAL_CHROMATIC_SCALE.indexOf(getNaturalNote(rootNote))
   const naturalDegreeIndex = ORDERED_DEGREES.indexOf(getNaturalDegree(chromaticDegree))
-  const naturalNote = NATURAL_CHROMATIC_SCALE[(rootNoteIndex+naturalDegreeIndex) % 7]
+  const naturalNote = NATURAL_CHROMATIC_SCALE[(rootNoteIndex + naturalDegreeIndex) % 7]
 
   const chromaticDegreeInterval = FULL_CHROMATIC_DEGREE_SEMITONES[chromaticDegree]
   const fullChromaticNote = transposeNote(rootNote, chromaticDegreeInterval)
   const alteration = getAlteration(naturalNote, fullChromaticNote)
 
-  return naturalNote+alteration
+  return naturalNote + alteration
 }
 
-export function generateChordFromDegrees(chordRoot: FullChromaticNote, degrees: FullChromaticDegree[]): Chord {
+export function generateChordFromDegrees(
+  chordRoot: FullChromaticNote,
+  degrees: FullChromaticDegree[],
+): Chord {
   const chord: Chord = []
   for (const degree of degrees) {
     chord.push(getChromaticNoteFromDegree(chordRoot, degree))
@@ -94,7 +106,9 @@ export function getNaturalDegree(fullChromaticDegree: FullChromaticDegree): Natu
  *
  * todo: bass
  */
-export function generateChromaticDegreesFromCustomQuality(customQuality: string): FullChromaticDegree[] {
+export function generateChromaticDegreesFromCustomQuality(
+  customQuality: string,
+): FullChromaticDegree[] {
   const chordDefinition = ['I']
   const arrQuality = Array.from(customQuality)
 
@@ -136,7 +150,10 @@ export function generateChromaticDegreesFromCustomQuality(customQuality: string)
     multiIncludes(customQuality, ['dim', '-5', 'b5', '♭5', '°5', 'o5'])
   ) {
     fifth = 'b'
-  } else if (arrQuality[0] === '+' || multiIncludes(customQuality, ['aug', '+5', '#5', '♯5', 'm+'])) {
+  } else if (
+    arrQuality[0] === '+' ||
+    multiIncludes(customQuality, ['aug', '+5', '#5', '♯5', 'm+'])
+  ) {
     fifth = '#'
   }
   // sixth
@@ -157,9 +174,9 @@ export function generateChromaticDegreesFromCustomQuality(customQuality: string)
     seventh = 'b'
   }
   // ninth
-  if (multiIncludes(customQuality, ['b9','♭9'])) {
+  if (multiIncludes(customQuality, ['b9', '♭9'])) {
     ninth = 'b'
-  } else if (multiIncludes(customQuality, ['#9','♯9'])) {
+  } else if (multiIncludes(customQuality, ['#9', '♯9'])) {
     ninth = '#'
   } else if (
     customQuality.includes('9') ||
@@ -178,7 +195,7 @@ export function generateChromaticDegreesFromCustomQuality(customQuality: string)
     eleventh = ''
   }
   // thirteenth
-  if (multiIncludes(customQuality, ['b13','♭13'])) {
+  if (multiIncludes(customQuality, ['b13', '♭13'])) {
     thirteenth = 'b'
   } else if (customQuality.includes('13')) {
     thirteenth = ''

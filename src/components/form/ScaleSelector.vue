@@ -15,6 +15,8 @@ const localValue = computed({
 
 <template>
   <select class="form-select" v-model="localValue">
-    <option v-for="mode in Object.values(ScaleEnum)" :key="mode" :value="mode">{{ ScaleLabels[mode] }}</option>
+    <option v-for="scale in Object.values(ScaleEnum)" :key="scale" :value="scale">
+      {{ ScaleLabels[scale] }}
+    </option>
   </select>
 </template>

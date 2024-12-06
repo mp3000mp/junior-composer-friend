@@ -123,7 +123,11 @@ describe('music/utils.ts', () => {
     })
   })
 
-  const transposeNoteTestCases: { baseNote: FullChromaticNote; interval: number; expected: SharpNote }[] = [
+  const transposeNoteTestCases: {
+    baseNote: FullChromaticNote
+    interval: number
+    expected: SharpNote
+  }[] = [
     {
       baseNote: 'C',
       interval: 1,

@@ -1,12 +1,20 @@
 import { describe, expect, test } from 'vitest'
 import {
   generateChromaticDegreesFromCustomQuality,
-  generateChordFromModeDegree,
+  generateChordFromScaleDegree,
   generateChordFromDegrees,
-  generateChordFromCustomQuality, getChromaticNoteFromDegree, generateTritonicSubstitution, getScaleInterval
+  generateChordFromCustomQuality,
+  getChromaticNoteFromDegree,
+  generateTritonicSubstitution,
+  getScaleInterval,
 } from '../chordGenerator'
 import { Chord, ChordStructure } from '@/music/chord/types'
-import { FullChromaticDegree, ScaleEnum, type NaturalDegree, ScaleIntervals } from '@/music/scale/types'
+import {
+  FullChromaticDegree,
+  ScaleEnum,
+  type NaturalDegree,
+  ScaleIntervals,
+} from '@/music/scale/types'
 import { FullChromaticNote, type SharpNote } from '@/music/types'
 
 describe('music/chordGenerator.ts', () => {
@@ -27,50 +35,48 @@ describe('music/chordGenerator.ts', () => {
       fromIndex: 2,
       toIndex: 0,
       expected: 1,
-    }
-  ]
-  getScaleIntervalTestCases.forEach(
-    ({ scaleIntervals, fromIndex, toIndex, expected }) => {
-      test(`getScaleInterval with [${scaleIntervals.join(',')}] and [${fromIndex},${toIndex}]`, () => {
-        const result = getScaleInterval(scaleIntervals, fromIndex, toIndex)
-        expect(result).toEqual(expected)
-      })
     },
-  )
+  ]
+  getScaleIntervalTestCases.forEach(({ scaleIntervals, fromIndex, toIndex, expected }) => {
+    test(`getScaleInterval with [${scaleIntervals.join(',')}] and [${fromIndex},${toIndex}]`, () => {
+      const result = getScaleInterval(scaleIntervals, fromIndex, toIndex)
+      expect(result).toEqual(expected)
+    })
+  })
 
-  const generateChordFromModeDegreeTestCases: {
-    modeRoot: SharpNote
-    mode: ScaleEnum
+  const generateChordFromScaleDegreeTestCases: {
+    scaleRoot: SharpNote
+    scale: ScaleEnum
     degree: NaturalDegree
     chordStructure: ChordStructure
     expected: Chord
   }[] = [
     {
-      modeRoot: 'C',
-      mode: ScaleEnum.Ionian,
+      scaleRoot: 'C',
+      scale: ScaleEnum.Ionian,
       degree: 'I',
       chordStructure: ChordStructure.Triad,
       expected: ['C', 'E', 'G'],
     },
     {
-      modeRoot: 'C',
-      mode: ScaleEnum.Ionian,
+      scaleRoot: 'C',
+      scale: ScaleEnum.Ionian,
       degree: 'II',
       chordStructure: ChordStructure.Tetrad,
       expected: ['D', 'F', 'A', 'C'],
     },
     {
-      modeRoot: 'A',
-      mode: ScaleEnum.Eolian,
+      scaleRoot: 'A',
+      scale: ScaleEnum.Eolian,
       degree: 'V',
       chordStructure: ChordStructure.Triad,
       expected: ['E', 'G', 'B'],
     },
   ]
-  generateChordFromModeDegreeTestCases.forEach(
-    ({ modeRoot, mode, degree, chordStructure, expected }) => {
-      test(`generateChordFromModeDegree with ${modeRoot} and ${degree}`, () => {
-        const result = generateChordFromModeDegree(modeRoot, mode, degree, chordStructure)
+  generateChordFromScaleDegreeTestCases.forEach(
+    ({ scaleRoot, scale, degree, chordStructure, expected }) => {
+      test(`generateChordFromScaleDegree with ${scaleRoot} and ${degree}`, () => {
+        const result = generateChordFromScaleDegree(scaleRoot, scale, degree, chordStructure)
         expect(result).toEqual(expected)
       })
     },
