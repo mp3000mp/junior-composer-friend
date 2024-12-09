@@ -6,10 +6,12 @@ import type { FullChromaticNote } from '../../types'
 describe('music/scaleAnalyzer.ts', () => {
   const getEligibleScalesFromNotesTestCases: {
     notes: FullChromaticNote[]
+    root: FullChromaticNote | null
     expected: ScaleEnum[]
   }[] = [
     {
       notes: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
+      root: null,
       expected: [
         { rootScale: 'C', scale: ScaleEnum.Ionian, similarity: 1 },
         { rootScale: 'D', scale: ScaleEnum.Dorian, similarity: 1 },
@@ -22,23 +24,36 @@ describe('music/scaleAnalyzer.ts', () => {
     },
     {
       notes: ['C', 'D', 'Eb', 'F', 'G', 'Ab', 'B'],
+      root: null,
       expected: [{ rootScale: 'C', scale: ScaleEnum.HarmonicMinor, similarity: 1 }],
     },
     {
-      notes: ['C', 'Db', 'Eb', 'F', 'G', 'Ab', 'B'],
+      notes: ['C', 'Db', 'Db', 'Eb', 'F', 'G', 'G', 'A', 'Bb'],
+      root: 'C',
       expected: [
-        { rootScale: 'C', scale: ScaleEnum.Phrygian, similarity: 0.86 },
-        { rootScale: 'C', scale: ScaleEnum.HarmonicMinor, similarity: 0.86 },
-        { rootScale: 'C', scale: ScaleEnum.DoubleHarmonicMinor, similarity: 0.86 },
-        { rootScale: 'F', scale: ScaleEnum.Eolian, similarity: 0.86 },
-        { rootScale: 'F', scale: ScaleEnum.GypsyMinor, similarity: 0.86 },
-        { rootScale: 'G', scale: ScaleEnum.Locrian, similarity: 0.86 },
+        { rootScale: 'C', scale: ScaleEnum.Phrygian, similarity: 0.89 },
+        { rootScale: 'C', scale: ScaleEnum.Dorian, similarity: 0.78 },
       ],
     },
+    {
+      notes: ['Bb', 'C', 'Db', 'Eb', 'F', 'Gb', 'Ab'],
+      root: 'Bb',
+      expected: [{ rootScale: 'Bb', scale: ScaleEnum.Eolian, similarity: 1 }],
+    },
+    {
+      notes: ['E', 'F#', 'G', 'A', 'B', 'C', 'D#'],
+      root: 'E',
+      expected: [{ rootScale: 'E', scale: ScaleEnum.HarmonicMinor, similarity: 1 }],
+    },
+    {
+      notes: ['Cb', 'Db', 'Ebb', 'Fb', 'Gb', 'Abb', 'Bbb'],
+      root: 'Cb',
+      expected: [{ rootScale: 'Cb', scale: ScaleEnum.Eolian, similarity: 1 }],
+    },
   ]
-  getEligibleScalesFromNotesTestCases.forEach(({ notes, expected }) => {
-    test(`getEligibleScalesFromNotes with [${notes.join(',')}]`, () => {
-      const result = getEligibleScalesFromNotes(notes)
+  getEligibleScalesFromNotesTestCases.forEach(({ notes, root, expected }) => {
+    test(`getEligibleScalesFromNotes with [${notes.join(',')}] and ${root}`, () => {
+      const result = getEligibleScalesFromNotes(notes, root)
       expect(result).toEqual(expected)
     })
   })

@@ -15,7 +15,10 @@ type EligibleScaleCandidate = EligibleScale & {
   scale: ScaleEnum
 }
 
-export function getEligibleScalesFromNotes(notes: FullChromaticNote[]): EligibleScale[] {
+export function getEligibleScalesFromNotes(
+  notes: FullChromaticNote[],
+  root: FullChromaticNote | null = null,
+): EligibleScale[] {
   const eligibleNotes: EligibleScaleNote[] = []
   for (const note of notes) {
     let eligibleNote = eligibleNotes.find((en) => en.note === note)
@@ -28,25 +31,26 @@ export function getEligibleScalesFromNotes(notes: FullChromaticNote[]): Eligible
 
   let maxSimilarity = 0
   const eligibleScales: EligibleScaleCandidate[] = []
-  for (const rootScale of SHARP_CHROMATIC_SCALE) {
+  const eligibleRootScales = root === null ? SHARP_CHROMATIC_SCALE : [root]
+  for (const rootScale of eligibleRootScales) {
     for (const scale of Object.keys(SCALE_INTERVALS)) {
-      let matchingNotes = 0
+      let matchingScore = 0
       const scaleNotes = generateScaleFromIntervals(rootScale, SCALE_INTERVALS[scale])
       for (const eligibleNote of eligibleNotes) {
         if (scaleNotes.includes(eligibleNote.note)) {
-          matchingNotes++
+          matchingScore += eligibleNote.weight
         }
       }
-      const similarity = Math.round((matchingNotes / eligibleNotes.length) * 100) / 100
+      const similarity = Math.round((matchingScore / notes.length) * 100) / 100
       if (similarity > maxSimilarity) {
         maxSimilarity = similarity
       }
-      eligibleScales.push({ rootScale, scale, notes, similarity })
+      eligibleScales.push({ rootScale, scale, scaleNotes, similarity })
     }
   }
 
   return eligibleScales
-    .filter((es) => es.similarity === maxSimilarity)
-    .sort((a, b) => a.similarity < b.similarity)
+    .filter((es) => (maxSimilarity === 1 ? es.similarity === 1 : es.similarity > 0.75))
     .map((es) => ({ rootScale: es.rootScale, scale: es.scale, similarity: es.similarity }))
+    .sort((a, b) => b.similarity - a.similarity)
 }
