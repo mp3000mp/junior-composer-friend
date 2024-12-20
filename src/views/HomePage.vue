@@ -5,7 +5,7 @@ import CustomChordForm from '@/views/CustomChordForm.vue'
 
 <template>
   <main class="py-3">
-    <scale-degree-form class="app-block mb-3" />
     <custom-chord-form class="app-block" />
+    <scale-degree-form class="app-block mt-3" />
   </main>
 </template>

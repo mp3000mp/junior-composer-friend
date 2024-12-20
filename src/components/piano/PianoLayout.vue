@@ -3,9 +3,10 @@ import PianoKey from '@/components/piano/PianoKey.vue'
 import { BASE_OCTAVE, SHARP_CHROMATIC_SCALE, type SharpNote } from '@/music/types'
 import { type Chord } from '@/music/chord/types'
 import { type Scale } from '@/music/scale/types'
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, type Ref, ref, watch } from 'vue'
 import { usePlayer } from '@/music/player'
 import { getSharpNote } from '@/music/utils'
+import { onClickOutside } from '@vueuse/core'
 
 const player = usePlayer()
 
@@ -55,6 +56,34 @@ function playPlatedChord() {
 function playArpeggiatedChord() {
   player.playChord(props.chord, 400)
 }
+
+const volumeRange = 500
+const volumeSliderShown = ref(false)
+const volume = ref(volumeRange / 10)
+function showVolumeSlider() {
+  volumeSliderShown.value = true
+}
+function hideVolumeSlider() {
+  volumeSliderShown.value = false
+}
+watch(volume, () => {
+  player.setVolume(volume.value / volumeRange)
+})
+
+function handleKeypress(e: KeyboardEvent) {
+  if (e.code === 'Escape') {
+    hideVolumeSlider()
+  }
+}
+onMounted(() => {
+  window.addEventListener('keydown', handleKeypress)
+})
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeypress)
+})
+
+const volumeSlider: Ref<HTMLInputElement> = ref(null)
+onClickOutside(volumeSlider, () => hideVolumeSlider())
 </script>
 
 <template>
@@ -72,9 +101,13 @@ function playArpeggiatedChord() {
         :octave="keyNote.octave"
       />
     </div>
-    <div class="cp text-center">
-      <font-aw icon="play" @click="playPlatedChord" title="plated" />
-      <font-aw icon="music" @click="playArpeggiatedChord" title="arpeggiated" />
+    <div class="text-center">
+      <font-aw class="cp" icon="play" @click="playPlatedChord" title="plated" />
+      <font-aw class="cp ms-1" icon="music" @click="playArpeggiatedChord" title="arpeggiated" />
+      <font-aw class="cp ms-1" icon="volume-low" @click="showVolumeSlider" title="volume" />
+    </div>
+    <div id="volume-tooltip" v-if="volumeSliderShown" class="text-center">
+      <input type="range" min="0" max="100" v-model="volume" ref="volumeSlider" />
     </div>
   </div>
 </template>
@@ -139,6 +172,10 @@ $highlightedColor: color.adjust($white, $lightness: -5%, $space: hsl);
     &.chord-root {
       color: color.adjust($red, $lightness: 20%, $space: hsl) !important;
     }
+  }
+
+  #volume-tooltip {
+    position: absolute;
   }
 }
 </style>
