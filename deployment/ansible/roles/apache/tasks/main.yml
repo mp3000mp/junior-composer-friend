@@ -1,3 +1,4 @@
+
 - name: Create vhosts frontend
   become: true
   become_user: root
@@ -34,3 +35,30 @@
   notify: restart apache2
   loop:
     - "{{ frontend_server_name }}"
+
+- name: Ensure correct ownership of Certbot directories
+  become: true
+  become_user: root
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: www-data
+    state: directory
+    mode: "0750"
+  loop:
+    - "/etc/letsencrypt/archive/{{ frontend_server_name }}"
+    - "/etc/letsencrypt/live/{{ frontend_server_name }}"
+
+- name: Ensure correct permissions on Certbot certificates
+  become: true
+  become_user: root
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: www-data
+    mode: "0640"
+  loop:
+    - "/etc/letsencrypt/archive/{{ frontend_server_name }}/fullchain.pem"
+    - "/etc/letsencrypt/archive/{{ frontend_server_name }}/privkey.pem"
+    - "/etc/letsencrypt/live/{{ frontend_server_name }}/fullchain.pem"
+    - "/etc/letsencrypt/live/{{ frontend_server_name }}/privkey.pem"

@@ -5,7 +5,6 @@
   vars_files:
     - vars.yml
   roles:
-#    - files
-#    - docker
-#    - deploy_frontend
-#    - apache
+    - files
+    - deploy_frontend
+    - apache

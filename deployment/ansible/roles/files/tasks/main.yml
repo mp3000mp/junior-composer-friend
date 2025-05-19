@@ -1,16 +1,3 @@
-- name: Create app directories
-  become: true
-  become_user: root
-  file:
-    path: "{{ app_directory }}{{ item }}"
-    state: directory
-    owner: "{{ maintainer_user }}"
-    group: "{{ maintainer_user }}"
-    mode: '755'
-    recurse: true
-  loop:
-    - ''
-
 - name: Create apache directories
   become: true
   become_user: root
@@ -22,4 +9,5 @@
     mode: '755'
     recurse: true
   loop:
+    - ''
     - '/frontend'
