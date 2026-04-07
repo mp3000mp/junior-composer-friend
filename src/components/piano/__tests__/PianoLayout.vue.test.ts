@@ -42,7 +42,7 @@ describe('PianoLayout.vue', () => {
       },
     })
     const icons = wrapper.findAll('font-aw-stub')
-    expect(icons.length).toBe(2)
+    expect(icons.length).toBe(3)
     await icons[0].trigger('click')
     expect(playerMock.playChord).toHaveBeenCalledTimes(1)
     await icons[1].trigger('click')

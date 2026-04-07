@@ -6,8 +6,6 @@ import {
   type Scale,
   ScaleIntervals,
   SCALE_INTERVALS,
-  SCALE_INTERVALS,
-  ScaleEnum,
 } from '@/music/scale/types'
 
 describe('music/scaleGenerator.ts', () => {

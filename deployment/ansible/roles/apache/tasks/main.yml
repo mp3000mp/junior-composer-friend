@@ -1,34 +1,27 @@
-
 - name: Create vhosts frontend
-  become: true
-  become_user: root
   template:
     src: "templates/vhost_frontend.conf.j2"
     dest: "/etc/apache2/sites-available/{{ frontend_server_name }}.conf"
     owner: "{{ maintainer_user }}"
     group: "{{ maintainer_user }}"
     mode: '0640'
+  notify: restart apache2
 
 - name: Create vhosts ssl
-  become: true
-  become_user: root
   template:
     src: "templates/vhost_frontend-le-ssl.conf.j2"
     dest: "/etc/apache2/sites-available/{{ frontend_server_name }}-le-ssl.conf"
     owner: "{{ maintainer_user }}"
     group: "{{ maintainer_user }}"
     mode: '0640'
+  notify: restart apache2
 
 - name: Enable site
-  become: true
-  become_user: root
   command: a2ensite {{ item }}
   loop:
     - "{{ frontend_server_name }}"
 
 - name: Certbot
-  become: true
-  become_user: root
   shell:
     creates: "/etc/letsencrypt/live/{{ item }}"
     cmd: "certbot --apache --agree-tos --non-interactive -d {{ item }} -m {{ admin_email }}"
@@ -37,8 +30,6 @@
     - "{{ frontend_server_name }}"
 
 - name: Ensure correct ownership of Certbot directories
-  become: true
-  become_user: root
   file:
     path: "{{ item }}"
     owner: root
@@ -50,8 +41,6 @@
     - "/etc/letsencrypt/live/{{ frontend_server_name }}"
 
 - name: Ensure correct permissions on Certbot certificates
-  become: true
-  become_user: root
   file:
     path: "{{ item }}"
     owner: root

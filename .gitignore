@@ -1,6 +1,7 @@
 ### deployment
 /deployment/ansible/vars.yml
 /deployment/ansible/roles/*/vars.yml
+/deployment/ansible/inventory/hosts
 
 todo.txt
 
@@ -25,7 +26,6 @@ coverage
 
 # Editor directories and files
 .vscode/*
-!.vscode/extensions.json
 .idea
 *.suo
 *.ntvs*
@@ -36,4 +36,3 @@ coverage
 *.tsbuildinfo
 
 test-results/
-playwright-report/

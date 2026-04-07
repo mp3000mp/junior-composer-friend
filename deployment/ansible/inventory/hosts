@@ -1,2 +1,0 @@
-[prod_servers]
-vps-ikoula ansible_user=mp3000
