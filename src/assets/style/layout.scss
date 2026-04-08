@@ -11,22 +11,9 @@ body {
   background-color: $body-bg-light;
 }
 
-@include media-breakpoint-down(md) {
-  #visu-img {
-    width: 100%;
-  }
-}
-
 header {
   background-color: $body-bg-light;
   padding: 1rem;
-
-  a {
-    &:before,
-    &:after {
-      background-color: $link-hover-color;
-    }
-  }
 }
 
 h1 {
@@ -47,7 +34,7 @@ footer {
 footer,
 header {
   a {
-    border-bottom: 1px;
+    border-bottom-width: 1px;
     transition: 350ms color ease-in-out;
     position: relative;
 

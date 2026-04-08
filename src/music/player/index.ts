@@ -1,5 +1,7 @@
 import { computeFrequency } from '@/music/utils'
-import { BASE_OCTAVE, type Chord, SHARP_CHROMATIC_SCALE } from '@/music/types'
+import { BASE_OCTAVE } from '@/music/player/types'
+import { SHARP_CHROMATIC_SCALE } from '@/music/types'
+import { type Chord } from '@/music/chord/types'
 
 class Player {
   context: AudioContext

@@ -1,5 +1,5 @@
-import { SHARP_CHROMATIC_SCALE, SharpNote } from '@/music/types'
-import { Chord, CHORD_QUALITY_DEFINITIONS, ChordQuality } from '@/music/chord/types'
+import { SHARP_CHROMATIC_SCALE, type SharpNote } from '@/music/types'
+import { type Chord, CHORD_QUALITY_DEFINITIONS, ChordQuality } from '@/music/chord/types'
 
 function getNoteInterval(fromNote: SharpNote, toNote: SharpNote): number {
   const fromIndex = SHARP_CHROMATIC_SCALE.indexOf(fromNote)

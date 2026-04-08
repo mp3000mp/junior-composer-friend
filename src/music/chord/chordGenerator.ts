@@ -1,15 +1,14 @@
 import {
-  type Degree,
   type SharpNote,
-  type ScaleIntervals,
   type FullChromaticNote,
   NATURAL_CHROMATIC_SCALE,
+  FULL_CHROMATIC_NOTES_INDICES,
 } from '@/music/types'
-import { FULL_CHROMATIC_NOTES_INDICES } from '@/music/types'
 import { getAlteration, getNaturalNote, transposeChord, transposeNote } from '@/music/utils'
 import {
   FULL_CHROMATIC_DEGREE_SEMITONES,
   type FullChromaticDegree,
+  type ScaleIntervals,
   SCALE_INTERVALS,
   type NaturalDegree,
   ORDERED_DEGREES,
@@ -37,7 +36,7 @@ export function getScaleInterval(
 export function generateChordFromScaleDegree(
   scaleRoot: SharpNote,
   scale: ScaleEnum,
-  degree: Degree,
+  degree: NaturalDegree,
   chordStructure: ChordStructure,
 ): Chord {
   const degreeIndex = ORDERED_DEGREES.indexOf(degree)

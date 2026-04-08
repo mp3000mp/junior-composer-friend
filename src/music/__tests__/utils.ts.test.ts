@@ -7,7 +7,13 @@ import {
   getNaturalNote,
   getAlteration,
 } from '@/music/utils'
-import { Alteration, Chord, FullChromaticNote, NaturalNote, SharpNote } from '@/music/types'
+import {
+  type Alteration,
+  type FullChromaticNote,
+  type NaturalNote,
+  type SharpNote,
+} from '@/music/types'
+import type { Chord } from '@/music/chord/types'
 
 describe('music/utils.ts', () => {
   const computeFrequencyTestCases: { note: SharpNote; octave: number; expected: number }[] = [

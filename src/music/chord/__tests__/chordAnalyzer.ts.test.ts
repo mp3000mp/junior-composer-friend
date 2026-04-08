@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { getEligibleChordQualities } from '@/music/chord/chordAnalyzer'
-import { Chord, ChordQuality } from '@/music/chord/types'
+import { type Chord, ChordQuality } from '@/music/chord/types'
 
 describe('music/chordAnalyzer.ts', () => {
   const getEligibleChordQualitiesTestCases: {

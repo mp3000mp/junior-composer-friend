@@ -8,14 +8,14 @@ import {
   generateTritonicSubstitution,
   getScaleInterval,
 } from '../chordGenerator'
-import { Chord, ChordStructure } from '@/music/chord/types'
+import { type Chord, ChordStructure } from '@/music/chord/types'
 import {
-  FullChromaticDegree,
+  type FullChromaticDegree,
   ScaleEnum,
   type NaturalDegree,
-  ScaleIntervals,
+  type ScaleIntervals,
 } from '@/music/scale/types'
-import { FullChromaticNote, type SharpNote } from '@/music/types'
+import { type FullChromaticNote, type SharpNote } from '@/music/types'
 
 describe('music/chordGenerator.ts', () => {
   const getScaleIntervalTestCases: {

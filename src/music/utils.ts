@@ -1,5 +1,4 @@
 import {
-  BASE_A_FREQUENCY,
   FULL_CHROMATIC_NOTES_INDICES,
   SHARP_CHROMATIC_SCALE,
   ENHARMONIC_EQUIVALENTS,
@@ -9,6 +8,7 @@ import {
   type Alteration,
 } from '@/music/types'
 import { type Chord } from '@/music/chord/types'
+import { BASE_A_FREQUENCY } from '@/music/player/types'
 
 export function computeFrequency(note: FullChromaticNote, octave: number): number {
   const octaveRatio = Math.pow(2, octave - 4)
@@ -37,7 +37,7 @@ export function getAlteration(
 }
 
 export function getNaturalNote(note: FullChromaticNote): NaturalNote {
-  return Array.from(note).splice(0, 1)[0]
+  return Array.from(note).splice(0, 1)[0] as NaturalNote
 }
 
 export function getSharpNote(note: FullChromaticNote): SharpNote {

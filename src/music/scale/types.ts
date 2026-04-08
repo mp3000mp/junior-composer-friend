@@ -115,8 +115,8 @@ export const ScaleLabels = {
   // [ScaleEnum.WholeHalfDiminished]: 'whole half diminished',
 }
 
-const majorIntervals = [2, 2, 1, 2, 2, 2, 1]
-const minorIntervals = [2, 1, 2, 2, 1, 2, 2]
+const majorIntervals: ScaleIntervals = [2, 2, 1, 2, 2, 2, 1]
+const minorIntervals: ScaleIntervals = [2, 1, 2, 2, 1, 2, 2]
 export const SCALE_INTERVALS: Record<ScaleEnum, ScaleIntervals> = {
   // [ScaleEnum.Major]: majorIntervals,
   // [ScaleEnum.NaturalMinor]: minorIntervals,

@@ -1,5 +1,4 @@
-import type { FullChromaticNote } from '@/music/types'
-import { Alteration } from '@/music/types'
+import { type FullChromaticNote, type Alteration } from '@/music/types'
 
 export function chooseScaleAlteration(
   scaleRoot: FullChromaticNote,
@@ -12,4 +11,5 @@ export function chooseScaleAlteration(
     return '#'
   }
   // todo avoid duplicate raw note ?
+  return ''
 }

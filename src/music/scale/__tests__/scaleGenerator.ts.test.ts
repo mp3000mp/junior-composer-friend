@@ -1,16 +1,11 @@
 import { describe, expect, test } from 'vitest'
 import { generateScaleFromIntervals } from '@/music/scale/scaleGenerator'
-import { NaturalNote } from '@/music/types'
-import {
-  ScaleEnum,
-  type Scale,
-  ScaleIntervals,
-  SCALE_INTERVALS,
-} from '@/music/scale/types'
+import type { FullChromaticNote } from '@/music/types'
+import { ScaleEnum, type Scale, type ScaleIntervals, SCALE_INTERVALS } from '@/music/scale/types'
 
 describe('music/scaleGenerator.ts', () => {
   const generateScaleFromIntervalsTestCases: {
-    scaleRoot: NaturalNote
+    scaleRoot: FullChromaticNote
     intervals: ScaleIntervals
     expected: Scale
   }[] = [

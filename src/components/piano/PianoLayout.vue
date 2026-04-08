@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PianoKey from '@/components/piano/PianoKey.vue'
-import { BASE_OCTAVE, SHARP_CHROMATIC_SCALE, type SharpNote } from '@/music/types'
+import { SHARP_CHROMATIC_SCALE, type SharpNote } from '@/music/types'
+import { BASE_OCTAVE } from '@/music/player/types'
 import { type Chord } from '@/music/chord/types'
 import { type Scale } from '@/music/scale/types'
 import { computed, onMounted, onUnmounted, type Ref, ref, watch } from 'vue'
@@ -82,7 +83,7 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeypress)
 })
 
-const volumeSlider: Ref<HTMLInputElement> = ref(null)
+const volumeSlider: Ref<HTMLInputElement | null> = ref(null)
 onClickOutside(volumeSlider, () => hideVolumeSlider())
 </script>
 

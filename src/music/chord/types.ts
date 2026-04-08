@@ -1,7 +1,32 @@
 import type { FullChromaticNote } from '@/music/types'
-import { Interval, OrderedNote } from '@/music/types'
+
+export enum OrderedNote {
+  Tonic = 0,
+  Second = 1,
+  Third = 2,
+  Fourth = 3,
+  Fifth = 4,
+  Sixth = 5,
+  Seventh = 6,
+}
+
+export enum Interval {
+  Tonic = 0,
+  DiminishedSecond = 1,
+  Second = 2,
+  MinorThird = 3, // or AugmentedSecond
+  MajorThird = 4,
+  Fourth = 5,
+  DiminishedFifth = 6, // or AugmentedFourth
+  Fifth = 7,
+  MinorSixth = 8, // or AugmentedFifth
+  MajorSixth = 9,
+  MinorSeventh = 10,
+  MajorSeventh = 11,
+}
 
 export type Chord = FullChromaticNote[]
+export type StructuredChord = OrderedNote[]
 
 export enum ChordStructure {
   Power = 'Power',
