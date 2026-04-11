@@ -1,38 +1,40 @@
 import { describe, expect, test } from 'vitest'
 import { chooseScaleAlteration } from '@/music/scale/utils'
-import { type Alteration, type FullChromaticNote } from '@/music/types'
+import { type Alteration, type Note } from '@/music/types'
 import { SCALE_INTERVALS, ScaleEnum, type ScaleIntervals } from '@/music/scale/types'
+import { noteToString } from '../../utils'
+import { makeNote } from '../../../test-utils'
 
 describe('music/scale/utils.ts', () => {
   const chooseScaleAlterationTestCases: {
-    scaleRoot: FullChromaticNote
+    scaleRootNote: Note
     scaleIntervals: ScaleIntervals
     expected: Alteration
   }[] = [
     // {
-    //   scaleRoot: 'A#',
+    //   scaleRootNote: makeNote('A', '#'),
     //   scaleIntervals: [],
     //   expected: '#',
     // },
     // {
-    //   scaleRoot: 'Ab',
+    //   scaleRootNote: makeNote('A', 'b'),
     //   scaleIntervals: [],
     //   expected: 'b',
     // },
     // {
-    //   scaleRoot: 'C',
+    //   scaleRootNote: makeNote('C'),
     //   scaleIntervals: [SCALE_INTERVALS.Lydian],
     //   expected: '#',
     // },
     {
-      scaleRoot: 'C',
+      scaleRootNote: makeNote('C'),
       scaleIntervals: SCALE_INTERVALS[ScaleEnum.Eolian],
       expected: 'b',
     },
   ]
-  chooseScaleAlterationTestCases.forEach(({ scaleRoot, expected }) => {
-    test(`chooseScaleAlteration with ${scaleRoot}`, () => {
-      const result = chooseScaleAlteration(scaleRoot)
+  chooseScaleAlterationTestCases.forEach(({ scaleRootNote, expected }) => {
+    test(`chooseScaleAlteration with ${noteToString(scaleRootNote)}`, () => {
+      const result = chooseScaleAlteration(scaleRootNote)
       expect(result).toEqual(expected)
     })
   })

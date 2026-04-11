@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import Component from '@/components/piano/PianoKey.vue'
+import Component, { type PianoKeyProps } from '@/components/piano/PianoKey.vue'
 import { mount } from '@vue/test-utils'
+import { makeNote } from '../../../test-utils'
 
-let playerMock
+let playerMock: { playNote: ReturnType<typeof vi.fn> }
 vi.mock('@/music/player', () => ({
   usePlayer: () => playerMock,
 }))
 
 describe('PianoKey.vue', () => {
-  let defaultProps
+  let defaultProps: PianoKeyProps
   beforeEach(() => {
     defaultProps = {
       isBlack: false,
@@ -16,7 +17,7 @@ describe('PianoKey.vue', () => {
       isPlayed: false,
       isChordRoot: false,
       isScaleRoot: false,
-      note: 'C',
+      note: makeNote('C'),
       octave: 4,
     }
     playerMock = {

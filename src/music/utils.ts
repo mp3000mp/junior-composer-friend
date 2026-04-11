@@ -1,58 +1,68 @@
 import {
-  FULL_CHROMATIC_NOTES_INDICES,
   SHARP_CHROMATIC_SCALE,
-  ENHARMONIC_EQUIVALENTS,
-  type FullChromaticNote,
-  type SharpNote,
-  type NaturalNote,
+  type NoteLetter,
   type Alteration,
+  type Note,
+  type NoteString,
+  NOTE_LETTERS,
+  LETTER_INTERVALS_FROM_C,
+  ALTERATION_INTERVALS,
 } from '@/music/types'
 import { type Chord } from '@/music/chord/types'
 import { BASE_A_FREQUENCY } from '@/music/player/types'
 
-export function computeFrequency(note: FullChromaticNote, octave: number): number {
+// todo which temperament ?
+export function computeFrequency(note: Note, octave: number): number {
   const octaveRatio = Math.pow(2, octave - 4)
   const aFrequency = BASE_A_FREQUENCY * octaveRatio
-  const aIndex = SHARP_CHROMATIC_SCALE.indexOf('A')
-  const noteIndex = FULL_CHROMATIC_NOTES_INDICES[note]
+  const aIndex = LETTER_INTERVALS_FROM_C['A']
+  const noteIndex = getIntervalFromC(note)
   const semitoneOffset = noteIndex - aIndex
 
   return Math.round(aFrequency * Math.pow(2, semitoneOffset / 12))
 }
 
-export function getAlteration(
-  naturalNote: NaturalNote,
-  fullChromaticNote: FullChromaticNote,
-): Alteration {
-  const chromaticNoteCount = SHARP_CHROMATIC_SCALE.length
-  let interval =
-    (FULL_CHROMATIC_NOTES_INDICES[fullChromaticNote] -
-      FULL_CHROMATIC_NOTES_INDICES[naturalNote] +
-      chromaticNoteCount) %
-    chromaticNoteCount
-  if (interval > 2) {
-    interval -= chromaticNoteCount
+export function getAlteration(naturalNoteLetter: NoteLetter, intervalFromC: number): Alteration {
+  const naturalIntervalFromC = getIntervalFromC({ letter: naturalNoteLetter, alteration: '' })
+  let intervalDiff = intervalFromC - naturalIntervalFromC
+  if (intervalDiff > 2) {
+    intervalDiff = -1 * (SHARP_CHROMATIC_SCALE.length - intervalDiff)
   }
-  return ['bb', 'b', '', '#', '##'][interval + 2]
+  const alterationChar = intervalDiff > 0 ? '#' : 'b'
+  return Array(Math.abs(intervalDiff)).fill(alterationChar).join('')
 }
 
-export function getNaturalNote(note: FullChromaticNote): NaturalNote {
-  return Array.from(note).splice(0, 1)[0] as NaturalNote
-}
-
-export function getSharpNote(note: FullChromaticNote): SharpNote {
-  if (note.indexOf('b') < 0) {
-    return note
-  }
-  return ENHARMONIC_EQUIVALENTS[note]
-}
-
-export function transposeNote(baseNote: FullChromaticNote, interval: number): SharpNote {
-  const rootIndex = FULL_CHROMATIC_NOTES_INDICES[baseNote]
+export function transposeNote(baseNote: Note, interval: number): Note {
+  const rootIndex =
+    LETTER_INTERVALS_FROM_C[baseNote.letter] + ALTERATION_INTERVALS[baseNote.alteration]
   const newIndex = (rootIndex + interval) % SHARP_CHROMATIC_SCALE.length
-  return SHARP_CHROMATIC_SCALE[newIndex]
+  // todo force alteration ?
+  return noteFromString(SHARP_CHROMATIC_SCALE[newIndex])
 }
 
 export function transposeChord(chord: Chord, interval: number): Chord {
   return chord.map((note) => transposeNote(note, interval))
+}
+
+export function noteToString(note: Note): NoteString {
+  return note.letter + note.alteration
+}
+
+export function noteFromString(note: NoteString): Note {
+  return {
+    letter: note.charAt(0),
+    alteration: note.substring(1),
+  }
+}
+
+export function getIntervalFromC(note: Note): number {
+  return LETTER_INTERVALS_FROM_C[note.letter] + ALTERATION_INTERVALS[note.alteration]
+}
+
+export function noteAreEquals(noteA: Note, noteB: Note): boolean {
+  return getIntervalFromC(noteA) === getIntervalFromC(noteB)
+}
+
+export function nextLetter(letter: NoteLetter): NoteLetter {
+  return NOTE_LETTERS[(NOTE_LETTERS.indexOf(letter) + 1) % NOTE_LETTERS.length]
 }

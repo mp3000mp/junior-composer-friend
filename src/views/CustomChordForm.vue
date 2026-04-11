@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { type SharpNote } from '@/music/types'
+import { type Note } from '@/music/types'
 import PianoLayout from '@/components/piano/PianoLayout.vue'
 import { generateChordFromCustomQuality } from '@/music/chord/chordGenerator'
 
 const customQuality = ref('')
 
 const chord = computed(() => generateChordFromCustomQuality(customQuality.value))
-const chordRoot = computed<SharpNote | null>(() =>
-  chord.value.length === 0 ? null : Array.from(chord.value)[0],
-)
+const chordRoot = computed<Note | null>(() => (chord.value.length === 0 ? null : chord.value[0]))
 </script>
 
 <template>

@@ -1,54 +1,58 @@
 <script setup lang="ts">
 import PianoKey from '@/components/piano/PianoKey.vue'
-import { SHARP_CHROMATIC_SCALE, type SharpNote } from '@/music/types'
+import { type Note, SHARP_CHROMATIC_SCALE } from '@/music/types'
 import { BASE_OCTAVE } from '@/music/player/types'
 import { type Chord } from '@/music/chord/types'
 import { type Scale } from '@/music/scale/types'
 import { computed, onMounted, onUnmounted, type Ref, ref, watch } from 'vue'
 import { usePlayer } from '@/music/player'
-import { getSharpNote } from '@/music/utils'
+import { getIntervalFromC, noteAreEquals, noteFromString, noteToString } from '@/music/utils'
 import { onClickOutside } from '@vueuse/core'
 
 const player = usePlayer()
 
-const props = defineProps<{
-  chordRoot: SharpNote
+export type PianoLayoutProp = {
+  chordRoot: Note
   scale: Scale
   chord: Chord
-}>()
+}
+
+const props = defineProps<PianoLayoutProp>()
 
 type KeyNote = {
   isHighlighted: boolean
   isPlayed: boolean
   isChordRoot: boolean
   isScaleRoot: boolean
-  note: SharpNote
+  note: Note
   octave: number
 }
 
-const sharpScale = computed(() => props.scale.map((note) => getSharpNote(note)))
+const scaleIntervalsFromC = computed(() => props.scale.map((note) => getIntervalFromC(note)))
 
 const pianoNotes = computed(() => {
-  const notes: KeyNote[] = []
+  const keyNotes: KeyNote[] = []
   let chordCursor = 0
   for (let i = BASE_OCTAVE - 1; i < BASE_OCTAVE + 2; i++) {
-    for (const note of SHARP_CHROMATIC_SCALE) {
+    for (const noteLetter of SHARP_CHROMATIC_SCALE) {
+      const note = noteFromString(noteLetter)
+      const intervalFromC = getIntervalFromC(note)
       let isPlayed = false
-      if (chordCursor < props.chord.length && props.chord[chordCursor] === note) {
+      if (chordCursor < props.chord.length && noteAreEquals(props.chord[chordCursor], note)) {
         isPlayed = true
         chordCursor++
       }
-      notes.push({
-        isHighlighted: sharpScale.value.includes(note),
+      keyNotes.push({
+        isHighlighted: scaleIntervalsFromC.value.includes(intervalFromC),
         isPlayed,
-        isChordRoot: note === props.chordRoot,
-        isScaleRoot: note === props.scale[0],
-        note,
+        isChordRoot: noteAreEquals(note, props.chordRoot),
+        isScaleRoot: noteAreEquals(note, props.scale[0]),
+        note: note,
         octave: i,
       })
     }
   }
-  return notes
+  return keyNotes
 })
 
 function playPlatedChord() {
@@ -92,12 +96,12 @@ onClickOutside(volumeSlider, () => hideVolumeSlider())
     <div class="piano-keyboard">
       <piano-key
         v-for="keyNote in pianoNotes"
-        :key="keyNote.note + keyNote.octave"
+        :key="noteToString(keyNote.note) + keyNote.octave"
         :is-highlighted="keyNote.isHighlighted"
         :is-played="keyNote.isPlayed"
         :is-chord-root="keyNote.isChordRoot"
         :is-scale-root="keyNote.isScaleRoot"
-        :is-black="keyNote.note.includes('#')"
+        :is-black="keyNote.note.alteration === '#'"
         :note="keyNote.note"
         :octave="keyNote.octave"
       />

@@ -1,9 +1,10 @@
-import { SHARP_CHROMATIC_SCALE, type SharpNote } from '@/music/types'
+import { type Note, SHARP_CHROMATIC_SCALE } from '@/music/types'
 import { type Chord, CHORD_QUALITY_DEFINITIONS, ChordQuality } from '@/music/chord/types'
+import { getIntervalFromC } from '@/music/utils'
 
-function getNoteInterval(fromNote: SharpNote, toNote: SharpNote): number {
-  const fromIndex = SHARP_CHROMATIC_SCALE.indexOf(fromNote)
-  const toIndex = SHARP_CHROMATIC_SCALE.indexOf(toNote)
+function getNotesInterval(fromNote: Note, toNote: Note): number {
+  const fromIndex = getIntervalFromC(fromNote)
+  const toIndex = getIntervalFromC(toNote)
   if (fromIndex <= toIndex) {
     return toIndex - fromIndex
   }
@@ -13,13 +14,13 @@ function getNoteInterval(fromNote: SharpNote, toNote: SharpNote): number {
 export function getEligibleChordQualities(chord: Chord): ChordQuality[] {
   // todo: gérer les accords renversés
   const tonic = chord[0]
-  const chordIntervals = []
+  const chordIntervals: number[] = []
   for (let i = 0; i < chord.length; i++) {
-    chordIntervals.push(getNoteInterval(tonic, chord[i]))
+    chordIntervals.push(getNotesInterval(tonic, chord[i]))
   }
 
   const eligibleChordQualities = []
-  for (const chordQuality in CHORD_QUALITY_DEFINITIONS) {
+  for (const chordQuality of Object.keys(CHORD_QUALITY_DEFINITIONS) as ChordQuality[]) {
     /**
      * todo: structureDefinition: mandatory/optional ?
      */

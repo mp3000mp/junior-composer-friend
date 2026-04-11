@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { getEligibleChordQualities } from '@/music/chord/chordAnalyzer'
 import { type Chord, ChordQuality } from '@/music/chord/types'
+import { makeNote } from '../../../test-utils'
 
 describe('music/chordAnalyzer.ts', () => {
   const getEligibleChordQualitiesTestCases: {
@@ -8,15 +9,15 @@ describe('music/chordAnalyzer.ts', () => {
     expected: ChordQuality[]
   }[] = [
     {
-      chord: ['C', 'E', 'G'],
+      chord: [makeNote('C'), makeNote('E'), makeNote('G')],
       expected: [ChordQuality.Major],
     },
     {
-      chord: ['A', 'C', 'E'],
+      chord: [makeNote('A'), makeNote('C'), makeNote('E')],
       expected: [ChordQuality.Minor],
     },
     {
-      chord: ['A', 'E', 'G', 'B'], // second <=> 9th
+      chord: [makeNote('A'), makeNote('E'), makeNote('G'), makeNote('B')], // second <=> 9th
       expected: [ChordQuality.SeventhSuspendedSecond],
     },
   ]

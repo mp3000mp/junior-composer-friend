@@ -1,4 +1,4 @@
-import type { FullChromaticNote } from '@/music/types'
+import type { Note } from '@/music/types'
 
 export type NaturalDegree = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII'
 export type FullChromaticDegree =
@@ -18,21 +18,11 @@ export type FullChromaticDegree =
   | 'VIIb'
   | 'VII'
 
-export type Scale = FullChromaticNote[]
+export type Scale = Note[]
 export type Interval = 1 | 2 | 3
 export type ScaleIntervals = Interval[]
 
 export const ORDERED_DEGREES: NaturalDegree[] = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
-
-export const NATURAL_DEGREE_SEMITONES = {
-  I: 0,
-  II: 2,
-  III: 4,
-  IV: 5,
-  V: 7,
-  VI: 9,
-  VII: 11,
-}
 
 export const FULL_CHROMATIC_DEGREE_SEMITONES = {
   I: 0,

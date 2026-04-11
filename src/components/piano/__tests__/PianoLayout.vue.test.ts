@@ -1,22 +1,31 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import Component from '@/components/piano/PianoLayout.vue'
+import Component, { type PianoLayoutProp } from '@/components/piano/PianoLayout.vue'
 import PianoKey from '@/components/piano/PianoKey.vue'
 import { mount } from '@vue/test-utils'
+import { makeNote } from '../../../test-utils'
 
 const stubs = ['font-aw']
 
-let playerMock
+let playerMock: { playChord: ReturnType<typeof vi.fn> }
 vi.mock('@/music/player', () => ({
   usePlayer: () => playerMock,
 }))
 
 describe('PianoLayout.vue', () => {
-  let defaultProps
+  let defaultProps: PianoLayoutProp
   beforeEach(() => {
     defaultProps = {
-      chordRoot: 'C',
-      scale: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
-      chord: ['D', 'F', 'A'],
+      chordRoot: makeNote('C'),
+      scale: [
+        makeNote('C'),
+        makeNote('D'),
+        makeNote('E'),
+        makeNote('F'),
+        makeNote('G'),
+        makeNote('A'),
+        makeNote('B'),
+      ],
+      chord: [makeNote('D'), makeNote('F'), makeNote('A')],
     }
     playerMock = {
       playChord: vi.fn(),

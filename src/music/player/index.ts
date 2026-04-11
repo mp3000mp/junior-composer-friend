@@ -1,6 +1,6 @@
-import { computeFrequency } from '@/music/utils'
+import { computeFrequency, getIntervalFromC } from '@/music/utils'
 import { BASE_OCTAVE } from '@/music/player/types'
-import { SHARP_CHROMATIC_SCALE } from '@/music/types'
+import { type Note } from '@/music/types'
 import { type Chord } from '@/music/chord/types'
 
 class Player {
@@ -10,6 +10,7 @@ class Player {
   volume: number
 
   constructor() {
+    this.context = new AudioContext()
     this.volume = 0.1
   }
 
@@ -41,7 +42,7 @@ class Player {
     this.startTime = null
   }
 
-  private play(note: number, octave: number, durationMs: number, delayMs: number = 0) {
+  private play(note: Note, octave: number, durationMs: number, delayMs: number = 0) {
     this.initialize()
 
     if (this.startTime === null) {
@@ -60,7 +61,7 @@ class Player {
     oscillatorNode.stop(startTime + durationMs / 1000)
   }
 
-  public playNote(note: number, octave: number, durationMs: number, delayMs: number = 0) {
+  public playNote(note: Note, octave: number, durationMs: number, delayMs: number = 0) {
     this.initialize()
     this.resetStartTime()
     this.play(note, octave, durationMs, delayMs)
@@ -77,9 +78,9 @@ class Player {
 
     this.resetStartTime()
     let currentOctave = BASE_OCTAVE
-    let previousNoteIndex = SHARP_CHROMATIC_SCALE.indexOf(chord[0])
+    let previousNoteIndex = getIntervalFromC(chord[0])
     for (let i = 0; i < chord.length; i++) {
-      const currentNoteIndex = SHARP_CHROMATIC_SCALE.indexOf(chord[i])
+      const currentNoteIndex = getIntervalFromC(chord[i])
       if (currentNoteIndex < previousNoteIndex) {
         currentOctave++
       }

@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import type { SharpNote } from '@/music/types'
+import type { Note } from '@/music/types'
 import { usePlayer } from '@/music/player'
+import { noteToString } from '../../music/utils'
 
 const player = usePlayer()
 
-const props = defineProps<{
+export type PianoKeyProps = {
   isBlack: boolean
   isHighlighted: boolean
   isPlayed: boolean
   isChordRoot: boolean
   isScaleRoot: boolean
-  note: SharpNote
+  note: Note
   octave: number
-}>()
+}
+
+const props = defineProps<PianoKeyProps>()
 
 function play() {
   player.playNote(props.note, props.octave, 500)
@@ -32,6 +35,6 @@ function play() {
     }"
     @click="play"
   >
-    {{ isPlayed ? note : '' }}
+    {{ isPlayed ? noteToString(note) : '' }}
   </div>
 </template>

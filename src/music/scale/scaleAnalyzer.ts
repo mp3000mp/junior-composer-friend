@@ -1,27 +1,22 @@
-import { type FullChromaticNote, SHARP_CHROMATIC_SCALE } from '@/music/types'
+import { type Note, SHARP_CHROMATIC_SCALE } from '@/music/types'
 import { ScaleEnum, SCALE_INTERVALS } from '@/music/scale/types'
 import { generateScaleFromIntervals } from '@/music/scale/scaleGenerator'
+import { noteAreEquals, noteFromString } from '@/music/utils'
 
 type EligibleScaleNote = {
-  note: FullChromaticNote
+  note: Note
   weight: number
 }
 type EligibleScale = {
-  rootScale: FullChromaticNote
-  notes: FullChromaticNote[]
+  rootScale: Note
+  scale: ScaleEnum
   similarity: number
 }
-type EligibleScaleCandidate = EligibleScale & {
-  scale: ScaleEnum
-}
 
-export function getEligibleScalesFromNotes(
-  notes: FullChromaticNote[],
-  root: FullChromaticNote | null = null,
-): EligibleScale[] {
+export function getEligibleScalesFromNotes(notes: Note[], root: Note | null): EligibleScale[] {
   const eligibleNotes: EligibleScaleNote[] = []
   for (const note of notes) {
-    let eligibleNote = eligibleNotes.find((en) => en.note === note)
+    let eligibleNote = eligibleNotes.find((en) => noteAreEquals(en.note, note))
     if (!eligibleNote) {
       eligibleNote = { note, weight: 0 }
       eligibleNotes.push(eligibleNote)
@@ -30,14 +25,15 @@ export function getEligibleScalesFromNotes(
   }
 
   let maxSimilarity = 0
-  const eligibleScales: EligibleScaleCandidate[] = []
-  const eligibleRootScales = root === null ? SHARP_CHROMATIC_SCALE : [root]
+  const eligibleScales: EligibleScale[] = []
+  const eligibleRootScales =
+    root === null ? SHARP_CHROMATIC_SCALE.map((noteString) => noteFromString(noteString)) : [root]
   for (const rootScale of eligibleRootScales) {
-    for (const scale of Object.keys(SCALE_INTERVALS)) {
+    for (const scale of Object.keys(SCALE_INTERVALS) as ScaleEnum[]) {
       let matchingScore = 0
       const scaleNotes = generateScaleFromIntervals(rootScale, SCALE_INTERVALS[scale])
       for (const eligibleNote of eligibleNotes) {
-        if (scaleNotes.includes(eligibleNote.note)) {
+        if (scaleNotes.some((en) => noteAreEquals(en, eligibleNote.note))) {
           matchingScore += eligibleNote.weight
         }
       }
@@ -45,7 +41,7 @@ export function getEligibleScalesFromNotes(
       if (similarity > maxSimilarity) {
         maxSimilarity = similarity
       }
-      eligibleScales.push({ rootScale, scale, scaleNotes, similarity })
+      eligibleScales.push({ rootScale, scale, similarity })
     }
   }
 

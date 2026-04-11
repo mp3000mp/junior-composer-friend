@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { type SharpNote } from '@/music/types'
+import { type Note } from '@/music/types'
 import { ChordStructure } from '@/music/chord/types'
 import { ScaleEnum, type NaturalDegree, SCALE_INTERVALS } from '@/music/scale/types'
 import PianoLayout from '@/components/piano/PianoLayout.vue'
@@ -11,7 +11,7 @@ import { generateChordFromScaleDegree } from '@/music/chord/chordGenerator'
 import ChordStructureSelector from '@/components/form/ChordStructureSelector.vue'
 import DegreeSelector from '@/components/form/DegreeSelector.vue'
 
-const scaleRoot = ref<SharpNote>('E')
+const scaleRoot = ref<Note>({ letter: 'E', alteration: '' })
 const scale = ref<ScaleEnum>(ScaleEnum.Mixolydian)
 const degree = ref<NaturalDegree>('I')
 const chordStructure = ref<ChordStructure>(ChordStructure.Tetrad)
@@ -22,6 +22,7 @@ const scaleNotes = computed(() =>
 const chord = computed(() =>
   generateChordFromScaleDegree(scaleRoot.value, scale.value, degree.value, chordStructure.value),
 )
+const chordRoot = computed(() => chord.value[0])
 </script>
 
 <template>
@@ -42,7 +43,7 @@ const chord = computed(() =>
       </div>
     </div>
     <div class="row mt-3 justify-content-center">
-      <piano-layout class="col-auto" :chord="chord" :scale="scaleNotes" :chord-root="chord[0]" />
+      <piano-layout class="col-auto" :chord="chord" :scale="scaleNotes" :chord-root="chordRoot" />
     </div>
   </div>
 </template>

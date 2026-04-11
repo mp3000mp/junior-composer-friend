@@ -1,15 +1,12 @@
-import { type FullChromaticNote, type Alteration } from '@/music/types'
+import { type Alteration, type Note } from '@/music/types'
 
 export function chooseScaleAlteration(
-  scaleRoot: FullChromaticNote,
+  scaleRootNote: Note,
   // scaleIntervals: ScaleIntervals,
 ): Alteration {
-  if (scaleRoot.indexOf('b')) {
-    return 'b'
+  if (scaleRootNote.alteration === '') {
+    // todo avoid duplicate raw note ?
+    return ''
   }
-  if (scaleRoot.indexOf('#')) {
-    return '#'
-  }
-  // todo avoid duplicate raw note ?
-  return ''
+  return scaleRootNote.alteration
 }

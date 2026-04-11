@@ -29,6 +29,12 @@ npm run test:cov:html
 ff coverage/index.html
 ```
 
+### Check type
+
+```sh
+npm run type-check
+```
+
 ### Format with prettier
 
 ```sh

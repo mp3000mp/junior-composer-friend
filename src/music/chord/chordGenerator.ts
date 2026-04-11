@@ -1,10 +1,5 @@
-import {
-  type SharpNote,
-  type FullChromaticNote,
-  NATURAL_CHROMATIC_SCALE,
-  FULL_CHROMATIC_NOTES_INDICES,
-} from '@/music/types'
-import { getAlteration, getNaturalNote, transposeChord, transposeNote } from '@/music/utils'
+import { NOTE_LETTERS, type Note } from '@/music/types'
+import { getAlteration, transposeChord, transposeNote } from '@/music/utils'
 import {
   FULL_CHROMATIC_DEGREE_SEMITONES,
   type FullChromaticDegree,
@@ -34,7 +29,7 @@ export function getScaleInterval(
 }
 
 export function generateChordFromScaleDegree(
-  scaleRoot: SharpNote,
+  scaleRootNote: Note,
   scale: ScaleEnum,
   degree: NaturalDegree,
   chordStructure: ChordStructure,
@@ -42,7 +37,7 @@ export function generateChordFromScaleDegree(
   const degreeIndex = ORDERED_DEGREES.indexOf(degree)
   const scaleIntervals = SCALE_INTERVALS[scale]
   const rootInterval = getScaleInterval(scaleIntervals, 0, degreeIndex)
-  const chordRoot = transposeNote(scaleRoot, rootInterval)
+  const chordRoot = transposeNote(scaleRootNote, rootInterval)
 
   const chordStructureDefinition = CHORD_STRUCTURE_DEFINITIONS[chordStructure]
   const chord: Chord = []
@@ -59,24 +54,24 @@ export function generateChordFromScaleDegree(
 }
 
 export function getChromaticNoteFromDegree(
-  rootNote: FullChromaticNote,
+  rootNote: Note,
   chromaticDegree: FullChromaticDegree,
-): FullChromaticNote {
-  const rootNoteIndex = NATURAL_CHROMATIC_SCALE.indexOf(getNaturalNote(rootNote))
+): Note {
+  // todo: input scale ?
+  const rootNoteIndex = NOTE_LETTERS.indexOf(rootNote.letter)
   const naturalDegreeIndex = ORDERED_DEGREES.indexOf(getNaturalDegree(chromaticDegree))
-  const naturalNote = NATURAL_CHROMATIC_SCALE[(rootNoteIndex + naturalDegreeIndex) % 7]
+  const naturalNoteLetter = NOTE_LETTERS[(rootNoteIndex + naturalDegreeIndex) % 7]
 
   const chromaticDegreeInterval = FULL_CHROMATIC_DEGREE_SEMITONES[chromaticDegree]
-  const fullChromaticNote = transposeNote(rootNote, chromaticDegreeInterval)
-  const alteration = getAlteration(naturalNote, fullChromaticNote)
+  const alteration = getAlteration(naturalNoteLetter, chromaticDegreeInterval)
 
-  return naturalNote + alteration
+  return {
+    letter: naturalNoteLetter,
+    alteration: alteration,
+  }
 }
 
-export function generateChordFromDegrees(
-  chordRoot: FullChromaticNote,
-  degrees: FullChromaticDegree[],
-): Chord {
+export function generateChordFromDegrees(chordRoot: Note, degrees: FullChromaticDegree[]): Chord {
   const chord: Chord = []
   for (const degree of degrees) {
     chord.push(getChromaticNoteFromDegree(chordRoot, degree))
@@ -97,7 +92,7 @@ function multiIncludes(str: string, includes: string[]): boolean {
 }
 
 export function getNaturalDegree(fullChromaticDegree: FullChromaticDegree): NaturalDegree {
-  return fullChromaticDegree.replace('b', '').replace('#', '')
+  return fullChromaticDegree.replace('b', '').replace('#', '') as NaturalDegree
 }
 
 /**
@@ -238,32 +233,40 @@ export function generateChromaticDegreesFromCustomQuality(
     chordDefinition.push(thirteenth === 'b' ? 'VIb' : 'VI')
   }
 
-  return chordDefinition
+  return chordDefinition as FullChromaticDegree[]
 }
 
 export function generateChordFromCustomQuality(customQuality: string): Chord {
+  // todo function sanitize
   customQuality = customQuality.replace('♭', 'b').replace('♯', '#')
   const arrQuality = Array.from(customQuality)
   if (arrQuality.length === 0) {
     return []
   }
 
-  let chordRoot = arrQuality[0]
+  const chordRootLetter = arrQuality[0]
+  if (!NOTE_LETTERS.includes(chordRootLetter)) {
+    // todo throw error ?
+    return []
+  }
+  const chordRootNote: Note = {
+    letter: chordRootLetter,
+    alteration: '',
+  }
+
   let arrQualityRootLess = arrQuality.slice(1)
   if (arrQualityRootLess.length > 0 && ['b', '#'].includes(arrQualityRootLess[0])) {
-    chordRoot += arrQualityRootLess[0]
+    chordRootNote.alteration = arrQualityRootLess[0]
     arrQualityRootLess = arrQualityRootLess.slice(1)
   }
 
-  if (!Object.keys(FULL_CHROMATIC_NOTES_INDICES).includes(chordRoot)) {
-    return []
-  }
   return generateChordFromDegrees(
-    chordRoot,
+    chordRootNote,
     generateChromaticDegreesFromCustomQuality(arrQualityRootLess.join('')),
   )
 }
 
 export function generateTritonicSubstitution(chord: Chord): Chord {
+  // todo
   return transposeChord(chord, 6)
 }

@@ -1,4 +1,4 @@
-import type { FullChromaticNote } from '@/music/types'
+import type { Note } from '@/music/types'
 
 export enum OrderedNote {
   Tonic = 0,
@@ -25,7 +25,7 @@ export enum Interval {
   MajorSeventh = 11,
 }
 
-export type Chord = FullChromaticNote[]
+export type Chord = Note[]
 export type StructuredChord = OrderedNote[]
 
 export enum ChordStructure {
