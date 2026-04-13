@@ -1,47 +1,12 @@
 import type { Note } from '@/music/types'
 
 export type NaturalDegree = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII'
-export type FullChromaticDegree =
-  | 'I'
-  | 'IIb'
-  | 'II'
-  | 'II#'
-  | 'IIIb'
-  | 'III'
-  | 'IV'
-  | 'IV#'
-  | 'Vb'
-  | 'V'
-  | 'V#'
-  | 'VIb'
-  | 'VI'
-  | 'VIIb'
-  | 'VII'
 
 export type Scale = Note[]
 export type Interval = 1 | 2 | 3
 export type ScaleIntervals = Interval[]
 
 export const ORDERED_DEGREES: NaturalDegree[] = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
-
-export const FULL_CHROMATIC_DEGREE_SEMITONES = {
-  I: 0,
-  IIb: 1,
-  II: 2,
-  'II#': 3,
-  IIIb: 3,
-  III: 4,
-  IVb: 4,
-  IV: 5,
-  'IV#': 6,
-  Vb: 6,
-  V: 7,
-  'V#': 8,
-  VIb: 8,
-  VI: 9,
-  VIIb: 10,
-  VII: 11,
-}
 
 export enum ScaleEnum {
   // Major = 'major',

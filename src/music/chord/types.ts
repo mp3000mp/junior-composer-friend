@@ -23,6 +23,16 @@ export enum Interval {
   MajorSixth = 9,
   MinorSeventh = 10,
   MajorSeventh = 11,
+  Octave = 12,
+  DiminishedNinth = 13,
+  Ninth = 14,
+  AugmentedNinth = 15,
+  DiminishedEleventh = 16,
+  Eleventh = 17,
+  AugmentedEleventh = 18,
+  DiminishedThirteenth = 20,
+  Thirteenth = 21,
+  AugmentedThirteenth = 22,
 }
 
 export type Chord = Note[]

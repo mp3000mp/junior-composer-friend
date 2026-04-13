@@ -1,15 +1,18 @@
 import { NOTE_LETTERS, type Note } from '@/music/types'
-import { getAlteration, transposeChord, transposeNote } from '@/music/utils'
+import { transposeChord, transposeNote } from '@/music/utils'
 import {
-  FULL_CHROMATIC_DEGREE_SEMITONES,
-  type FullChromaticDegree,
   type ScaleIntervals,
   SCALE_INTERVALS,
   type NaturalDegree,
   ORDERED_DEGREES,
   ScaleEnum,
 } from '@/music/scale/types'
-import { type Chord, CHORD_STRUCTURE_DEFINITIONS, ChordStructure } from '@/music/chord/types'
+import {
+  type Chord,
+  CHORD_STRUCTURE_DEFINITIONS,
+  ChordStructure,
+  Interval,
+} from '@/music/chord/types'
 
 export function getScaleInterval(
   scaleIntervals: ScaleIntervals,
@@ -53,28 +56,10 @@ export function generateChordFromScaleDegree(
   return chord
 }
 
-export function getChromaticNoteFromDegree(
-  rootNote: Note,
-  chromaticDegree: FullChromaticDegree,
-): Note {
-  // todo: input scale ?
-  const rootNoteIndex = NOTE_LETTERS.indexOf(rootNote.letter)
-  const naturalDegreeIndex = ORDERED_DEGREES.indexOf(getNaturalDegree(chromaticDegree))
-  const naturalNoteLetter = NOTE_LETTERS[(rootNoteIndex + naturalDegreeIndex) % 7]
-
-  const chromaticDegreeInterval = FULL_CHROMATIC_DEGREE_SEMITONES[chromaticDegree]
-  const alteration = getAlteration(naturalNoteLetter, chromaticDegreeInterval)
-
-  return {
-    letter: naturalNoteLetter,
-    alteration: alteration,
-  }
-}
-
-export function generateChordFromDegrees(chordRoot: Note, degrees: FullChromaticDegree[]): Chord {
+export function generateChordFromIntervals(chordRoot: Note, intervals: Interval[]): Chord {
   const chord: Chord = []
-  for (const degree of degrees) {
-    chord.push(getChromaticNoteFromDegree(chordRoot, degree))
+  for (const interval of intervals) {
+    chord.push(transposeNote(chordRoot, interval))
   }
 
   return chord
@@ -91,19 +76,13 @@ function multiIncludes(str: string, includes: string[]): boolean {
   return false
 }
 
-export function getNaturalDegree(fullChromaticDegree: FullChromaticDegree): NaturalDegree {
-  return fullChromaticDegree.replace('b', '').replace('#', '') as NaturalDegree
-}
-
 /**
  * customQuality without root
  *
  * todo: bass
  */
-export function generateChromaticDegreesFromCustomQuality(
-  customQuality: string,
-): FullChromaticDegree[] {
-  const chordDefinition = ['I']
+export function generateChordIntervalsFromCustomQuality(customQuality: string): Interval[] {
+  const chordIntervals = [Interval.Tonic]
   const arrQuality = Array.from(customQuality)
 
   let second: noteQuality = null
@@ -196,44 +175,44 @@ export function generateChromaticDegreesFromCustomQuality(
   }
 
   if (second !== null) {
-    chordDefinition.push('II')
+    chordIntervals.push(Interval.Second)
   }
   if (third !== null) {
-    chordDefinition.push(third === 'b' ? 'IIIb' : 'III')
+    chordIntervals.push(third === 'b' ? Interval.MinorThird : Interval.MajorThird)
   }
   if (fourth !== null) {
-    chordDefinition.push('IV')
+    chordIntervals.push(Interval.Fourth)
   }
   if (fifth === 'b') {
-    chordDefinition.push('Vb')
+    chordIntervals.push(Interval.DiminishedFifth)
   } else if (fifth === '#') {
-    chordDefinition.push('V#')
+    chordIntervals.push(Interval.MinorSixth) // or augmented fifth ?
   } else {
-    chordDefinition.push('V')
+    chordIntervals.push(Interval.Fifth)
   }
   if (sixth !== null) {
-    chordDefinition.push('VI')
+    chordIntervals.push(Interval.MajorSixth)
   }
   if (seventh !== null) {
-    chordDefinition.push(seventh === 'b' ? 'VIIb' : 'VII')
+    chordIntervals.push(seventh === 'b' ? Interval.MinorSeventh : Interval.MajorSeventh)
   }
   if (ninth !== null) {
     if (ninth === 'b') {
-      chordDefinition.push('IIb')
+      chordIntervals.push(Interval.DiminishedNinth)
     } else if (ninth === '#') {
-      chordDefinition.push('II#')
+      chordIntervals.push(Interval.AugmentedNinth)
     } else {
-      chordDefinition.push('II')
+      chordIntervals.push(Interval.Ninth)
     }
   }
   if (eleventh !== null) {
-    chordDefinition.push(eleventh === '#' ? 'IV#' : 'IV')
+    chordIntervals.push(eleventh === '#' ? Interval.AugmentedEleventh : Interval.Eleventh)
   }
   if (thirteenth !== null) {
-    chordDefinition.push(thirteenth === 'b' ? 'VIb' : 'VI')
+    chordIntervals.push(thirteenth === 'b' ? Interval.DiminishedThirteenth : Interval.Thirteenth)
   }
 
-  return chordDefinition as FullChromaticDegree[]
+  return chordIntervals
 }
 
 export function generateChordFromCustomQuality(customQuality: string): Chord {
@@ -260,13 +239,13 @@ export function generateChordFromCustomQuality(customQuality: string): Chord {
     arrQualityRootLess = arrQualityRootLess.slice(1)
   }
 
-  return generateChordFromDegrees(
+  return generateChordFromIntervals(
     chordRootNote,
-    generateChromaticDegreesFromCustomQuality(arrQualityRootLess.join('')),
+    generateChordIntervalsFromCustomQuality(arrQualityRootLess.join('')),
   )
 }
 
+// todo find rules
 export function generateTritonicSubstitution(chord: Chord): Chord {
-  // todo
   return transposeChord(chord, 6)
 }

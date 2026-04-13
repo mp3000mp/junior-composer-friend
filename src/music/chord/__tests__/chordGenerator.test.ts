@@ -1,20 +1,13 @@
 import { describe, expect, test } from 'vitest'
 import {
-  generateChromaticDegreesFromCustomQuality,
-  generateChordFromScaleDegree,
-  generateChordFromDegrees,
   generateChordFromCustomQuality,
-  getChromaticNoteFromDegree,
+  generateChordFromIntervals,
+  generateChordFromScaleDegree,
   generateTritonicSubstitution,
   getScaleInterval,
 } from '../chordGenerator'
-import { type Chord, ChordStructure } from '@/music/chord/types'
-import {
-  type FullChromaticDegree,
-  ScaleEnum,
-  type NaturalDegree,
-  type ScaleIntervals,
-} from '@/music/scale/types'
+import { type Chord, ChordStructure, Interval } from '@/music/chord/types'
+import { type NaturalDegree, ScaleEnum, type ScaleIntervals } from '@/music/scale/types'
 import { type Note } from '@/music/types'
 import { makeNote } from '../../../test-utils'
 import { noteToString } from '../../utils'
@@ -84,20 +77,20 @@ describe('music/chordGenerator.ts', () => {
     },
   )
 
-  const generateChordFromDegreesTestCases: {
+  const generateChordFromIntervalsTestCases: {
     chordRoot: Note
-    degrees: FullChromaticDegree[]
+    intervals: Interval[]
     expected: Chord
   }[] = [
     {
       chordRoot: makeNote('C'),
-      degrees: ['I', 'III', 'V'],
+      intervals: [Interval.Tonic, Interval.MajorThird, Interval.Fifth],
       expected: [makeNote('C'), makeNote('E'), makeNote('G')],
     },
   ]
-  generateChordFromDegreesTestCases.forEach(({ chordRoot, degrees, expected }) => {
-    test(`generateChordFromDegrees with ${noteToString(chordRoot)} and [ ${degrees.join(' ')} ]`, () => {
-      const result = generateChordFromDegrees(chordRoot, degrees)
+  generateChordFromIntervalsTestCases.forEach(({ chordRoot, intervals, expected }) => {
+    test(`generateChordFromDegrees with ${noteToString(chordRoot)} and [ ${intervals.join(' ')} ]`, () => {
+      const result = generateChordFromIntervals(chordRoot, intervals)
       expect(result).toEqual(expected)
     })
   })
@@ -466,70 +459,6 @@ describe('music/chordGenerator.ts', () => {
   generateChordFromCustomQualityTestCases.forEach(({ customQuality, expected }) => {
     test(`generateChordFromCustomQuality with ${customQuality}`, () => {
       const result = generateChordFromCustomQuality(customQuality)
-      expect(result).toEqual(expected)
-    })
-  })
-
-  const generateChromaticDegreesFromCustomQualityTestCases: {
-    customQuality: string
-    expected: FullChromaticDegree[]
-  }[] = [
-    {
-      customQuality: 'm',
-      expected: ['I', 'IIIb', 'V'],
-    },
-  ]
-  generateChromaticDegreesFromCustomQualityTestCases.forEach(({ customQuality, expected }) => {
-    test(`generateIntervalsFromCustomQuality with ${customQuality}`, () => {
-      const result = generateChromaticDegreesFromCustomQuality(customQuality)
-      expect(result).toEqual(expected)
-    })
-  })
-
-  const getChromaticNoteFromDegreeTestCases: {
-    rootNote: Note
-    chromaticDegree: FullChromaticDegree
-    expected: Note
-  }[] = [
-    {
-      rootNote: makeNote('C'),
-      chromaticDegree: 'III',
-      expected: makeNote('E'),
-    },
-    {
-      rootNote: makeNote('A', '#'),
-      chromaticDegree: 'III',
-      expected: makeNote('C', '##'), // todo D ?
-    },
-    {
-      rootNote: makeNote('B', 'b'),
-      chromaticDegree: 'III',
-      expected: makeNote('D'),
-    },
-    {
-      rootNote: makeNote('C'),
-      chromaticDegree: 'IIIb',
-      expected: makeNote('E', 'b'),
-    },
-    {
-      rootNote: makeNote('A'),
-      chromaticDegree: 'IV#',
-      expected: makeNote('D', '#'),
-    },
-    {
-      rootNote: makeNote('A'),
-      chromaticDegree: 'IVb',
-      expected: makeNote('D', 'b'),
-    },
-    {
-      rootNote: makeNote('E', 'b'),
-      chromaticDegree: 'V#',
-      expected: makeNote('B'),
-    },
-  ]
-  getChromaticNoteFromDegreeTestCases.forEach(({ rootNote, chromaticDegree, expected }) => {
-    test(`getChromaticNoteFromDegree with ${noteToString(rootNote)} and ${chromaticDegree}`, () => {
-      const result = getChromaticNoteFromDegree(rootNote, chromaticDegree)
       expect(result).toEqual(expected)
     })
   })
