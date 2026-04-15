@@ -10,9 +10,14 @@ describe('player.ts', () => {
     stop: ReturnType<typeof vi.fn>
   }
 
+  let mockGainNode: {
+    connect: ReturnType<typeof vi.fn>
+    gain: { value: number }
+  }
+
   beforeEach(() => {
     usePlayer().isInitialized = false
-    const gainNode = {
+    mockGainNode = {
       connect: vi.fn(),
       gain: { value: 1 },
     }
@@ -24,17 +29,21 @@ describe('player.ts', () => {
       start: vi.fn(),
       stop: vi.fn(),
     }
+
     vi.stubGlobal(
       'AudioContext',
-      vi.fn(function () {
-        return {
-          createGain: () => gainNode,
-          createOscillator: vi.fn(() => mockOscillatorNode),
+      class {
+        createGain() {
+          return mockGainNode
         }
-      }),
+        createOscillator() {
+          return mockOscillatorNode
+        }
+        get currentTime() {
+          return 0
+        }
+      },
     )
-    vi.stubGlobal('GainNode', gainNode)
-    vi.stubGlobal('OscillatorNode', mockOscillatorNode)
   })
 
   test('should play notes', () => {

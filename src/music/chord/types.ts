@@ -10,30 +10,33 @@ export enum OrderedNote {
   Seventh = 6,
 }
 
-export enum Interval {
-  Tonic = 0,
-  DiminishedSecond = 1,
-  Second = 2,
-  MinorThird = 3, // or AugmentedSecond
-  MajorThird = 4,
-  Fourth = 5,
-  DiminishedFifth = 6, // or AugmentedFourth
-  Fifth = 7,
-  MinorSixth = 8, // or AugmentedFifth
-  MajorSixth = 9,
-  MinorSeventh = 10,
-  MajorSeventh = 11,
-  Octave = 12,
-  DiminishedNinth = 13,
-  Ninth = 14,
-  AugmentedNinth = 15,
-  DiminishedEleventh = 16,
-  Eleventh = 17,
-  AugmentedEleventh = 18,
-  DiminishedThirteenth = 20,
-  Thirteenth = 21,
-  AugmentedThirteenth = 22,
-}
+export const Interval = {
+  Tonic: { diatonicSteps: 0, semitones: 0 },
+  DiminishedSecond: { diatonicSteps: 1, semitones: 1 },
+  Second: { diatonicSteps: 1, semitones: 2 },
+  MinorThird: { diatonicSteps: 2, semitones: 3 },
+  MajorThird: { diatonicSteps: 2, semitones: 4 },
+  Fourth: { diatonicSteps: 3, semitones: 5 },
+  DiminishedFifth: { diatonicSteps: 4, semitones: 6 },
+  Fifth: { diatonicSteps: 4, semitones: 7 },
+  AugmentedFifth: { diatonicSteps: 4, semitones: 8 },
+  MinorSixth: { diatonicSteps: 5, semitones: 8 },
+  MajorSixth: { diatonicSteps: 5, semitones: 9 },
+  MinorSeventh: { diatonicSteps: 6, semitones: 10 },
+  MajorSeventh: { diatonicSteps: 6, semitones: 11 },
+  Octave: { diatonicSteps: 7, semitones: 12 },
+  DiminishedNinth: { diatonicSteps: 8, semitones: 13 },
+  Ninth: { diatonicSteps: 8, semitones: 14 },
+  AugmentedNinth: { diatonicSteps: 8, semitones: 15 },
+  DiminishedEleventh: { diatonicSteps: 10, semitones: 16 },
+  Eleventh: { diatonicSteps: 10, semitones: 17 },
+  AugmentedEleventh: { diatonicSteps: 10, semitones: 18 },
+  DiminishedThirteenth: { diatonicSteps: 12, semitones: 20 },
+  Thirteenth: { diatonicSteps: 12, semitones: 21 },
+  AugmentedThirteenth: { diatonicSteps: 12, semitones: 22 },
+} as const
+
+export type Interval = (typeof Interval)[keyof typeof Interval]
 
 export type Chord = Note[]
 export type StructuredChord = OrderedNote[]

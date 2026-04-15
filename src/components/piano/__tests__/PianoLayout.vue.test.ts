@@ -3,10 +3,11 @@ import Component, { type PianoLayoutProp } from '@/components/piano/PianoLayout.
 import PianoKey from '@/components/piano/PianoKey.vue'
 import { mount } from '@vue/test-utils'
 import { makeNote } from '../../../test-utils'
+import { createPlayerMock, type PlayerMock } from '@/test-utils/player'
 
 const stubs = ['font-aw']
 
-let playerMock: { playChord: ReturnType<typeof vi.fn> }
+let playerMock: PlayerMock
 vi.mock('@/music/player', () => ({
   usePlayer: () => playerMock,
 }))
@@ -14,6 +15,10 @@ vi.mock('@/music/player', () => ({
 describe('PianoLayout.vue', () => {
   let defaultProps: PianoLayoutProp
   beforeEach(() => {
+    playerMock = createPlayerMock({
+      playChord: vi.fn(),
+      playNote: vi.fn(),
+    })
     defaultProps = {
       chordRoot: makeNote('C'),
       scale: [
@@ -26,9 +31,6 @@ describe('PianoLayout.vue', () => {
         makeNote('B'),
       ],
       chord: [makeNote('D'), makeNote('F'), makeNote('A')],
-    }
-    playerMock = {
-      playChord: vi.fn(),
     }
   })
 

@@ -10,8 +10,8 @@ class Player {
   volume: number
 
   constructor() {
-    this.context = new AudioContext()
     this.volume = 0.1
+    this.initialize()
   }
 
   private createOscillator(type: OscillatorType): OscillatorNode {

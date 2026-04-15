@@ -26,19 +26,15 @@ export const ALTERATION_INTERVALS: Record<Alteration, number> = {
   '##': 2,
 }
 
-export type SharpNote = 'C' | 'C#' | 'D' | 'D#' | 'E' | 'F' | 'F#' | 'G' | 'G#' | 'A' | 'A#' | 'B'
+// Nombre de demi-tons dans une octave
+export const SEMITONES_PER_OCTAVE = 12
 
-export const SHARP_CHROMATIC_SCALE: SharpNote[] = [
-  'C',
-  'C#',
-  'D',
-  'D#',
-  'E',
-  'F',
-  'F#',
-  'G',
-  'G#',
-  'A',
-  'A#',
-  'B',
-]
+export const WHOLE_TONE_LETTERS: Record<NoteLetter, boolean> = {
+  C: true,
+  D: true,
+  E: false,
+  F: true,
+  G: true,
+  A: true,
+  B: false,
+}

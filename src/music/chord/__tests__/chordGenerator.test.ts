@@ -87,6 +87,16 @@ describe('music/chordGenerator.ts', () => {
       intervals: [Interval.Tonic, Interval.MajorThird, Interval.Fifth],
       expected: [makeNote('C'), makeNote('E'), makeNote('G')],
     },
+    {
+      chordRoot: makeNote('C', '#'),
+      intervals: [Interval.Tonic, Interval.MajorThird, Interval.Fifth],
+      expected: [makeNote('C', '#'), makeNote('E', '#'), makeNote('G', '#')],
+    },
+    {
+      chordRoot: makeNote('D', 'b'),
+      intervals: [Interval.Tonic, Interval.MajorThird, Interval.Fifth],
+      expected: [makeNote('D', 'b'), makeNote('F'), makeNote('A', 'b')],
+    },
   ]
   generateChordFromIntervalsTestCases.forEach(({ chordRoot, intervals, expected }) => {
     test(`generateChordFromDegrees with ${noteToString(chordRoot)} and [ ${intervals.join(' ')} ]`, () => {

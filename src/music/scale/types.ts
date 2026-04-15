@@ -50,7 +50,7 @@ export const ScaleLabels = {
   // [ScaleEnum.DorianB2]: 'dorian b2',
   [ScaleEnum.Phrygian]: 'phrygian',
   [ScaleEnum.Lydian]: 'lydian',
-  [ScaleEnum.LydianB7]: 'lydian b7 (dominant)',
+  [ScaleEnum.LydianB7]: 'lydian b7',
   // [ScaleEnum['Lydian#9']]: 'lydian #9',
   [ScaleEnum.Mixolydian]: 'mixolydian',
   // [ScaleEnum.MixolydianB6]: 'mixolydian b6',

@@ -1,7 +1,7 @@
-import { type Note, SHARP_CHROMATIC_SCALE } from '@/music/types'
+import { type Note, SEMITONES_PER_OCTAVE } from '@/music/types'
 import { ScaleEnum, SCALE_INTERVALS } from '@/music/scale/types'
 import { generateScaleFromIntervals } from '@/music/scale/scaleGenerator'
-import { noteAreEquals, noteFromString } from '@/music/utils'
+import { indexToNote, noteAreEquals } from '@/music/utils'
 
 type EligibleScaleNote = {
   note: Note
@@ -27,7 +27,7 @@ export function getEligibleScalesFromNotes(notes: Note[], root: Note | null): El
   let maxSimilarity = 0
   const eligibleScales: EligibleScale[] = []
   const eligibleRootScales =
-    root === null ? SHARP_CHROMATIC_SCALE.map((noteString) => noteFromString(noteString)) : [root]
+    root === null ? Array.from({ length: SEMITONES_PER_OCTAVE }, (_, i) => indexToNote(i)) : [root]
   for (const rootScale of eligibleRootScales) {
     for (const scale of Object.keys(SCALE_INTERVALS) as ScaleEnum[]) {
       let matchingScore = 0

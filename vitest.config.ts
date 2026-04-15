@@ -20,6 +20,7 @@ export default mergeConfig(
       },
       environment: 'jsdom',
       root: fileURLToPath(new URL('./', import.meta.url)),
+      setupFiles: ['./src/music/__tests__/setup.ts'],
     },
   }),
 )

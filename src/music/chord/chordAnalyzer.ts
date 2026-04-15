@@ -1,4 +1,4 @@
-import { type Note, SHARP_CHROMATIC_SCALE } from '@/music/types'
+import { type Note, SEMITONES_PER_OCTAVE } from '@/music/types'
 import { type Chord, CHORD_QUALITY_DEFINITIONS, ChordQuality } from '@/music/chord/types'
 import { getIntervalFromC } from '@/music/utils'
 
@@ -8,7 +8,7 @@ function getNotesInterval(fromNote: Note, toNote: Note): number {
   if (fromIndex <= toIndex) {
     return toIndex - fromIndex
   }
-  return toIndex - fromIndex + SHARP_CHROMATIC_SCALE.length
+  return toIndex - fromIndex + SEMITONES_PER_OCTAVE
 }
 
 export function getEligibleChordQualities(chord: Chord): ChordQuality[] {
@@ -26,7 +26,9 @@ export function getEligibleChordQualities(chord: Chord): ChordQuality[] {
      */
     if (
       CHORD_QUALITY_DEFINITIONS[chordQuality].length === chordIntervals.length &&
-      CHORD_QUALITY_DEFINITIONS[chordQuality].every((interval) => chordIntervals.includes(interval))
+      CHORD_QUALITY_DEFINITIONS[chordQuality].every((interval) =>
+        chordIntervals.includes(interval.semitones),
+      )
     ) {
       eligibleChordQualities.push(chordQuality)
     }

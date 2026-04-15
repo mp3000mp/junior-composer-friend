@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import PianoKey from '@/components/piano/PianoKey.vue'
-import { type Note, SHARP_CHROMATIC_SCALE } from '@/music/types'
+import { type Note, SEMITONES_PER_OCTAVE } from '@/music/types'
 import { BASE_OCTAVE } from '@/music/player/types'
 import { type Chord } from '@/music/chord/types'
 import { type Scale } from '@/music/scale/types'
 import { computed, onMounted, onUnmounted, type Ref, ref, watch } from 'vue'
 import { usePlayer } from '@/music/player'
-import { getIntervalFromC, noteAreEquals, noteFromString, noteToString } from '@/music/utils'
+import { getIntervalFromC, indexToNote, noteAreEquals, noteToString } from '@/music/utils'
 import { onClickOutside } from '@vueuse/core'
 
 const player = usePlayer()
@@ -34,8 +34,8 @@ const pianoNotes = computed(() => {
   const keyNotes: KeyNote[] = []
   let chordCursor = 0
   for (let i = BASE_OCTAVE - 1; i < BASE_OCTAVE + 2; i++) {
-    for (const noteLetter of SHARP_CHROMATIC_SCALE) {
-      const note = noteFromString(noteLetter)
+    for (let semitone = 0; semitone < SEMITONES_PER_OCTAVE; semitone++) {
+      const note = indexToNote(semitone)
       const intervalFromC = getIntervalFromC(note)
       let isPlayed = false
       if (chordCursor < props.chord.length && noteAreEquals(props.chord[chordCursor], note)) {
@@ -65,8 +65,8 @@ function playArpeggiatedChord() {
 const volumeRange = 500
 const volumeSliderShown = ref(false)
 const volume = ref(volumeRange / 10)
-function showVolumeSlider() {
-  volumeSliderShown.value = true
+function toggleVolumeSlider() {
+  volumeSliderShown.value = !volumeSliderShown.value
 }
 function hideVolumeSlider() {
   volumeSliderShown.value = false
@@ -109,7 +109,7 @@ onClickOutside(volumeSlider, () => hideVolumeSlider())
     <div class="text-center">
       <font-aw class="cp" icon="play" @click="playPlatedChord" title="plated" />
       <font-aw class="cp ms-1" icon="music" @click="playArpeggiatedChord" title="arpeggiated" />
-      <font-aw class="cp ms-1" icon="volume-low" @click="showVolumeSlider" title="volume" />
+      <font-aw class="cp ms-1" icon="volume-low" @click="toggleVolumeSlider" title="volume" />
     </div>
     <div id="volume-tooltip" v-if="volumeSliderShown" class="text-center">
       <input type="range" min="0" max="100" v-model="volume" ref="volumeSlider" />
@@ -119,7 +119,7 @@ onClickOutside(volumeSlider, () => hideVolumeSlider())
 
 <style lang="scss">
 @use 'sass:color';
-@import 'src/assets/style/bootstrap/vars-override';
+@import '../../assets/style/bootstrap/vars-override';
 
 $whiteKeyWidth: 35px;
 $blackKeyWidth: $whiteKeyWidth * 0.66;

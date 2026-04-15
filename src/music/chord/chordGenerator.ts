@@ -1,5 +1,5 @@
 import { NOTE_LETTERS, type Note } from '@/music/types'
-import { transposeChord, transposeNote } from '@/music/utils'
+import { transposeChord, transposeNote, transposeNoteByInterval } from '@/music/utils'
 import {
   type ScaleIntervals,
   SCALE_INTERVALS,
@@ -59,7 +59,7 @@ export function generateChordFromScaleDegree(
 export function generateChordFromIntervals(chordRoot: Note, intervals: Interval[]): Chord {
   const chord: Chord = []
   for (const interval of intervals) {
-    chord.push(transposeNote(chordRoot, interval))
+    chord.push(transposeNoteByInterval(chordRoot, interval))
   }
 
   return chord
@@ -186,7 +186,7 @@ export function generateChordIntervalsFromCustomQuality(customQuality: string): 
   if (fifth === 'b') {
     chordIntervals.push(Interval.DiminishedFifth)
   } else if (fifth === '#') {
-    chordIntervals.push(Interval.MinorSixth) // or augmented fifth ?
+    chordIntervals.push(Interval.AugmentedFifth)
   } else {
     chordIntervals.push(Interval.Fifth)
   }
