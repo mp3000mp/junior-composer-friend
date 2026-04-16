@@ -4,15 +4,10 @@ import { type Note } from '@/music/types'
 import { type Chord } from '@/music/chord/types'
 
 class Player {
-  context: AudioContext
+  context!: AudioContext
   isInitialized: boolean = false
   startTime: number | null = null
-  volume: number
-
-  constructor() {
-    this.volume = 0.1
-    this.initialize()
-  }
+  volume: number = 0.1
 
   private createOscillator(type: OscillatorType): OscillatorNode {
     const gainNode = this.context.createGain()
@@ -24,12 +19,11 @@ class Player {
     return oscillatorNode
   }
 
-  public initialize() {
+  private initialize() {
     if (this.isInitialized) {
       return
     }
     this.context = new AudioContext()
-    this.setVolume(this.volume)
     this.isInitialized = true
   }
 
@@ -62,7 +56,6 @@ class Player {
   }
 
   public playNote(note: Note, octave: number, durationMs: number, delayMs: number = 0) {
-    this.initialize()
     this.resetStartTime()
     this.play(note, octave, durationMs, delayMs)
   }
@@ -71,7 +64,6 @@ class Player {
     if (chord.length === 0) {
       return
     }
-    this.initialize()
 
     const platedChordDurationMs = 0 === delayMs ? 1000 : delayMs
     const totalDurationMs = chord.length * delayMs + platedChordDurationMs

@@ -106,6 +106,25 @@ describe('music/scaleAnalyzer.ts', () => {
       rootNote: makeNote('C', 'b'),
       expected: [{ rootScale: makeNote('C', 'b'), scale: ScaleEnum.Eolian, similarity: 1 }],
     },
+    {
+      notes: [
+        makeNote('G', 'b'),
+        makeNote('A', 'b'),
+        makeNote('B', 'b'),
+        makeNote('C', 'b'),
+        makeNote('D', 'b'),
+        makeNote('E', 'b'),
+        makeNote('F', 'b'),
+      ],
+      rootNote: null,
+      expected: [
+        { rootScale: makeNote('D', 'b'), scale: ScaleEnum.Dorian, similarity: 1 },
+        { rootScale: makeNote('E', 'b'), scale: ScaleEnum.Phrygian, similarity: 1 },
+        { rootScale: makeNote('G', 'b'), scale: ScaleEnum.Mixolydian, similarity: 1 },
+        { rootScale: makeNote('A', 'b'), scale: ScaleEnum.Eolian, similarity: 1 },
+        { rootScale: makeNote('B', 'b'), scale: ScaleEnum.Locrian, similarity: 1 },
+      ],
+    },
   ]
   getEligibleScalesFromNotesTestCases.forEach(({ notes, rootNote, expected }) => {
     test(`getEligibleScalesFromNotes with [${notes.map((note) => noteToString(note)).join(',')}] and ${rootNote ? noteToString(rootNote) : 'null'}`, () => {

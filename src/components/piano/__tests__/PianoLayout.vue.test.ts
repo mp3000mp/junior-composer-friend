@@ -20,7 +20,6 @@ describe('PianoLayout.vue', () => {
       playNote: vi.fn(),
     })
     defaultProps = {
-      chordRoot: makeNote('C'),
       scale: [
         makeNote('C'),
         makeNote('D'),

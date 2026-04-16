@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import { noteFromString, noteToString } from '@/music/utils'
-import { type Note, NOTE_LETTERS } from '@/music/types'
+import { type Note, NOTE_LETTERS, type NoteString } from '@/music/types'
 import { computed, ref, watch } from 'vue'
 
-const model = defineModel<Note | null>({ required: true })
+const model = defineModel<Note>({ required: true })
 
 const stringValue = computed({
-  get: () => (model.value ? noteToString(model.value) : null),
+  get: () => noteToString(model.value),
   set: (value) => {
-    model.value = value ? noteFromString(value) : null
+    model.value = noteFromString(value)
   },
 })
 
 const alterationMode = ref<'#' | 'b'>('#')
 
-const notes = computed<Note[]>(() => {
+const notes = computed<NoteString[]>(() => {
   if (alterationMode.value === '#') {
     return ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
   }
@@ -32,7 +32,7 @@ watch(alterationMode, () => {
       NOTE_LETTERS.length
     const newLetter = NOTE_LETTERS[letterIndex]
     const newAlteration = alterationMode.value
-    stringValue.value = newLetter + newAlteration
+    stringValue.value = (newLetter + newAlteration) as NoteString
   }
 })
 </script>

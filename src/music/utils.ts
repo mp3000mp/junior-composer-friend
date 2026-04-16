@@ -1,6 +1,6 @@
 import {
-  type NoteLetter,
   type Alteration,
+  type NoteLetter,
   type Note,
   type NoteString,
   NOTE_LETTERS,
@@ -9,7 +9,7 @@ import {
   SEMITONES_PER_OCTAVE,
   WHOLE_TONE_LETTERS,
 } from '@/music/types'
-import { type Chord, Interval } from '@/music/chord/types'
+import { Interval } from '@/music/chord/types'
 import { BASE_A_FREQUENCY } from '@/music/player/types'
 
 // todo which temperament ?
@@ -23,22 +23,10 @@ export function computeFrequency(note: Note, octave: number): number {
   return Math.round(aFrequency * Math.pow(2, semitoneOffset / 12))
 }
 
-export function getAlteration(naturalNoteLetter: NoteLetter, intervalFromC: number): Alteration {
-  const naturalIntervalFromC = getIntervalFromC({ letter: naturalNoteLetter, alteration: '' })
-  let intervalDiff = intervalFromC - naturalIntervalFromC
-  if (intervalDiff > 2) {
-    intervalDiff = -1 * (SEMITONES_PER_OCTAVE - intervalDiff)
-  }
-  const alterationChar = intervalDiff > 0 ? '#' : 'b'
-  return Array(Math.abs(intervalDiff)).fill(alterationChar).join('')
-}
-
-// Convertit un index de demi-ton (0-11) en note
-export function indexToNote(index: number): Note {
+export function indexToNote(index: number, preferFlats = false): Note {
   let semitoneCount = 0
   let letterIndex = 0
 
-  // Trouver la lettre de base en parcourant les lettres
   while (
     letterIndex < NOTE_LETTERS.length &&
     semitoneCount + (WHOLE_TONE_LETTERS[NOTE_LETTERS[letterIndex]] ? 2 : 1) <= index
@@ -47,29 +35,22 @@ export function indexToNote(index: number): Note {
     letterIndex++
   }
 
-  const letter = NOTE_LETTERS[letterIndex % NOTE_LETTERS.length]
   const remainingSemitones = index - semitoneCount
 
-  // Calculer l'altération (# si demi-ton supplémentaire)
+  if (remainingSemitones === 1 && preferFlats) {
+    const letter = NOTE_LETTERS[(letterIndex + 1) % NOTE_LETTERS.length]
+    return { letter, alteration: 'b' }
+  }
+
+  const letter = NOTE_LETTERS[letterIndex % NOTE_LETTERS.length]
   const alteration = remainingSemitones === 1 ? '#' : ''
 
   return { letter, alteration }
 }
 
-export function transposeNote(baseNote: Note, interval: number): Note {
-  const rootIndex =
-    LETTER_INTERVALS_FROM_C[baseNote.letter] + ALTERATION_INTERVALS[baseNote.alteration]
-  const newIndex = (rootIndex + interval) % SEMITONES_PER_OCTAVE
-  // todo force alteration ?
-  return indexToNote(newIndex)
-}
-
 export function transposeNoteByInterval(note: Note, interval: Interval): Note {
   const newLetter =
-    NOTE_LETTERS[
-      NOTE_LETTERS.indexOf(note.letter) +
-        ((interval.diatonicSteps % NOTE_LETTERS.length) % NOTE_LETTERS.length)
-    ]
+    NOTE_LETTERS[(NOTE_LETTERS.indexOf(note.letter) + interval.diatonicSteps) % NOTE_LETTERS.length]
   const rootSemitones = getIntervalFromC(note)
   const targetSemitones = (rootSemitones + interval.semitones) % SEMITONES_PER_OCTAVE
   const naturalNewSemitones = LETTER_INTERVALS_FROM_C[newLetter]
@@ -86,18 +67,14 @@ export function transposeNoteByInterval(note: Note, interval: Interval): Note {
   return { letter: newLetter, alteration }
 }
 
-export function transposeChord(chord: Chord, interval: number): Chord {
-  return chord.map((note) => transposeNote(note, interval))
-}
-
 export function noteToString(note: Note): NoteString {
-  return note.letter + note.alteration
+  return (note.letter + note.alteration) as NoteString
 }
 
 export function noteFromString(note: NoteString): Note {
   return {
-    letter: note.charAt(0),
-    alteration: note.substring(1),
+    letter: note.charAt(0) as NoteLetter,
+    alteration: note.substring(1) as Alteration,
   }
 }
 
@@ -107,8 +84,4 @@ export function getIntervalFromC(note: Note): number {
 
 export function noteAreEquals(noteA: Note, noteB: Note): boolean {
   return getIntervalFromC(noteA) === getIntervalFromC(noteB)
-}
-
-export function nextLetter(letter: NoteLetter): NoteLetter {
-  return NOTE_LETTERS[(NOTE_LETTERS.indexOf(letter) + 1) % NOTE_LETTERS.length]
 }

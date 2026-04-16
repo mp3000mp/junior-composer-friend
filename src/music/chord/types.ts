@@ -10,6 +10,11 @@ export enum OrderedNote {
   Seventh = 6,
 }
 
+export type Interval = {
+  diatonicSteps: number
+  semitones: number
+}
+
 export const Interval = {
   Tonic: { diatonicSteps: 0, semitones: 0 },
   DiminishedSecond: { diatonicSteps: 1, semitones: 1 },
@@ -34,9 +39,7 @@ export const Interval = {
   DiminishedThirteenth: { diatonicSteps: 12, semitones: 20 },
   Thirteenth: { diatonicSteps: 12, semitones: 21 },
   AugmentedThirteenth: { diatonicSteps: 12, semitones: 22 },
-} as const
-
-export type Interval = (typeof Interval)[keyof typeof Interval]
+} satisfies Record<string, Interval>
 
 export type Chord = Note[]
 export type StructuredChord = OrderedNote[]

@@ -19,13 +19,7 @@ const chordRoot = computed<Note | null>(() => (chord.value.length === 0 ? null :
       </div>
     </div>
     <div class="row mt-3 justify-content-center">
-      <piano-layout
-        class="col-auto"
-        v-if="chordRoot"
-        :chord="chord"
-        :scale="[]"
-        :chord-root="chordRoot"
-      />
+      <piano-layout class="col-auto" v-if="chordRoot" :chord="chord" :scale="[]" />
     </div>
   </div>
 </template>

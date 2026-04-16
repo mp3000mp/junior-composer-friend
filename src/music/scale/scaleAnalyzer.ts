@@ -26,8 +26,14 @@ export function getEligibleScalesFromNotes(notes: Note[], root: Note | null): El
 
   let maxSimilarity = 0
   const eligibleScales: EligibleScale[] = []
+  const preferFlats =
+    root === null &&
+    notes.some((n) => n.alteration.includes('b')) &&
+    !notes.some((n) => n.alteration.includes('#'))
   const eligibleRootScales =
-    root === null ? Array.from({ length: SEMITONES_PER_OCTAVE }, (_, i) => indexToNote(i)) : [root]
+    root === null
+      ? Array.from({ length: SEMITONES_PER_OCTAVE }, (_, i) => indexToNote(i, preferFlats))
+      : [root]
   for (const rootScale of eligibleRootScales) {
     for (const scale of Object.keys(SCALE_INTERVALS) as ScaleEnum[]) {
       let matchingScore = 0
@@ -47,6 +53,5 @@ export function getEligibleScalesFromNotes(notes: Note[], root: Note | null): El
 
   return eligibleScales
     .filter((es) => (maxSimilarity === 1 ? es.similarity === 1 : es.similarity > 0.75))
-    .map((es) => ({ rootScale: es.rootScale, scale: es.scale, similarity: es.similarity }))
     .sort((a, b) => b.similarity - a.similarity)
 }

@@ -22,7 +22,6 @@ const scaleNotes = computed(() =>
 const chord = computed(() =>
   generateChordFromScaleDegree(scaleRoot.value, scale.value, degree.value, chordStructure.value),
 )
-const chordRoot = computed(() => chord.value[0])
 </script>
 
 <template>
@@ -43,7 +42,7 @@ const chordRoot = computed(() => chord.value[0])
       </div>
     </div>
     <div class="row mt-3 justify-content-center">
-      <piano-layout class="col-auto" :chord="chord" :scale="scaleNotes" :chord-root="chordRoot" />
+      <piano-layout class="col-auto" :chord="chord" :scale="scaleNotes" />
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
-import { NOTE_LETTERS, type Note } from '@/music/types'
-import { transposeChord, transposeNote, transposeNoteByInterval } from '@/music/utils'
+import { NOTE_LETTERS, type Alteration, type NoteLetter, type Note } from '@/music/types'
+import { transposeNoteByInterval } from '@/music/utils'
 import {
   type ScaleIntervals,
   SCALE_INTERVALS,
@@ -39,42 +39,27 @@ export function generateChordFromScaleDegree(
 ): Chord {
   const degreeIndex = ORDERED_DEGREES.indexOf(degree)
   const scaleIntervals = SCALE_INTERVALS[scale]
-  const rootInterval = getScaleInterval(scaleIntervals, 0, degreeIndex)
-  const chordRoot = transposeNote(scaleRootNote, rootInterval)
+  const rootSemitones = getScaleInterval(scaleIntervals, 0, degreeIndex)
+  const chordRoot = transposeNoteByInterval(scaleRootNote, {
+    diatonicSteps: degreeIndex,
+    semitones: rootSemitones,
+  })
 
   const chordStructureDefinition = CHORD_STRUCTURE_DEFINITIONS[chordStructure]
   const chord: Chord = []
   for (const orderedNote of chordStructureDefinition) {
     chord.push(
-      transposeNote(
-        chordRoot,
-        getScaleInterval(scaleIntervals, degreeIndex, degreeIndex + orderedNote),
-      ),
+      transposeNoteByInterval(chordRoot, {
+        diatonicSteps: orderedNote,
+        semitones: getScaleInterval(scaleIntervals, degreeIndex, degreeIndex + orderedNote),
+      }),
     )
   }
 
   return chord
 }
 
-export function generateChordFromIntervals(chordRoot: Note, intervals: Interval[]): Chord {
-  const chord: Chord = []
-  for (const interval of intervals) {
-    chord.push(transposeNoteByInterval(chordRoot, interval))
-  }
-
-  return chord
-}
-
 type noteQuality = null | '' | 'b' | '#'
-
-function multiIncludes(str: string, includes: string[]): boolean {
-  for (const include of includes) {
-    if (str.includes(include)) {
-      return true
-    }
-  }
-  return false
-}
 
 /**
  * customQuality without root
@@ -105,7 +90,7 @@ export function generateChordIntervalsFromCustomQuality(customQuality: string): 
     ['m', '-', '°', 'o', 'ø', 'Ø', 'd'].includes(arrQuality[0])
   ) {
     third = 'b'
-  } else if (arrQuality[0] === '5' || multiIncludes(customQuality, ['sus', 'no3'])) {
+  } else if (arrQuality[0] === '5' || ['sus', 'no3'].some((s) => customQuality.includes(s))) {
     third = null
   }
   // fourth
@@ -120,12 +105,12 @@ export function generateChordIntervalsFromCustomQuality(customQuality: string): 
   // fifth
   if (
     ['°', 'o', 'ø', 'Ø'].includes(arrQuality[0]) ||
-    multiIncludes(customQuality, ['dim', '-5', 'b5', '♭5', '°5', 'o5'])
+    ['dim', '-5', 'b5', '♭5', '°5', 'o5'].some((s) => customQuality.includes(s))
   ) {
     fifth = 'b'
   } else if (
     arrQuality[0] === '+' ||
-    multiIncludes(customQuality, ['aug', '+5', '#5', '♯5', 'm+'])
+    ['aug', '+5', '#5', '♯5', 'm+'].some((s) => customQuality.includes(s))
   ) {
     fifth = '#'
   }
@@ -134,10 +119,10 @@ export function generateChordIntervalsFromCustomQuality(customQuality: string): 
     sixth = ''
   }
   // seventh
-  if (multiIncludes(customQuality, ['maj', 'M', 'Δ'])) {
+  if (['maj', 'M', 'Δ'].some((s) => customQuality.includes(s))) {
     seventh = ''
   } else if (
-    multiIncludes(customQuality, ['7', 'ø', 'Ø']) ||
+    ['7', 'ø', 'Ø'].some((s) => customQuality.includes(s)) ||
     (customQuality.includes('9') &&
       !customQuality.includes('add9') &&
       !customQuality.includes('6/9')) ||
@@ -147,9 +132,9 @@ export function generateChordIntervalsFromCustomQuality(customQuality: string): 
     seventh = 'b'
   }
   // ninth
-  if (multiIncludes(customQuality, ['b9', '♭9'])) {
+  if (['b9', '♭9'].some((s) => customQuality.includes(s))) {
     ninth = 'b'
-  } else if (multiIncludes(customQuality, ['#9', '♯9'])) {
+  } else if (['#9', '♯9'].some((s) => customQuality.includes(s))) {
     ninth = '#'
   } else if (
     customQuality.includes('9') ||
@@ -159,7 +144,7 @@ export function generateChordIntervalsFromCustomQuality(customQuality: string): 
     ninth = ''
   }
   // eleventh
-  if (multiIncludes(customQuality, ['#11', '♯11', '+11'])) {
+  if (['#11', '♯11', '+11'].some((s) => customQuality.includes(s))) {
     eleventh = '#'
   } else if (
     customQuality.includes('11') ||
@@ -168,7 +153,7 @@ export function generateChordIntervalsFromCustomQuality(customQuality: string): 
     eleventh = ''
   }
   // thirteenth
-  if (multiIncludes(customQuality, ['b13', '♭13'])) {
+  if (['b13', '♭13'].some((s) => customQuality.includes(s))) {
     thirteenth = 'b'
   } else if (customQuality.includes('13')) {
     thirteenth = ''
@@ -224,28 +209,21 @@ export function generateChordFromCustomQuality(customQuality: string): Chord {
   }
 
   const chordRootLetter = arrQuality[0]
-  if (!NOTE_LETTERS.includes(chordRootLetter)) {
+  if (!(NOTE_LETTERS as string[]).includes(chordRootLetter)) {
     // todo throw error ?
     return []
   }
   const chordRootNote: Note = {
-    letter: chordRootLetter,
+    letter: chordRootLetter as NoteLetter,
     alteration: '',
   }
 
   let arrQualityRootLess = arrQuality.slice(1)
   if (arrQualityRootLess.length > 0 && ['b', '#'].includes(arrQualityRootLess[0])) {
-    chordRootNote.alteration = arrQualityRootLess[0]
+    chordRootNote.alteration = arrQualityRootLess[0] as Alteration
     arrQualityRootLess = arrQualityRootLess.slice(1)
   }
 
-  return generateChordFromIntervals(
-    chordRootNote,
-    generateChordIntervalsFromCustomQuality(arrQualityRootLess.join('')),
-  )
-}
-
-// todo find rules
-export function generateTritonicSubstitution(chord: Chord): Chord {
-  return transposeChord(chord, 6)
+  const intervals = generateChordIntervalsFromCustomQuality(arrQualityRootLess.join(''))
+  return intervals.map((interval) => transposeNoteByInterval(chordRootNote, interval))
 }

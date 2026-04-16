@@ -12,7 +12,6 @@ import { onClickOutside } from '@vueuse/core'
 const player = usePlayer()
 
 export type PianoLayoutProp = {
-  chordRoot: Note
   scale: Scale
   chord: Chord
 }
@@ -24,6 +23,7 @@ type KeyNote = {
   isPlayed: boolean
   isChordRoot: boolean
   isScaleRoot: boolean
+  isBlack: boolean
   note: Note
   octave: number
 }
@@ -35,19 +35,25 @@ const pianoNotes = computed(() => {
   let chordCursor = 0
   for (let i = BASE_OCTAVE - 1; i < BASE_OCTAVE + 2; i++) {
     for (let semitone = 0; semitone < SEMITONES_PER_OCTAVE; semitone++) {
-      const note = indexToNote(semitone)
-      const intervalFromC = getIntervalFromC(note)
+      const chromaticNote = indexToNote(semitone)
+      const intervalFromC = getIntervalFromC(chromaticNote)
       let isPlayed = false
-      if (chordCursor < props.chord.length && noteAreEquals(props.chord[chordCursor], note)) {
+      let note = chromaticNote
+      if (
+        chordCursor < props.chord.length &&
+        noteAreEquals(props.chord[chordCursor], chromaticNote)
+      ) {
         isPlayed = true
+        note = props.chord[chordCursor]
         chordCursor++
       }
       keyNotes.push({
         isHighlighted: scaleIntervalsFromC.value.includes(intervalFromC),
         isPlayed,
-        isChordRoot: noteAreEquals(note, props.chordRoot),
-        isScaleRoot: noteAreEquals(note, props.scale[0]),
-        note: note,
+        isChordRoot: props.chord.length > 0 && noteAreEquals(chromaticNote, props.chord[0]),
+        isScaleRoot: noteAreEquals(chromaticNote, props.scale[0]),
+        isBlack: chromaticNote.alteration === '#',
+        note,
         octave: i,
       })
     }
@@ -87,8 +93,8 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeypress)
 })
 
-const volumeSlider: Ref<HTMLInputElement | null> = ref(null)
-onClickOutside(volumeSlider, () => hideVolumeSlider())
+const volumeContainer: Ref<HTMLElement | null> = ref(null)
+onClickOutside(volumeContainer, () => hideVolumeSlider())
 </script>
 
 <template>
@@ -101,7 +107,7 @@ onClickOutside(volumeSlider, () => hideVolumeSlider())
         :is-played="keyNote.isPlayed"
         :is-chord-root="keyNote.isChordRoot"
         :is-scale-root="keyNote.isScaleRoot"
-        :is-black="keyNote.note.alteration === '#'"
+        :is-black="keyNote.isBlack"
         :note="keyNote.note"
         :octave="keyNote.octave"
       />
@@ -109,10 +115,12 @@ onClickOutside(volumeSlider, () => hideVolumeSlider())
     <div class="text-center">
       <font-aw class="cp" icon="play" @click="playPlatedChord" title="plated" />
       <font-aw class="cp ms-1" icon="music" @click="playArpeggiatedChord" title="arpeggiated" />
-      <font-aw class="cp ms-1" icon="volume-low" @click="toggleVolumeSlider" title="volume" />
-    </div>
-    <div id="volume-tooltip" v-if="volumeSliderShown" class="text-center">
-      <input type="range" min="0" max="100" v-model="volume" ref="volumeSlider" />
+      <span ref="volumeContainer" style="display: inline-block; position: relative">
+        <font-aw class="cp ms-1" icon="volume-low" @click="toggleVolumeSlider" title="volume" />
+        <div id="volume-tooltip" v-if="volumeSliderShown" class="text-center">
+          <input type="range" min="0" max="100" v-model="volume" />
+        </div>
+      </span>
     </div>
   </div>
 </template>
@@ -178,9 +186,12 @@ $highlightedColor: color.adjust($white, $lightness: -5%, $space: hsl);
       color: color.adjust($red, $lightness: 20%, $space: hsl) !important;
     }
   }
+}
 
-  #volume-tooltip {
-    position: absolute;
-  }
+#volume-tooltip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
 }
 </style>

@@ -1,12 +1,10 @@
 import { describe, expect, test } from 'vitest'
 import {
   generateChordFromCustomQuality,
-  generateChordFromIntervals,
   generateChordFromScaleDegree,
-  generateTritonicSubstitution,
   getScaleInterval,
 } from '../chordGenerator'
-import { type Chord, ChordStructure, Interval } from '@/music/chord/types'
+import { type Chord, ChordStructure } from '@/music/chord/types'
 import { type NaturalDegree, ScaleEnum, type ScaleIntervals } from '@/music/scale/types'
 import { type Note } from '@/music/types'
 import { makeNote } from '../../../test-utils'
@@ -54,18 +52,25 @@ describe('music/chordGenerator.ts', () => {
       expected: [makeNote('C'), makeNote('E'), makeNote('G')],
     },
     {
-      scaleRootNote: makeNote('C'),
+      scaleRootNote: makeNote('C', '#'),
       scale: ScaleEnum.Ionian,
       degree: 'II',
       chordStructure: ChordStructure.Tetrad,
-      expected: [makeNote('D'), makeNote('F'), makeNote('A'), makeNote('C')],
+      expected: [makeNote('D', '#'), makeNote('F', '#'), makeNote('A', '#'), makeNote('C', '#')],
     },
     {
-      scaleRootNote: makeNote('A'),
+      scaleRootNote: makeNote('A', 'b'),
       scale: ScaleEnum.Eolian,
       degree: 'V',
       chordStructure: ChordStructure.Triad,
-      expected: [makeNote('E'), makeNote('G'), makeNote('B')],
+      expected: [makeNote('E', 'b'), makeNote('G', 'b'), makeNote('B', 'b')],
+    },
+    {
+      scaleRootNote: makeNote('G', 'b'),
+      scale: ScaleEnum.Mixolydian,
+      degree: 'I',
+      chordStructure: ChordStructure.Tetrad,
+      expected: [makeNote('G', 'b'), makeNote('B', 'b'), makeNote('D', 'b'), makeNote('F', 'b')],
     },
   ]
   generateChordFromScaleDegreeTestCases.forEach(
@@ -76,34 +81,6 @@ describe('music/chordGenerator.ts', () => {
       })
     },
   )
-
-  const generateChordFromIntervalsTestCases: {
-    chordRoot: Note
-    intervals: Interval[]
-    expected: Chord
-  }[] = [
-    {
-      chordRoot: makeNote('C'),
-      intervals: [Interval.Tonic, Interval.MajorThird, Interval.Fifth],
-      expected: [makeNote('C'), makeNote('E'), makeNote('G')],
-    },
-    {
-      chordRoot: makeNote('C', '#'),
-      intervals: [Interval.Tonic, Interval.MajorThird, Interval.Fifth],
-      expected: [makeNote('C', '#'), makeNote('E', '#'), makeNote('G', '#')],
-    },
-    {
-      chordRoot: makeNote('D', 'b'),
-      intervals: [Interval.Tonic, Interval.MajorThird, Interval.Fifth],
-      expected: [makeNote('D', 'b'), makeNote('F'), makeNote('A', 'b')],
-    },
-  ]
-  generateChordFromIntervalsTestCases.forEach(({ chordRoot, intervals, expected }) => {
-    test(`generateChordFromDegrees with ${noteToString(chordRoot)} and [ ${intervals.join(' ')} ]`, () => {
-      const result = generateChordFromIntervals(chordRoot, intervals)
-      expect(result).toEqual(expected)
-    })
-  })
 
   // see https://fr.wikipedia.org/wiki/Chiffrage_des_accords
   const generateChordFromCustomQualityTestCases: {
@@ -469,27 +446,6 @@ describe('music/chordGenerator.ts', () => {
   generateChordFromCustomQualityTestCases.forEach(({ customQuality, expected }) => {
     test(`generateChordFromCustomQuality with ${customQuality}`, () => {
       const result = generateChordFromCustomQuality(customQuality)
-      expect(result).toEqual(expected)
-    })
-  })
-
-  const generateTritonicSubstitutionTestCases: {
-    chord: Chord
-    expected: Chord
-  }[] = [
-    {
-      chord: [makeNote('C'), makeNote('E'), makeNote('G'), makeNote('B', 'b')],
-      expected: [makeNote('F', '#'), makeNote('A', '#'), makeNote('C', '#'), makeNote('E')],
-    },
-    {
-      chord: [makeNote('G'), makeNote('B'), makeNote('D'), makeNote('F')],
-      expected: [makeNote('C', '#'), makeNote('F'), makeNote('G', '#'), makeNote('B')],
-      // expected: ['Db', 'F', 'Ab', 'Cb'], why not, see: https://fr.wikipedia.org/wiki/Substitution_tritonique
-    },
-  ]
-  generateTritonicSubstitutionTestCases.forEach(({ chord, expected }) => {
-    test(`generateTritonicSubstitution with [${chord.map((note) => noteToString(note)).join(',')}]`, () => {
-      const result = generateTritonicSubstitution(chord)
       expect(result).toEqual(expected)
     })
   })
