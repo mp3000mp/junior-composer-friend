@@ -24,6 +24,10 @@ h1 {
   cursor: pointer;
 }
 
+select {
+  text-align: center;
+}
+
 footer {
   background-color: $body-bg-light;
   margin-top: 3rem;

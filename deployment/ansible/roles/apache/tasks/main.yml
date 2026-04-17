@@ -1,25 +1,37 @@
+- name: Enable required Apache modules
+  command:
+    cmd: a2enmod {{ item }}
+    creates: "/etc/apache2/mods-enabled/{{ item }}.load"
+  loop:
+    - ssl
+    - rewrite
+  notify: restart apache2
+
 - name: Create vhosts frontend
   template:
     src: "templates/vhost_frontend.conf.j2"
     dest: "/etc/apache2/sites-available/{{ frontend_server_name }}.conf"
-    owner: "{{ maintainer_user }}"
-    group: "{{ maintainer_user }}"
-    mode: '0640'
+    owner: root
+    group: root
+    mode: '0644'
   notify: restart apache2
 
 - name: Create vhosts ssl
   template:
     src: "templates/vhost_frontend-le-ssl.conf.j2"
     dest: "/etc/apache2/sites-available/{{ frontend_server_name }}-le-ssl.conf"
-    owner: "{{ maintainer_user }}"
-    group: "{{ maintainer_user }}"
-    mode: '0640'
+    owner: root
+    group: root
+    mode: '0644'
   notify: restart apache2
 
 - name: Enable site
-  command: a2ensite {{ item }}
+  command:
+    cmd: a2ensite {{ item }}
+    creates: "/etc/apache2/sites-enabled/{{ item }}.conf"
   loop:
     - "{{ frontend_server_name }}"
+  notify: restart apache2
 
 - name: Certbot
   shell:
@@ -28,6 +40,15 @@
   notify: restart apache2
   loop:
     - "{{ frontend_server_name }}"
+
+- name: Configure Certbot auto-renewal cron
+  cron:
+    name: "certbot renew"
+    job: "certbot renew --quiet"
+    minute: "0"
+    hour: "3"
+    weekday: "1"
+    user: root
 
 - name: Ensure correct ownership of Certbot directories
   file:
@@ -47,7 +68,5 @@
     group: www-data
     mode: "0640"
   loop:
-    - "/etc/letsencrypt/archive/{{ frontend_server_name }}/fullchain.pem"
-    - "/etc/letsencrypt/archive/{{ frontend_server_name }}/privkey.pem"
     - "/etc/letsencrypt/live/{{ frontend_server_name }}/fullchain.pem"
     - "/etc/letsencrypt/live/{{ frontend_server_name }}/privkey.pem"

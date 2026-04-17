@@ -1,3 +1,14 @@
+- name: Check dist directory exists
+  stat:
+    path: '{{ playbook_dir }}/../../dist'
+  register: dist_stat
+  delegate_to: localhost
+
+- name: Fail if dist directory does not exist
+  fail:
+    msg: "dist/ directory not found. Run local_build.sh first."
+  when: not dist_stat.stat.exists
+
 - name: Create frontend directories
   become_user: "{{ maintainer_user }}"
   file:

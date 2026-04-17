@@ -4,11 +4,9 @@
 	DocumentRoot "{{ app_directory }}/frontend/dist"
 
 	<Directory {{ app_directory }}/frontend/dist/>
-		Options Indexes FollowSymLinks MultiViews
-		AllowOverride all
+		Options FollowSymLinks MultiViews
+		AllowOverride None
 		Require all granted
-		Order allow,deny
-		allow from all
 
 		RewriteEngine on
 		RewriteBase /

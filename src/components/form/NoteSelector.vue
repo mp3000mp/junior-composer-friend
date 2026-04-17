@@ -62,8 +62,17 @@ watch(alterationMode, () => {
       />
       <label class="btn btn-outline-primary" for="flatMode">b</label>
     </div>
-    <select class="form-select" v-model="stringValue">
-      <option v-for="note in notes" :key="note" :value="note">{{ note }}</option>
-    </select>
+    <div class="gap-1" style="display: grid; grid-template-columns: repeat(6, 1fr)">
+      <button
+        v-for="note in notes"
+        :key="note"
+        type="button"
+        class="btn btn-sm btn-outline-primary"
+        :class="{ active: stringValue === note }"
+        @click="stringValue = note"
+      >
+        {{ note }}
+      </button>
+    </div>
   </div>
 </template>

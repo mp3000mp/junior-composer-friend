@@ -99,24 +99,36 @@ onClickOutside(volumeContainer, () => hideVolumeSlider())
 
 <template>
   <div class="piano-layout">
-    <div class="piano-keyboard">
-      <piano-key
-        v-for="keyNote in pianoNotes"
-        :key="noteToString(keyNote.note) + keyNote.octave"
-        :is-highlighted="keyNote.isHighlighted"
-        :is-played="keyNote.isPlayed"
-        :is-chord-root="keyNote.isChordRoot"
-        :is-scale-root="keyNote.isScaleRoot"
-        :is-black="keyNote.isBlack"
-        :note="keyNote.note"
-        :octave="keyNote.octave"
-      />
+    <div class="piano-keyboard-scroll">
+      <div class="piano-keyboard">
+        <piano-key
+          v-for="keyNote in pianoNotes"
+          :key="noteToString(keyNote.note) + keyNote.octave"
+          :is-highlighted="keyNote.isHighlighted"
+          :is-played="keyNote.isPlayed"
+          :is-chord-root="keyNote.isChordRoot"
+          :is-scale-root="keyNote.isScaleRoot"
+          :is-black="keyNote.isBlack"
+          :note="keyNote.note"
+          :octave="keyNote.octave"
+        />
+      </div>
     </div>
-    <div class="text-center">
-      <font-aw class="cp" icon="play" @click="playPlatedChord" title="plated" />
-      <font-aw class="cp ms-1" icon="music" @click="playArpeggiatedChord" title="arpeggiated" />
+    <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
+      <button class="btn btn-sm btn-outline-secondary" @click="playPlatedChord" title="Chord">
+        <font-aw icon="play" />
+      </button>
+      <button
+        class="btn btn-sm btn-outline-secondary"
+        @click="playArpeggiatedChord"
+        title="Arpeggio"
+      >
+        <font-aw icon="music" />
+      </button>
       <span ref="volumeContainer" style="display: inline-block; position: relative">
-        <font-aw class="cp ms-1" icon="volume-low" @click="toggleVolumeSlider" title="volume" />
+        <button class="btn btn-sm btn-outline-secondary" @click="toggleVolumeSlider">
+          <font-aw icon="volume-low" />
+        </button>
         <div id="volume-tooltip" v-if="volumeSliderShown" class="text-center">
           <input type="range" min="0" max="100" v-model="volume" />
         </div>
@@ -129,16 +141,25 @@ onClickOutside(volumeContainer, () => hideVolumeSlider())
 @use 'sass:color';
 @import '../../assets/style/bootstrap/vars-override';
 
-$whiteKeyWidth: 35px;
-$blackKeyWidth: $whiteKeyWidth * 0.66;
 $highlightedColor: color.adjust($white, $lightness: -5%, $space: hsl);
 
+.piano-layout {
+  width: 100%;
+}
+
+.piano-keyboard-scroll {
+  overflow-x: auto;
+}
+
 .piano-keyboard {
+  --key-w: clamp(20px, 4.5vw, 35px);
   display: flex;
+  width: fit-content;
+  margin: 0 auto;
 
   .key {
-    width: $whiteKeyWidth;
-    height: $whiteKeyWidth * 3.5;
+    width: var(--key-w);
+    height: calc(var(--key-w) * 3.5);
     border: 1px solid #333;
     position: relative;
     margin: 0 1px;
@@ -153,9 +174,9 @@ $highlightedColor: color.adjust($white, $lightness: -5%, $space: hsl);
     &.black {
       background-color: black;
       color: $white;
-      height: $blackKeyWidth * 3.5;
-      width: $blackKeyWidth;
-      margin: 0 $blackKeyWidth/-2;
+      width: calc(var(--key-w) * 0.66);
+      height: calc(var(--key-w) * 2.31);
+      margin: 0 calc(var(--key-w) * -0.33);
       z-index: 1;
 
       &.played {

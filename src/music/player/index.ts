@@ -5,31 +5,23 @@ import { type Chord } from '@/music/chord/types'
 
 class Player {
   context!: AudioContext
+  compressor!: DynamicsCompressorNode
   isInitialized: boolean = false
   startTime: number | null = null
   volume: number = 0.1
-
-  private createOscillator(type: OscillatorType): OscillatorNode {
-    const gainNode = this.context.createGain()
-    gainNode.connect(this.context.destination)
-    gainNode.gain.value = this.volume
-    const oscillatorNode = this.context.createOscillator()
-    oscillatorNode.type = type
-    oscillatorNode.connect(gainNode)
-    return oscillatorNode
-  }
 
   private initialize() {
     if (this.isInitialized) {
       return
     }
     this.context = new AudioContext()
+    this.compressor = this.context.createDynamicsCompressor()
+    this.compressor.connect(this.context.destination)
     this.isInitialized = true
   }
 
   public setVolume(volume: number) {
     this.volume = volume
-    // todo update all active gains ?
   }
 
   private resetStartTime() {
@@ -43,16 +35,54 @@ class Player {
       this.startTime = this.context.currentTime
     }
 
-    const oscillatorNode = this.createOscillator('sawtooth')
-    oscillatorNode.frequency.setTargetAtTime(
-      computeFrequency(note, octave),
-      this.context.currentTime,
-      0,
-    )
-
     const startTime = this.startTime + delayMs / 1000
-    oscillatorNode.start(startTime)
-    oscillatorNode.stop(startTime + durationMs / 1000)
+    const duration = durationMs / 1000
+    const ringDuration = duration * 3
+    const freq = computeFrequency(note, octave)
+
+    const filter = this.context.createBiquadFilter()
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(6000, startTime)
+    filter.frequency.exponentialRampToValueAtTime(600, startTime + ringDuration)
+    filter.connect(this.compressor)
+
+    const masterGain = this.context.createGain()
+    masterGain.gain.setValueAtTime(0, startTime)
+    masterGain.gain.linearRampToValueAtTime(this.volume, startTime + 0.005)
+    masterGain.gain.exponentialRampToValueAtTime(this.volume * 0.65, startTime + 0.08)
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, startTime + ringDuration)
+    masterGain.connect(filter)
+
+    const harmonics = [
+      { ratio: 1, gain: 1.0 },
+      { ratio: 2, gain: 0.4 },
+      { ratio: 3, gain: 0.15 },
+      { ratio: 4, gain: 0.08 },
+      { ratio: 5, gain: 0.04 },
+    ]
+
+    let activeOscs = harmonics.length
+    for (const h of harmonics) {
+      const harmGain = this.context.createGain()
+      harmGain.gain.setValueAtTime(h.gain, startTime)
+      harmGain.gain.exponentialRampToValueAtTime(0.001, startTime + ringDuration * (1.5 / h.ratio))
+      harmGain.connect(masterGain)
+
+      const osc = this.context.createOscillator()
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(freq * h.ratio, startTime)
+      osc.connect(harmGain)
+      osc.onended = () => {
+        osc.disconnect()
+        harmGain.disconnect()
+        if (--activeOscs === 0) {
+          masterGain.disconnect()
+          filter.disconnect()
+        }
+      }
+      osc.start(startTime)
+      osc.stop(startTime + ringDuration + 0.1)
+    }
   }
 
   public playNote(note: Note, octave: number, durationMs: number, delayMs: number = 0) {

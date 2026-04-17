@@ -9,19 +9,23 @@ $body-bg: #001229;
 $body-bg-light: #001b3d;
 
 $primary: #a56702;
+$secondary: #bfaf8c;
 
 $link-color: $primary;
 $link-decoration: none;
 $link-hover-color: $orange;
 
-$input-btn-padding-y: 0.2rem;
-$input-btn-padding-x: 0.4rem;
+$border-color: rgba($white, 0.15);
+$nav-tabs-link-active-color: $white;
+$nav-tabs-link-active-bg: $body-bg;
+$nav-tabs-border-color: $border-color;
+$nav-tabs-link-hover-border-color: $border-color $border-color $nav-tabs-border-color;
+$nav-tabs-link-active-border-color: $border-color $border-color $nav-tabs-link-active-bg;
+
+$input-btn-padding-y: 0.4rem;
+$input-btn-padding-x: 0.6rem;
 
 $toast-border-color: $primary;
-
-$btn-padding-y: 1px;
-
-$input-padding-y: 1px;
 
 $alert-padding-x: 6px;
 $alert-padding-y: 4px;

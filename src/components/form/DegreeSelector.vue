@@ -14,7 +14,16 @@ const localValue = computed({
 </script>
 
 <template>
-  <select class="form-select" v-model="localValue">
-    <option v-for="degree in ORDERED_DEGREES" :key="degree" :value="degree">{{ degree }}</option>
-  </select>
+  <div class="btn-group" role="group" aria-label="Scale degree">
+    <button
+      v-for="degree in ORDERED_DEGREES"
+      :key="degree"
+      type="button"
+      class="btn btn-outline-primary"
+      :class="{ active: localValue === degree }"
+      @click="localValue = degree"
+    >
+      {{ degree }}
+    </button>
+  </div>
 </template>
