@@ -60,170 +60,252 @@ export function generateChordFromScaleDegree(
 }
 
 type noteQuality = null | '' | 'b' | '#'
+type DegreeKey =
+  | 'second'
+  | 'third'
+  | 'fourth'
+  | 'fifth'
+  | 'sixth'
+  | 'seventh'
+  | 'ninth'
+  | 'eleventh'
+  | 'thirteenth'
+type Degrees = Record<DegreeKey, noteQuality>
 
-/**
- * customQuality without root
- *
- * todo: bass
- */
-export function generateChordIntervalsFromCustomQuality(customQuality: string): Interval[] {
-  const chordIntervals = [Interval.Tonic]
-  const arrQuality = Array.from(customQuality)
+type QualityRule = {
+  tokens: string[]
+  firstCharOnly?: true
+  notIfIncludes?: string[]
+  notIfStartsWith?: string[]
+  sets: Partial<Degrees>
+}
 
-  let second: noteQuality = null
-  let third: noteQuality = ''
-  let fourth: noteQuality = null
-  let fifth: noteQuality = ''
-  let sixth: noteQuality = null
-  let seventh: noteQuality = null
-  let ninth: noteQuality = null
-  let eleventh: noteQuality = null
-  let thirteenth: noteQuality = null
+// Rules are applied in order — later rules override earlier ones.
+// Cascades come first (lower priority), explicit degree setters come after (higher priority).
+const QUALITY_RULES: QualityRule[] = [
+  // Extension cascades: imply b7 + all lower extensions
+  {
+    tokens: ['13'],
+    notIfIncludes: ['add13'],
+    sets: { seventh: 'b', ninth: '', eleventh: '', thirteenth: '' },
+  },
+  { tokens: ['11'], notIfIncludes: ['add11'], sets: { seventh: 'b', ninth: '', eleventh: '' } },
+  { tokens: ['9'], notIfIncludes: ['add9', '6/9', 'b9', '#9'], sets: { seventh: 'b', ninth: '' } },
 
-  // second
-  if (arrQuality.includes('2')) {
-    second = ''
-  }
-  // third
-  if (
-    customQuality.substring(0, 3) !== 'maj' &&
-    ['m', '-', '°', 'o', 'ø', 'Ø', 'd'].includes(arrQuality[0])
-  ) {
-    third = 'b'
-  } else if (arrQuality[0] === '5' || ['sus', 'no3'].some((s) => customQuality.includes(s))) {
-    third = null
-  }
-  // fourth
-  if (
-    arrQuality.includes('4') ||
-    (customQuality.includes('sus') &&
-      !customQuality.includes('sus2') &&
-      !customQuality.includes('13sus'))
-  ) {
-    fourth = ''
-  }
-  // fifth
-  if (
-    ['°', 'o', 'ø', 'Ø'].includes(arrQuality[0]) ||
-    ['dim', '-5', 'b5', '♭5', '°5', 'o5'].some((s) => customQuality.includes(s))
-  ) {
-    fifth = 'b'
-  } else if (
-    arrQuality[0] === '+' ||
-    ['aug', '+5', '#5', '♯5', 'm+'].some((s) => customQuality.includes(s))
-  ) {
-    fifth = '#'
-  }
-  // sixth
-  if (arrQuality.includes('6')) {
-    sixth = ''
-  }
-  // seventh
-  if (['maj', 'M', 'Δ'].some((s) => customQuality.includes(s))) {
-    seventh = ''
-  } else if (
-    ['7', 'ø', 'Ø'].some((s) => customQuality.includes(s)) ||
-    (customQuality.includes('9') &&
-      !customQuality.includes('add9') &&
-      !customQuality.includes('6/9')) ||
-    (customQuality.includes('11') && !customQuality.includes('add11')) ||
-    (customQuality.includes('13') && !customQuality.includes('add13'))
-  ) {
-    seventh = 'b'
-  }
-  // ninth
-  if (['b9', '♭9'].some((s) => customQuality.includes(s))) {
-    ninth = 'b'
-  } else if (['#9', '♯9'].some((s) => customQuality.includes(s))) {
-    ninth = '#'
-  } else if (
-    customQuality.includes('9') ||
-    (customQuality.includes('11') && !customQuality.includes('add11')) ||
-    (customQuality.includes('13') && !customQuality.includes('add13'))
-  ) {
-    ninth = ''
-  }
-  // eleventh
-  if (['#11', '♯11', '+11'].some((s) => customQuality.includes(s))) {
-    eleventh = '#'
-  } else if (
-    customQuality.includes('11') ||
-    (customQuality.includes('13') && !customQuality.includes('add13'))
-  ) {
-    eleventh = ''
-  }
-  // thirteenth
-  if (['b13', '♭13'].some((s) => customQuality.includes(s))) {
-    thirteenth = 'b'
-  } else if (customQuality.includes('13')) {
-    thirteenth = ''
+  // Explicit extensions (override cascades above)
+  { tokens: ['b9'], sets: { ninth: 'b' } },
+  { tokens: ['#9'], sets: { ninth: '#' } },
+  { tokens: ['add9', '6/9'], sets: { ninth: '' } },
+  { tokens: ['#11', '+11'], sets: { eleventh: '#' } },
+  { tokens: ['add11'], sets: { eleventh: '' } },
+  { tokens: ['b13'], sets: { thirteenth: 'b' } },
+  { tokens: ['add13'], sets: { thirteenth: '' } },
+
+  // Second
+  { tokens: ['2', 'add2'], sets: { second: '' } },
+
+  // Third
+  {
+    tokens: ['m', '-', '°', 'o', 'ø', 'Ø', 'd'],
+    firstCharOnly: true,
+    notIfStartsWith: ['maj'],
+    sets: { third: 'b' },
+  },
+  { tokens: ['5'], firstCharOnly: true, sets: { third: null } },
+  { tokens: ['no3', 'sus'], sets: { third: null } },
+
+  // Sus2: second + no third (must come after the generic sus rule to override fourth='' for sus)
+  { tokens: ['sus2'], sets: { third: null, second: '' } },
+
+  // Fourth
+  { tokens: ['4', 'add4'], sets: { fourth: '' } },
+  { tokens: ['sus4', 'sus'], notIfIncludes: ['sus2', '13sus'], sets: { fourth: '' } },
+
+  // Fifth: diminished
+  { tokens: ['°', 'o', 'ø', 'Ø'], firstCharOnly: true, sets: { fifth: 'b' } },
+  { tokens: ['dim', '-5', 'b5', 'o5', '°5'], sets: { fifth: 'b' } },
+  // Fifth: augmented
+  { tokens: ['+'], firstCharOnly: true, sets: { fifth: '#' } },
+  { tokens: ['aug', '+5', '#5', 'm+'], sets: { fifth: '#' } },
+
+  // Sixth
+  { tokens: ['6', '6/9'], sets: { sixth: '' } },
+
+  // Seventh (explicit — must come after cascades to allow maj to override b7)
+  { tokens: ['7', 'ø', 'Ø'], sets: { seventh: 'b' } },
+  { tokens: ['maj', 'M', 'Δ'], sets: { seventh: '' } },
+
+  // Notation characters (recognized but no effect on degrees)
+  { tokens: ['/'], sets: {} },
+]
+
+const QUALITY_TOKENS_SORTED = [...new Set(QUALITY_RULES.flatMap((r) => r.tokens))].sort(
+  (a, b) => b.length - a.length,
+)
+
+const FIRST_CHAR_TOKENS = new Set(
+  QUALITY_RULES.filter((r) => r.firstCharOnly).flatMap((r) => r.tokens),
+)
+
+function applyRules(qualityStr: string): Degrees {
+  const arr = Array.from(qualityStr)
+  const degrees: Degrees = {
+    second: null,
+    third: '',
+    fourth: null,
+    fifth: '',
+    sixth: null,
+    seventh: null,
+    ninth: null,
+    eleventh: null,
+    thirteenth: null,
   }
 
-  if (second !== null) {
-    chordIntervals.push(Interval.Second)
+  for (const rule of QUALITY_RULES) {
+    if (rule.notIfIncludes?.some((s) => qualityStr.includes(s))) continue
+    if (rule.notIfStartsWith?.some((s) => qualityStr.startsWith(s))) continue
+
+    const matches = rule.firstCharOnly
+      ? rule.tokens.some((t) => t === arr[0])
+      : rule.tokens.some((t) => qualityStr.includes(t))
+
+    if (matches) Object.assign(degrees, rule.sets)
   }
-  if (third !== null) {
-    chordIntervals.push(third === 'b' ? Interval.MinorThird : Interval.MajorThird)
+
+  return degrees
+}
+
+// todo: bass
+export function generateChordIntervalsFromCustomQuality(qualityStr: string): Interval[] {
+  const d = applyRules(qualityStr)
+  const intervals: Interval[] = [Interval.Tonic]
+
+  if (d.second !== null) intervals.push(Interval.Second)
+  if (d.third !== null) intervals.push(d.third === 'b' ? Interval.MinorThird : Interval.MajorThird)
+  if (d.fourth !== null) intervals.push(Interval.Fourth)
+  if (d.fifth === 'b') intervals.push(Interval.DiminishedFifth)
+  else if (d.fifth === '#') intervals.push(Interval.AugmentedFifth)
+  else intervals.push(Interval.Fifth)
+  if (d.sixth !== null) intervals.push(Interval.MajorSixth)
+  if (d.seventh !== null)
+    intervals.push(d.seventh === 'b' ? Interval.MinorSeventh : Interval.MajorSeventh)
+  if (d.ninth !== null) {
+    if (d.ninth === 'b') intervals.push(Interval.DiminishedNinth)
+    else if (d.ninth === '#') intervals.push(Interval.AugmentedNinth)
+    else intervals.push(Interval.Ninth)
   }
-  if (fourth !== null) {
-    chordIntervals.push(Interval.Fourth)
+  if (d.eleventh !== null)
+    intervals.push(d.eleventh === '#' ? Interval.AugmentedEleventh : Interval.Eleventh)
+  if (d.thirteenth !== null)
+    intervals.push(d.thirteenth === 'b' ? Interval.DiminishedThirteenth : Interval.Thirteenth)
+
+  return intervals
+}
+
+function sanitizeCustomQuality(customQuality: string): string {
+  const trimmed = customQuality.trim()
+  if (trimmed.length === 0) return ''
+  return (trimmed[0].toUpperCase() + trimmed.slice(1)).replace(/♭/g, 'b').replace(/♯/g, '#')
+}
+
+function parseRootAndQualityStr(sanitized: string): { root: Note; qualityStr: string } | null {
+  const arr = Array.from(sanitized)
+  const letter = arr[0]
+  if (!(NOTE_LETTERS as string[]).includes(letter)) return null
+
+  const root: Note = { letter: letter as NoteLetter, alteration: '' }
+  let rest = arr.slice(1)
+  if (rest.length > 0 && ['b', '#'].includes(rest[0])) {
+    root.alteration = rest[0] as Alteration
+    rest = rest.slice(1)
   }
-  if (fifth === 'b') {
-    chordIntervals.push(Interval.DiminishedFifth)
-  } else if (fifth === '#') {
-    chordIntervals.push(Interval.AugmentedFifth)
-  } else {
-    chordIntervals.push(Interval.Fifth)
-  }
-  if (sixth !== null) {
-    chordIntervals.push(Interval.MajorSixth)
-  }
-  if (seventh !== null) {
-    chordIntervals.push(seventh === 'b' ? Interval.MinorSeventh : Interval.MajorSeventh)
-  }
-  if (ninth !== null) {
-    if (ninth === 'b') {
-      chordIntervals.push(Interval.DiminishedNinth)
-    } else if (ninth === '#') {
-      chordIntervals.push(Interval.AugmentedNinth)
+
+  return { root, qualityStr: rest.join('') }
+}
+
+export type InputSegment = { text: string; ignored: boolean }
+
+export type ChordParseResult = {
+  chord: Chord
+  error: string | null
+  inputSegments: InputSegment[]
+}
+
+function getIgnoredPositions(qualityStr: string): boolean[] {
+  const chars = Array.from(qualityStr)
+  const ignored = chars.map(() => true)
+
+  for (const token of QUALITY_TOKENS_SORTED) {
+    const tokenChars = Array.from(token)
+    if (FIRST_CHAR_TOKENS.has(token)) {
+      if (tokenChars.every((c, i) => ignored[i] && chars[i] === c)) {
+        tokenChars.forEach((_, i) => (ignored[i] = false))
+      }
     } else {
-      chordIntervals.push(Interval.Ninth)
+      outer: for (let i = 0; i <= chars.length - tokenChars.length; i++) {
+        for (let j = 0; j < tokenChars.length; j++) {
+          if (chars[i + j] !== tokenChars[j] || !ignored[i + j]) continue outer
+        }
+        tokenChars.forEach((_, j) => (ignored[i + j] = false))
+        break // only first occurrence — the parser applies each rule once
+      }
     }
   }
-  if (eleventh !== null) {
-    chordIntervals.push(eleventh === '#' ? Interval.AugmentedEleventh : Interval.Eleventh)
-  }
-  if (thirteenth !== null) {
-    chordIntervals.push(thirteenth === 'b' ? Interval.DiminishedThirteenth : Interval.Thirteenth)
+
+  return ignored
+}
+
+function buildInputSegments(root: Note, qualityStr: string): InputSegment[] {
+  const segments: InputSegment[] = [{ text: root.letter + root.alteration, ignored: false }]
+  const qualityChars = Array.from(qualityStr)
+  const ignoredPositions = getIgnoredPositions(qualityStr)
+
+  for (let i = 0; i < qualityChars.length; i++) {
+    const isIgnored = ignoredPositions[i]
+    const last = segments[segments.length - 1]
+    if (last.ignored === isIgnored) {
+      last.text += qualityChars[i]
+    } else {
+      segments.push({ text: qualityChars[i], ignored: isIgnored })
+    }
   }
 
-  return chordIntervals
+  return segments
+}
+
+export function parseCustomQuality(input: string): ChordParseResult {
+  const sanitized = sanitizeCustomQuality(input)
+  if (sanitized.length === 0) return { chord: [], error: null, inputSegments: [] }
+
+  const parsed = parseRootAndQualityStr(sanitized)
+  if (parsed === null) {
+    return {
+      chord: [],
+      error: `Invalid chord root: "${Array.from(sanitized)[0]}"`,
+      inputSegments: [],
+    }
+  }
+
+  const intervals = generateChordIntervalsFromCustomQuality(parsed.qualityStr)
+
+  return {
+    chord: intervals.map((interval) => transposeNoteByInterval(parsed.root, interval)),
+    error: null,
+    inputSegments: buildInputSegments(parsed.root, parsed.qualityStr),
+  }
+}
+
+export function getCustomQualityWarnings(input: string): string[] {
+  const { inputSegments } = parseCustomQuality(input)
+  const ignored = inputSegments
+    .filter((s) => s.ignored)
+    .map((s) => s.text)
+    .join('')
+  return ignored ? [`Ignored "${ignored}" in quality`] : []
 }
 
 export function generateChordFromCustomQuality(customQuality: string): Chord {
-  // todo function sanitize
-  customQuality = customQuality.replace('♭', 'b').replace('♯', '#')
-  const arrQuality = Array.from(customQuality)
-  if (arrQuality.length === 0) {
-    return []
-  }
-
-  const chordRootLetter = arrQuality[0]
-  if (!(NOTE_LETTERS as string[]).includes(chordRootLetter)) {
-    // todo throw error ?
-    return []
-  }
-  const chordRootNote: Note = {
-    letter: chordRootLetter as NoteLetter,
-    alteration: '',
-  }
-
-  let arrQualityRootLess = arrQuality.slice(1)
-  if (arrQualityRootLess.length > 0 && ['b', '#'].includes(arrQualityRootLess[0])) {
-    chordRootNote.alteration = arrQualityRootLess[0] as Alteration
-    arrQualityRootLess = arrQualityRootLess.slice(1)
-  }
-
-  const intervals = generateChordIntervalsFromCustomQuality(arrQualityRootLess.join(''))
-  return intervals.map((interval) => transposeNoteByInterval(chordRootNote, interval))
+  const result = parseCustomQuality(customQuality)
+  if (result.error !== null) throw new Error(result.error)
+  return result.chord
 }

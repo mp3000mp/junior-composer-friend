@@ -2,7 +2,9 @@ import { describe, expect, test } from 'vitest'
 import {
   generateChordFromCustomQuality,
   generateChordFromScaleDegree,
+  getCustomQualityWarnings,
   getScaleInterval,
+  parseCustomQuality,
 } from '../chordGenerator'
 import { type Chord, ChordStructure } from '@/music/chord/types'
 import { type NaturalDegree, ScaleEnum, type ScaleIntervals } from '@/music/scale/types'
@@ -82,13 +84,31 @@ describe('music/chordGenerator.ts', () => {
     },
   )
 
+  test('generateChordFromCustomQuality throws on invalid root', () => {
+    expect(() => generateChordFromCustomQuality('X')).toThrow('Invalid chord root: "X"')
+  })
+
+  test('parseCustomQuality sanitizes input (trim, capitalize, unicode accidentals)', () => {
+    expect(parseCustomQuality('  dm7  ').chord).toEqual(parseCustomQuality('Dm7').chord)
+    expect(parseCustomQuality('c♭maj7').chord).toEqual(parseCustomQuality('Cbmaj7').chord)
+    expect(parseCustomQuality('d♯m9').chord).toEqual(parseCustomQuality('D#m9').chord)
+  })
+
+  test('getCustomQualityWarnings warns about ignored parts in quality', () => {
+    expect(getCustomQualityWarnings('Cxyz')).toEqual(['Ignored "xyz" in quality'])
+    expect(getCustomQualityWarnings('Cm7b5xyz')).toEqual(['Ignored "xyz" in quality'])
+    expect(getCustomQualityWarnings('Ammm')).toEqual(['Ignored "mm" in quality'])
+    expect(getCustomQualityWarnings('Am77777')).toEqual(['Ignored "7777" in quality'])
+    expect(getCustomQualityWarnings('D1134')).toEqual(['Ignored "1" in quality'])
+    expect(getCustomQualityWarnings('Cmaj7')).toEqual([])
+    expect(getCustomQualityWarnings('')).toEqual([])
+  })
+
   // see https://fr.wikipedia.org/wiki/Chiffrage_des_accords
   const generateChordFromCustomQualityTestCases: {
     customQuality: string
     expected: Chord
   }[] = [
-    // invalid
-    { customQuality: 'X', expected: [] },
     // power
     { customQuality: 'C5', expected: [makeNote('C'), makeNote('G')] },
     // triads

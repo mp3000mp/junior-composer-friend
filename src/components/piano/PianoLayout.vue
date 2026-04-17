@@ -51,7 +51,7 @@ const pianoNotes = computed(() => {
         isHighlighted: scaleIntervalsFromC.value.includes(intervalFromC),
         isPlayed,
         isChordRoot: props.chord.length > 0 && noteAreEquals(chromaticNote, props.chord[0]),
-        isScaleRoot: noteAreEquals(chromaticNote, props.scale[0]),
+        isScaleRoot: props.scale.length > 0 && noteAreEquals(chromaticNote, props.scale[0]),
         isBlack: chromaticNote.alteration === '#',
         note,
         octave: i,
