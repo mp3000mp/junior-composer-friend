@@ -1,23 +1,45 @@
-import { computeFrequency, getIntervalFromC } from '@/music/utils'
+import { SplendidGrandPiano } from 'smplr'
+import { ref } from 'vue'
 import { BASE_OCTAVE } from '@/music/player/types'
 import { type Note } from '@/music/types'
 import { type Chord } from '@/music/chord/types'
+import { getIntervalFromC } from '@/music/utils'
+
+const PIANO_OCTAVE_MIN = BASE_OCTAVE - 1
+const PIANO_OCTAVE_MAX = BASE_OCTAVE + 1
+const MIDI_MIN = (PIANO_OCTAVE_MIN + 1) * 12
+const MIDI_MAX = (PIANO_OCTAVE_MAX + 1) * 12 + 11
+
+const NOTES_TO_LOAD = {
+  notes: Array.from({ length: MIDI_MAX - MIDI_MIN + 1 }, (_, i) => MIDI_MIN + i),
+  velocityRange: [0, 127] as [number, number],
+}
+
+export const pianoLoadProgress = ref<{ loaded: number; total: number } | null>(null)
 
 class Player {
-  context!: AudioContext
-  compressor!: DynamicsCompressorNode
+  context: AudioContext | null = null
+  piano: SplendidGrandPiano | null = null
   isInitialized: boolean = false
   startTime: number | null = null
-  volume: number = 0.1
+  volume: number = 0.7
 
   private initialize() {
     if (this.isInitialized) {
       return
     }
     this.context = new AudioContext()
-    this.compressor = this.context.createDynamicsCompressor()
-    this.compressor.connect(this.context.destination)
+    this.piano = new SplendidGrandPiano(this.context, {
+      notesToLoad: NOTES_TO_LOAD,
+      onLoadProgress: (progress) => {
+        pianoLoadProgress.value = progress
+      },
+    })
     this.isInitialized = true
+  }
+
+  public initEager() {
+    this.initialize()
   }
 
   public setVolume(volume: number) {
@@ -28,61 +50,29 @@ class Player {
     this.startTime = null
   }
 
+  private noteToMidi(note: Note, octave: number): number {
+    const semitone = ((getIntervalFromC(note) % 12) + 12) % 12
+    return (octave + 1) * 12 + semitone
+  }
+
   private play(note: Note, octave: number, durationMs: number, delayMs: number = 0) {
     this.initialize()
+    if (!this.piano || !this.context) return
+
+    if (this.context.state === 'suspended') {
+      this.context.resume()
+    }
 
     if (this.startTime === null) {
       this.startTime = this.context.currentTime
     }
 
-    const startTime = this.startTime + delayMs / 1000
-    const duration = durationMs / 1000
-    const ringDuration = duration * 3
-    const freq = computeFrequency(note, octave)
-
-    const filter = this.context.createBiquadFilter()
-    filter.type = 'lowpass'
-    filter.frequency.setValueAtTime(6000, startTime)
-    filter.frequency.exponentialRampToValueAtTime(600, startTime + ringDuration)
-    filter.connect(this.compressor)
-
-    const masterGain = this.context.createGain()
-    masterGain.gain.setValueAtTime(0, startTime)
-    masterGain.gain.linearRampToValueAtTime(this.volume, startTime + 0.005)
-    masterGain.gain.exponentialRampToValueAtTime(this.volume * 0.65, startTime + 0.08)
-    masterGain.gain.exponentialRampToValueAtTime(0.0001, startTime + ringDuration)
-    masterGain.connect(filter)
-
-    const harmonics = [
-      { ratio: 1, gain: 1.0 },
-      { ratio: 2, gain: 0.4 },
-      { ratio: 3, gain: 0.15 },
-      { ratio: 4, gain: 0.08 },
-      { ratio: 5, gain: 0.04 },
-    ]
-
-    let activeOscs = harmonics.length
-    for (const h of harmonics) {
-      const harmGain = this.context.createGain()
-      harmGain.gain.setValueAtTime(h.gain, startTime)
-      harmGain.gain.exponentialRampToValueAtTime(0.001, startTime + ringDuration * (1.5 / h.ratio))
-      harmGain.connect(masterGain)
-
-      const osc = this.context.createOscillator()
-      osc.type = 'sine'
-      osc.frequency.setValueAtTime(freq * h.ratio, startTime)
-      osc.connect(harmGain)
-      osc.onended = () => {
-        osc.disconnect()
-        harmGain.disconnect()
-        if (--activeOscs === 0) {
-          masterGain.disconnect()
-          filter.disconnect()
-        }
-      }
-      osc.start(startTime)
-      osc.stop(startTime + ringDuration + 0.1)
-    }
+    this.piano.start({
+      note: this.noteToMidi(note, octave),
+      velocity: Math.round(Math.sqrt(this.volume) * 127),
+      duration: durationMs / 1000,
+      time: this.startTime + delayMs / 1000,
+    })
   }
 
   public playNote(note: Note, octave: number, durationMs: number, delayMs: number = 0) {
@@ -95,8 +85,8 @@ class Player {
       return
     }
 
-    const platedChordDurationMs = 0 === delayMs ? 1000 : delayMs
-    const totalDurationMs = chord.length * delayMs + platedChordDurationMs
+    const playedChordDurationMs = 0 === delayMs ? 1000 : delayMs
+    const totalDurationMs = chord.length * delayMs + playedChordDurationMs
 
     this.resetStartTime()
     let currentOctave = BASE_OCTAVE

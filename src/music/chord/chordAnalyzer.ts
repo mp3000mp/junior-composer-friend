@@ -1,5 +1,5 @@
 import { type Note, SEMITONES_PER_OCTAVE } from '@/music/types'
-import { type Chord, CHORD_QUALITY_DEFINITIONS, ChordQuality } from '@/music/chord/types'
+import { type Chord, CHORD_QUALITIES, ChordQualityEnum } from '@/music/chord/types'
 import { getIntervalFromC } from '@/music/utils'
 
 function getNotesInterval(fromNote: Note, toNote: Note): number {
@@ -11,7 +11,7 @@ function getNotesInterval(fromNote: Note, toNote: Note): number {
   return toIndex - fromIndex + SEMITONES_PER_OCTAVE
 }
 
-export function getEligibleChordQualities(chord: Chord): ChordQuality[] {
+export function getEligibleChordQualities(chord: Chord): ChordQualityEnum[] {
   // todo: gérer les accords renversés
   const tonic = chord[0]
   const chordIntervals: number[] = []
@@ -20,14 +20,14 @@ export function getEligibleChordQualities(chord: Chord): ChordQuality[] {
   }
 
   const eligibleChordQualities = []
-  for (const chordQuality of Object.keys(CHORD_QUALITY_DEFINITIONS) as ChordQuality[]) {
+  for (const chordQuality of Object.keys(CHORD_QUALITIES) as ChordQualityEnum[]) {
     /**
      * todo: structureDefinition: mandatory/optional ?
      */
     if (
-      CHORD_QUALITY_DEFINITIONS[chordQuality].length === chordIntervals.length &&
-      CHORD_QUALITY_DEFINITIONS[chordQuality].every((interval) =>
-        chordIntervals.includes(interval.semitones),
+      CHORD_QUALITIES[chordQuality].length === chordIntervals.length &&
+      CHORD_QUALITIES[chordQuality].every((interval) =>
+        chordIntervals.includes(interval.semitones % SEMITONES_PER_OCTAVE),
       )
     ) {
       eligibleChordQualities.push(chordQuality)

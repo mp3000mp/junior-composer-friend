@@ -1,32 +1,41 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import ScaleDegreeForm from '@/views/ScaleDegreeForm.vue'
 import CustomChordForm from '@/views/CustomChordForm.vue'
 
 type Tab = 'degree' | 'notation'
-const activeTab = ref<Tab>('notation')
+
+const route = useRoute()
+const router = useRouter()
+
+const activeTab = computed<Tab>(() => (route.name === 'degree' ? 'degree' : 'notation'))
+
+function setTab(tab: Tab) {
+  router.push({ name: tab })
+}
 </script>
 
 <template>
-  <main class="py-3">
-    <div class="container">
-      <ul class="nav nav-tabs nav-fill mb-0">
+  <main>
+    <div class="container d-flex justify-content-center my-2">
+      <ul class="nav nav-underline tab-switcher">
         <li class="nav-item">
           <button
-            class="nav-link w-100"
+            class="nav-link"
             :class="{ active: activeTab === 'degree' }"
-            @click="activeTab = 'degree'"
+            @click="setTab('degree')"
           >
-            By scale degree
+            <font-aw icon="music" class="me-2" />By scale degree
           </button>
         </li>
         <li class="nav-item">
           <button
-            class="nav-link w-100"
+            class="nav-link"
             :class="{ active: activeTab === 'notation' }"
-            @click="activeTab = 'notation'"
+            @click="setTab('notation')"
           >
-            By notation
+            <font-aw icon="pen" class="me-2" />By notation
           </button>
         </li>
       </ul>
@@ -42,3 +51,16 @@ const activeTab = ref<Tab>('notation')
     </div>
   </main>
 </template>
+
+<style scoped>
+.tab-switcher .nav-link {
+  color: var(--bs-body-color);
+  font-weight: 500;
+  opacity: 0.5;
+}
+
+.tab-switcher .nav-link.active,
+.tab-switcher .nav-link:hover {
+  opacity: 1;
+}
+</style>

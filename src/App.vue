@@ -12,7 +12,7 @@ const version = config.version
   <router-view />
   <footer>
     <font-aw icon="magic" /> Invoked from the magic kingdom by
-    <a href="https://github.com/mp3000mp">
+    <a href="https://github.com/mp3000mp/junior-composer-friend">
       mp3000
       <font-aw icon="hand-sparkles" />
     </a>

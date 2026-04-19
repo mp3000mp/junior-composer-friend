@@ -6,7 +6,7 @@ import {
   getScaleInterval,
   parseCustomQuality,
 } from '../chordGenerator'
-import { type Chord, ChordStructure } from '@/music/chord/types'
+import { type Chord, ChordStructureEnum } from '@/music/chord/types'
 import { type NaturalDegree, ScaleEnum, type ScaleIntervals } from '@/music/scale/types'
 import { type Note } from '@/music/types'
 import { makeNote } from '../../../test-utils'
@@ -31,6 +31,24 @@ describe('music/chordGenerator.ts', () => {
       toIndex: 0,
       expected: 1,
     },
+    {
+      scaleIntervals: [2, 2, 1, 2, 2, 2, 1],
+      fromIndex: 0,
+      toIndex: 8,
+      expected: 14,
+    },
+    {
+      scaleIntervals: [2, 2, 1, 2, 2, 2, 1],
+      fromIndex: 0,
+      toIndex: 10,
+      expected: 17,
+    },
+    {
+      scaleIntervals: [2, 2, 1, 2, 2, 2, 1],
+      fromIndex: 0,
+      toIndex: 12,
+      expected: 21,
+    },
   ]
   getScaleIntervalTestCases.forEach(({ scaleIntervals, fromIndex, toIndex, expected }) => {
     test(`getScaleInterval with [${scaleIntervals.join(',')}] and [${fromIndex},${toIndex}]`, () => {
@@ -43,36 +61,43 @@ describe('music/chordGenerator.ts', () => {
     scaleRootNote: Note
     scale: ScaleEnum
     degree: NaturalDegree
-    chordStructure: ChordStructure
+    chordStructure: ChordStructureEnum
     expected: Chord
   }[] = [
     {
       scaleRootNote: makeNote('C'),
       scale: ScaleEnum.Ionian,
       degree: 'I',
-      chordStructure: ChordStructure.Triad,
+      chordStructure: ChordStructureEnum.Triad,
       expected: [makeNote('C'), makeNote('E'), makeNote('G')],
     },
     {
       scaleRootNote: makeNote('C', '#'),
       scale: ScaleEnum.Ionian,
       degree: 'II',
-      chordStructure: ChordStructure.Tetrad,
+      chordStructure: ChordStructureEnum.Tetrad,
       expected: [makeNote('D', '#'), makeNote('F', '#'), makeNote('A', '#'), makeNote('C', '#')],
     },
     {
       scaleRootNote: makeNote('A', 'b'),
       scale: ScaleEnum.Eolian,
       degree: 'V',
-      chordStructure: ChordStructure.Triad,
+      chordStructure: ChordStructureEnum.Triad,
       expected: [makeNote('E', 'b'), makeNote('G', 'b'), makeNote('B', 'b')],
     },
     {
       scaleRootNote: makeNote('G', 'b'),
       scale: ScaleEnum.Mixolydian,
       degree: 'I',
-      chordStructure: ChordStructure.Tetrad,
+      chordStructure: ChordStructureEnum.Tetrad,
       expected: [makeNote('G', 'b'), makeNote('B', 'b'), makeNote('D', 'b'), makeNote('F', 'b')],
+    },
+    {
+      scaleRootNote: makeNote('C'),
+      scale: ScaleEnum.Ionian,
+      degree: 'I',
+      chordStructure: ChordStructureEnum.Ninth,
+      expected: [makeNote('C'), makeNote('E'), makeNote('G'), makeNote('B'), makeNote('D')],
     },
   ]
   generateChordFromScaleDegreeTestCases.forEach(

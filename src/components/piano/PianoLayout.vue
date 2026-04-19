@@ -5,7 +5,17 @@ import { BASE_OCTAVE } from '@/music/player/types'
 import { type Chord } from '@/music/chord/types'
 import { type Scale } from '@/music/scale/types'
 import { computed, onMounted, onUnmounted, type Ref, ref, watch } from 'vue'
-import { usePlayer } from '@/music/player'
+
+const isLoaded = computed(
+  () =>
+    pianoLoadProgress.value !== null &&
+    pianoLoadProgress.value.loaded >= pianoLoadProgress.value.total,
+)
+const loadPercent = computed(() => {
+  if (!pianoLoadProgress.value || pianoLoadProgress.value.total === 0) return 0
+  return Math.round((pianoLoadProgress.value.loaded / pianoLoadProgress.value.total) * 100)
+})
+import { pianoLoadProgress, usePlayer } from '@/music/player'
 import { getIntervalFromC, indexToNote, noteAreEquals, noteToString } from '@/music/utils'
 import { onClickOutside } from '@vueuse/core'
 
@@ -68,9 +78,9 @@ function playArpeggiatedChord() {
   player.playChord(props.chord, 400)
 }
 
-const volumeRange = 500
+const volumeRange = 100
 const volumeSliderShown = ref(false)
-const volume = ref(volumeRange / 10)
+const volume = ref(Math.round(player.volume * volumeRange))
 function toggleVolumeSlider() {
   volumeSliderShown.value = !volumeSliderShown.value
 }
@@ -87,6 +97,7 @@ function handleKeypress(e: KeyboardEvent) {
   }
 }
 onMounted(() => {
+  player.initEager()
   window.addEventListener('keydown', handleKeypress)
 })
 onUnmounted(() => {
@@ -100,7 +111,7 @@ onClickOutside(volumeContainer, () => hideVolumeSlider())
 <template>
   <div class="piano-layout">
     <div class="piano-keyboard-scroll">
-      <div class="piano-keyboard">
+      <div class="piano-keyboard" :class="{ loading: !isLoaded }">
         <piano-key
           v-for="keyNote in pianoNotes"
           :key="noteToString(keyNote.note) + keyNote.octave"
@@ -114,25 +125,40 @@ onClickOutside(volumeContainer, () => hideVolumeSlider())
         />
       </div>
     </div>
-    <div class="d-flex justify-content-center align-items-center gap-2 mt-2">
-      <button class="btn btn-sm btn-outline-secondary" @click="playPlatedChord" title="Chord">
-        <font-aw icon="play" />
-      </button>
-      <button
-        class="btn btn-sm btn-outline-secondary"
-        @click="playArpeggiatedChord"
-        title="Arpeggio"
-      >
-        <font-aw icon="music" />
-      </button>
-      <span ref="volumeContainer" style="display: inline-block; position: relative">
-        <button class="btn btn-sm btn-outline-secondary" @click="toggleVolumeSlider">
-          <font-aw icon="volume-low" />
-        </button>
-        <div id="volume-tooltip" v-if="volumeSliderShown" class="text-center">
-          <input type="range" min="0" max="100" v-model="volume" />
+    <div class="piano-controls mt-2">
+      <template v-if="!isLoaded">
+        <div class="piano-load-progress">
+          <div class="progress" style="height: 6px">
+            <div
+              class="progress-bar progress-bar-striped progress-bar-animated"
+              :style="{ width: loadPercent + '%' }"
+            />
+          </div>
+          <div class="text-center text-muted" style="font-size: 0.7rem">
+            Loading piano{{ pianoLoadProgress ? ` ${loadPercent}%` : '...' }}
+          </div>
         </div>
-      </span>
+      </template>
+      <template v-else>
+        <button class="btn btn-sm btn-outline-secondary" @click="playPlatedChord" title="Chord">
+          <font-aw icon="play" />
+        </button>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          @click="playArpeggiatedChord"
+          title="Arpeggio"
+        >
+          <font-aw icon="music" />
+        </button>
+        <span ref="volumeContainer" style="display: inline-block; position: relative">
+          <button class="btn btn-sm btn-outline-secondary" @click="toggleVolumeSlider">
+            <font-aw icon="volume-low" />
+          </button>
+          <div id="volume-tooltip" v-if="volumeSliderShown" class="text-center">
+            <input type="range" min="0" max="100" v-model="volume" />
+          </div>
+        </span>
+      </template>
     </div>
   </div>
 </template>
@@ -207,6 +233,23 @@ $highlightedColor: color.adjust($white, $lightness: -5%, $space: hsl);
       color: color.adjust($red, $lightness: 20%, $space: hsl) !important;
     }
   }
+
+  &.loading .key {
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+.piano-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  height: 31px;
+}
+
+.piano-load-progress {
+  width: 200px;
 }
 
 #volume-tooltip {

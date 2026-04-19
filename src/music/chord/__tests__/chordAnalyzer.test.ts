@@ -1,24 +1,24 @@
 import { describe, expect, test } from 'vitest'
 import { getEligibleChordQualities } from '@/music/chord/chordAnalyzer'
-import { type Chord, ChordQuality } from '@/music/chord/types'
+import { type Chord, ChordQualityEnum } from '@/music/chord/types'
 import { makeNote } from '../../../test-utils'
 
 describe('music/chordAnalyzer.ts', () => {
   const getEligibleChordQualitiesTestCases: {
     chord: Chord
-    expected: ChordQuality[]
+    expected: ChordQualityEnum[]
   }[] = [
     {
       chord: [makeNote('C'), makeNote('E'), makeNote('G')],
-      expected: [ChordQuality.Major],
+      expected: [ChordQualityEnum.Major],
     },
     {
       chord: [makeNote('A'), makeNote('C'), makeNote('E')],
-      expected: [ChordQuality.Minor],
+      expected: [ChordQualityEnum.Minor],
     },
     {
       chord: [makeNote('A'), makeNote('E'), makeNote('G'), makeNote('B')], // second <=> 9th
-      expected: [ChordQuality.SeventhSuspendedSecond],
+      expected: [ChordQualityEnum.SeventhSuspendedSecond],
     },
   ]
   getEligibleChordQualitiesTestCases.forEach(({ chord, expected }) => {

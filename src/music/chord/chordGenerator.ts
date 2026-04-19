@@ -9,8 +9,8 @@ import {
 } from '@/music/scale/types'
 import {
   type Chord,
-  CHORD_STRUCTURE_DEFINITIONS,
-  ChordStructure,
+  CHORD_STRUCTURES,
+  ChordStructureEnum,
   Interval,
 } from '@/music/chord/types'
 
@@ -22,8 +22,9 @@ export function getScaleInterval(
   const scaleLength = scaleIntervals.length
   const sevenFrom = fromIndex % scaleLength
   const sevenTo = toIndex % scaleLength
+  const numOctaves = toIndex > fromIndex ? Math.floor((toIndex - fromIndex) / scaleLength) : 0
 
-  let semiToneSum = 0
+  let semiToneSum = numOctaves * 12
   for (let i = sevenFrom; i !== sevenTo; i = (i + 1) % scaleLength) {
     semiToneSum += scaleIntervals[i]
   }
@@ -35,7 +36,7 @@ export function generateChordFromScaleDegree(
   scaleRootNote: Note,
   scale: ScaleEnum,
   degree: NaturalDegree,
-  chordStructure: ChordStructure,
+  chordStructure: ChordStructureEnum,
 ): Chord {
   const degreeIndex = ORDERED_DEGREES.indexOf(degree)
   const scaleIntervals = SCALE_INTERVALS[scale]
@@ -45,7 +46,7 @@ export function generateChordFromScaleDegree(
     semitones: rootSemitones,
   })
 
-  const chordStructureDefinition = CHORD_STRUCTURE_DEFINITIONS[chordStructure]
+  const chordStructureDefinition = CHORD_STRUCTURES[chordStructure]
   const chord: Chord = []
   for (const orderedNote of chordStructureDefinition) {
     chord.push(

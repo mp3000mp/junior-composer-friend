@@ -5,10 +5,11 @@ import {
   faHandSparkles,
   faMagic,
   faMusic,
+  faPen,
   faPlay,
   faVolumeLow,
 } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faCircleQuestion, faHandSparkles, faMagic, faMusic, faPlay, faVolumeLow)
+library.add(faCircleQuestion, faHandSparkles, faMagic, faMusic, faPen, faPlay, faVolumeLow)
 
 export default FontAwesomeIcon

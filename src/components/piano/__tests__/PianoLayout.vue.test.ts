@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { ref } from 'vue'
 import Component, { type PianoLayoutProp } from '@/components/piano/PianoLayout.vue'
 import PianoKey from '@/components/piano/PianoKey.vue'
 import { mount } from '@vue/test-utils'
@@ -10,6 +11,7 @@ const stubs = ['font-aw']
 let playerMock: PlayerMock
 vi.mock('@/music/player', () => ({
   usePlayer: () => playerMock,
+  pianoLoadProgress: ref({ loaded: 1, total: 1 }),
 }))
 
 describe('PianoLayout.vue', () => {
@@ -18,6 +20,7 @@ describe('PianoLayout.vue', () => {
     playerMock = createPlayerMock({
       playChord: vi.fn(),
       playNote: vi.fn(),
+      initEager: vi.fn(),
     })
     defaultProps = {
       scale: [

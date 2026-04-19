@@ -2,80 +2,30 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { usePlayer } from '@/music/player'
 import { makeNote } from '../../test-utils'
 
+vi.mock('smplr', () => ({
+  SplendidGrandPiano: vi.fn(),
+}))
+
 describe('player.ts', () => {
-  const HARMONICS_COUNT = 5
+  let mockStart: ReturnType<typeof vi.fn>
 
-  let mockOscillatorNode: {
-    type: OscillatorType
-    connect: ReturnType<typeof vi.fn>
-    frequency: { setValueAtTime: ReturnType<typeof vi.fn> }
-    start: ReturnType<typeof vi.fn>
-    stop: ReturnType<typeof vi.fn>
-  }
+  beforeEach(async () => {
+    mockStart = vi.fn()
+    const { SplendidGrandPiano } = await import('smplr')
+    vi.mocked(SplendidGrandPiano).mockImplementation(
+      function () {
+        return { start: mockStart }
+      } as any,
+    )
 
-  let mockGainNode: {
-    connect: ReturnType<typeof vi.fn>
-    gain: {
-      value: number
-      setValueAtTime: ReturnType<typeof vi.fn>
-      linearRampToValueAtTime: ReturnType<typeof vi.fn>
-      exponentialRampToValueAtTime: ReturnType<typeof vi.fn>
-    }
-  }
-
-  let mockFilterNode: {
-    type: BiquadFilterType
-    connect: ReturnType<typeof vi.fn>
-    frequency: {
-      setValueAtTime: ReturnType<typeof vi.fn>
-      exponentialRampToValueAtTime: ReturnType<typeof vi.fn>
-    }
-    Q: { value: number }
-  }
-
-  beforeEach(() => {
-    usePlayer().isInitialized = false
-    mockGainNode = {
-      connect: vi.fn(),
-      gain: {
-        value: 1,
-        setValueAtTime: vi.fn(),
-        linearRampToValueAtTime: vi.fn(),
-        exponentialRampToValueAtTime: vi.fn(),
-      },
-    }
-    mockOscillatorNode = {
-      type: 'sine',
-      connect: vi.fn(),
-      frequency: { setValueAtTime: vi.fn() },
-      start: vi.fn(),
-      stop: vi.fn(),
-    }
-    mockFilterNode = {
-      type: 'lowpass',
-      connect: vi.fn(),
-      frequency: {
-        setValueAtTime: vi.fn(),
-        exponentialRampToValueAtTime: vi.fn(),
-      },
-      Q: { value: 1 },
-    }
+    const player = usePlayer()
+    player.isInitialized = false
+    player.piano = null
+    player.context = null
 
     vi.stubGlobal(
       'AudioContext',
       class {
-        createGain() {
-          return mockGainNode
-        }
-        createOscillator() {
-          return mockOscillatorNode
-        }
-        createBiquadFilter() {
-          return mockFilterNode
-        }
-        createDynamicsCompressor() {
-          return { connect: vi.fn() }
-        }
         get currentTime() {
           return 0
         }
@@ -87,14 +37,16 @@ describe('player.ts', () => {
     const player = usePlayer()
     player.playNote(makeNote('A'), 4, 100)
     player.playNote(makeNote('A'), 4, 100)
-    expect(mockOscillatorNode.start).toHaveBeenCalledTimes(2 * HARMONICS_COUNT)
-    expect(mockOscillatorNode.stop).toHaveBeenCalledTimes(2 * HARMONICS_COUNT)
+    expect(mockStart).toHaveBeenCalledTimes(2)
+    expect(mockStart).toHaveBeenCalledWith(expect.objectContaining({ note: 69 })) // A4
   })
 
   test('should play chord', () => {
     const player = usePlayer()
     player.playChord([makeNote('A'), makeNote('C'), makeNote('E')], 100)
-    expect(mockOscillatorNode.start).toHaveBeenCalledTimes(3 * HARMONICS_COUNT)
-    expect(mockOscillatorNode.stop).toHaveBeenCalledTimes(3 * HARMONICS_COUNT)
+    expect(mockStart).toHaveBeenCalledTimes(3)
+    expect(mockStart).toHaveBeenNthCalledWith(1, expect.objectContaining({ note: 69 })) // A4
+    expect(mockStart).toHaveBeenNthCalledWith(2, expect.objectContaining({ note: 72 })) // C5
+    expect(mockStart).toHaveBeenNthCalledWith(3, expect.objectContaining({ note: 76 })) // E5
   })
 })

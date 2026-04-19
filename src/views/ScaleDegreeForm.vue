@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { type Note } from '@/music/types'
-import { ChordStructure } from '@/music/chord/types'
+import { ChordStructureEnum, ChordQualityLabels } from '@/music/chord/types'
 import { ScaleEnum, type NaturalDegree, SCALE_INTERVALS } from '@/music/scale/types'
 import PianoLayout from '@/components/piano/PianoLayout.vue'
 import NoteSelector from '@/components/form/NoteSelector.vue'
@@ -16,7 +16,7 @@ import DegreeSelector from '@/components/form/DegreeSelector.vue'
 const scaleRoot = ref<Note>({ letter: 'E', alteration: '' })
 const scale = ref<ScaleEnum>(ScaleEnum.Mixolydian)
 const degree = ref<NaturalDegree>('I')
-const chordStructure = ref<ChordStructure>(ChordStructure.Tetrad)
+const chordStructure = ref<ChordStructureEnum>(ChordStructureEnum.Tetrad)
 
 const scaleNotes = computed(() =>
   generateScaleFromIntervals(scaleRoot.value, SCALE_INTERVALS[scale.value]),
@@ -28,7 +28,7 @@ const chordName = computed(() => {
   if (chord.value.length === 0) return null
   const root = noteToString(chord.value[0])
   const qualities = getEligibleChordQualities(chord.value)
-  return qualities.length > 0 ? root + qualities[0] : root
+  return qualities.length > 0 ? root + ChordQualityLabels[qualities[0]] : root
 })
 </script>
 

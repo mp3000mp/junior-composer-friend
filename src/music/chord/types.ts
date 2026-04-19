@@ -8,6 +8,9 @@ export enum OrderedNote {
   Fifth = 4,
   Sixth = 5,
   Seventh = 6,
+  Ninth = 8,
+  Eleventh = 10,
+  Thirteenth = 12,
 }
 
 export type Interval = {
@@ -44,232 +47,282 @@ export const Interval = {
 export type Chord = Note[]
 export type StructuredChord = OrderedNote[]
 
-export enum ChordStructure {
-  Power = 'Power',
-  Triad = 'Triad',
-  Tetrad = 'Tetrad',
-  Ninth = 'Ninth',
-  AddedNinth = 'AddedNinth',
-  SuspendedSecond = 'SuspendedSecond',
-  SeventhSuspendedSecond = 'SeventhSuspendedSecond',
-  Eleventh = 'Eleventh',
-  AddedEleventh = 'AddedEleventh',
-  SuspendedFourth = 'SuspendedFourth',
-  SeventhSuspendedFourth = 'SeventhSuspendedFourth',
-  NinthSuspendedFourth = 'NinthSuspendedFourth',
-  Thirteenth = 'Thirteenth',
-  Sixth = 'Sixth',
-  SixthNinth = 'SixthNinth',
+export enum ChordStructureEnum {
+  Power = 'power',
+  Triad = 'triad',
+  Tetrad = 'tetrad',
+  Ninth = 'ninth',
+  AddedNinth = 'addedNinth',
+  SuspendedSecond = 'suspendedSecond',
+  SeventhSuspendedSecond = 'seventhSuspendedSecond',
+  Eleventh = 'eleventh',
+  AddedEleventh = 'addedEleventh',
+  SuspendedFourth = 'suspendedFourth',
+  SeventhSuspendedFourth = 'seventhSuspendedFourth',
+  NinthSuspendedFourth = 'ninthSuspendedFourth',
+  Thirteenth = 'thirteenth',
+  Sixth = 'sixth',
+  SixthNinth = 'sixthNinth',
 }
 
-export const CHORD_STRUCTURE_DEFINITIONS: Record<ChordStructure, StructuredChord> = {
-  [ChordStructure.Power]: [OrderedNote.Tonic, OrderedNote.Fifth],
-  [ChordStructure.Triad]: [OrderedNote.Tonic, OrderedNote.Third, OrderedNote.Fifth],
-  [ChordStructure.Tetrad]: [
+export const ChordStructureLabels: Record<ChordStructureEnum, string> = {
+  [ChordStructureEnum.Power]: 'Power',
+  [ChordStructureEnum.Triad]: 'Triad',
+  [ChordStructureEnum.Tetrad]: 'Tetrad',
+  [ChordStructureEnum.Ninth]: 'Ninth',
+  [ChordStructureEnum.AddedNinth]: 'Added Ninth',
+  [ChordStructureEnum.SuspendedSecond]: 'Suspended Second',
+  [ChordStructureEnum.SeventhSuspendedSecond]: '7th Suspended Second',
+  [ChordStructureEnum.Eleventh]: 'Eleventh',
+  [ChordStructureEnum.AddedEleventh]: 'Added Eleventh',
+  [ChordStructureEnum.SuspendedFourth]: 'Suspended Fourth',
+  [ChordStructureEnum.SeventhSuspendedFourth]: '7th Suspended Fourth',
+  [ChordStructureEnum.NinthSuspendedFourth]: '9th Suspended Fourth',
+  [ChordStructureEnum.Thirteenth]: 'Thirteenth',
+  [ChordStructureEnum.Sixth]: 'Sixth',
+  [ChordStructureEnum.SixthNinth]: 'Sixth Ninth',
+}
+
+export const CHORD_STRUCTURES: Record<ChordStructureEnum, StructuredChord> = {
+  [ChordStructureEnum.Power]: [OrderedNote.Tonic, OrderedNote.Fifth],
+  [ChordStructureEnum.Triad]: [OrderedNote.Tonic, OrderedNote.Third, OrderedNote.Fifth],
+  [ChordStructureEnum.Tetrad]: [
     OrderedNote.Tonic,
     OrderedNote.Third,
     OrderedNote.Fifth,
     OrderedNote.Seventh,
   ],
-  [ChordStructure.Ninth]: [
+  [ChordStructureEnum.Ninth]: [
     OrderedNote.Tonic,
     OrderedNote.Third,
     OrderedNote.Fifth,
     OrderedNote.Seventh,
-    OrderedNote.Second,
+    OrderedNote.Ninth,
   ],
-  [ChordStructure.AddedNinth]: [
+  [ChordStructureEnum.AddedNinth]: [
     OrderedNote.Tonic,
     OrderedNote.Third,
     OrderedNote.Fifth,
-    OrderedNote.Second,
+    OrderedNote.Ninth,
   ],
-  [ChordStructure.SuspendedSecond]: [OrderedNote.Tonic, OrderedNote.Second, OrderedNote.Fifth],
-  [ChordStructure.SeventhSuspendedSecond]: [
+  [ChordStructureEnum.SuspendedSecond]: [
+    OrderedNote.Tonic,
+    OrderedNote.Second,
+    OrderedNote.Fifth,
+  ],
+  [ChordStructureEnum.SeventhSuspendedSecond]: [
     OrderedNote.Tonic,
     OrderedNote.Second,
     OrderedNote.Fifth,
     OrderedNote.Seventh,
   ],
-  [ChordStructure.Eleventh]: [
+  [ChordStructureEnum.Eleventh]: [
     OrderedNote.Tonic,
     OrderedNote.Third,
     OrderedNote.Fifth,
     OrderedNote.Seventh,
-    OrderedNote.Second,
+    OrderedNote.Ninth,
+    OrderedNote.Eleventh,
+  ],
+  [ChordStructureEnum.AddedEleventh]: [
+    OrderedNote.Tonic,
+    OrderedNote.Third,
+    OrderedNote.Fifth,
+    OrderedNote.Eleventh,
+  ],
+  [ChordStructureEnum.SuspendedFourth]: [
+    OrderedNote.Tonic,
     OrderedNote.Fourth,
-  ],
-  [ChordStructure.AddedEleventh]: [
-    OrderedNote.Tonic,
-    OrderedNote.Third,
     OrderedNote.Fifth,
-    OrderedNote.Fourth,
   ],
-  [ChordStructure.SuspendedFourth]: [OrderedNote.Tonic, OrderedNote.Fourth, OrderedNote.Fifth],
-  [ChordStructure.SeventhSuspendedFourth]: [
+  [ChordStructureEnum.SeventhSuspendedFourth]: [
     OrderedNote.Tonic,
     OrderedNote.Fourth,
     OrderedNote.Fifth,
     OrderedNote.Seventh,
   ],
-  [ChordStructure.NinthSuspendedFourth]: [
+  [ChordStructureEnum.NinthSuspendedFourth]: [
     OrderedNote.Tonic,
     OrderedNote.Fourth,
     OrderedNote.Fifth,
     OrderedNote.Seventh,
-    OrderedNote.Second,
+    OrderedNote.Ninth,
   ],
-  [ChordStructure.Thirteenth]: [
+  [ChordStructureEnum.Thirteenth]: [
     OrderedNote.Tonic,
     OrderedNote.Third,
     OrderedNote.Fifth,
     OrderedNote.Seventh,
-    OrderedNote.Second,
-    OrderedNote.Fourth,
+    OrderedNote.Ninth,
+    OrderedNote.Eleventh,
+    OrderedNote.Thirteenth,
+  ],
+  [ChordStructureEnum.Sixth]: [
+    OrderedNote.Tonic,
+    OrderedNote.Third,
+    OrderedNote.Fifth,
     OrderedNote.Sixth,
   ],
-  [ChordStructure.Sixth]: [
+  [ChordStructureEnum.SixthNinth]: [
     OrderedNote.Tonic,
     OrderedNote.Third,
     OrderedNote.Fifth,
     OrderedNote.Sixth,
-  ],
-  [ChordStructure.SixthNinth]: [
-    OrderedNote.Tonic,
-    OrderedNote.Third,
-    OrderedNote.Fifth,
-    OrderedNote.Sixth,
-    OrderedNote.Second,
+    OrderedNote.Ninth,
   ],
 }
 
-export enum ChordQuality {
-  Power = '5',
-  Major = '',
-  Minor = 'm',
-  MajorSeventh = 'maj7',
-  MinorSeventh = 'm7',
-  DominantSeventh = '7',
-  HalfDiminished = 'm7b5',
-  SuspendedSecond = 'sus2',
-  SeventhSuspendedSecond = '7sus2',
-  SuspendedFourth = 'sus4',
-  SeventhSuspendedFourth = '7sus4',
-  NinthSuspendedFourth = '9sus4',
-  MajorSixth = '6',
-  MinorSixth = 'm6',
-  MajorSixthNinth = '6/9',
-  MajorNinth = '9',
-  MinorNinth = 'b9',
-  MajorEleventh = '11',
-  AugmentedEleventh = '#11',
-  MajorThirteenth = '13',
-  MinorThirteenth = 'b13',
+export enum ChordQualityEnum {
+  Power = 'power',
+  Major = 'major',
+  Minor = 'minor',
+  MajorSeventh = 'majorSeventh',
+  MinorSeventh = 'minorSeventh',
+  DominantSeventh = 'dominantSeventh',
+  HalfDiminished = 'halfDiminished',
+  SuspendedSecond = 'suspendedSecond',
+  SeventhSuspendedSecond = 'seventhSuspendedSecond',
+  SuspendedFourth = 'suspendedFourth',
+  SeventhSuspendedFourth = 'seventhSuspendedFourth',
+  NinthSuspendedFourth = 'ninthSuspendedFourth',
+  MajorSixth = 'majorSixth',
+  MinorSixth = 'minorSixth',
+  MajorSixthNinth = 'majorSixthNinth',
+  MajorNinth = 'majorNinth',
+  MinorNinth = 'minorNinth',
+  MajorEleventh = 'majorEleventh',
+  AugmentedEleventh = 'augmentedEleventh',
+  MajorThirteenth = 'majorThirteenth',
+  MinorThirteenth = 'minorThirteenth',
 }
 
-export const CHORD_QUALITY_DEFINITIONS: Record<ChordQuality, Interval[]> = {
-  [ChordQuality.Power]: [Interval.Tonic, Interval.Fifth],
-  [ChordQuality.Major]: [Interval.Tonic, Interval.MajorThird, Interval.Fifth],
-  [ChordQuality.Minor]: [Interval.Tonic, Interval.MinorThird, Interval.Fifth],
-  [ChordQuality.MajorSeventh]: [
+export const ChordQualityLabels: Record<ChordQualityEnum, string> = {
+  [ChordQualityEnum.Power]: '5',
+  [ChordQualityEnum.Major]: '',
+  [ChordQualityEnum.Minor]: 'm',
+  [ChordQualityEnum.MajorSeventh]: 'maj7',
+  [ChordQualityEnum.MinorSeventh]: 'm7',
+  [ChordQualityEnum.DominantSeventh]: '7',
+  [ChordQualityEnum.HalfDiminished]: 'm7b5',
+  [ChordQualityEnum.SuspendedSecond]: 'sus2',
+  [ChordQualityEnum.SeventhSuspendedSecond]: '7sus2',
+  [ChordQualityEnum.SuspendedFourth]: 'sus4',
+  [ChordQualityEnum.SeventhSuspendedFourth]: '7sus4',
+  [ChordQualityEnum.NinthSuspendedFourth]: '9sus4',
+  [ChordQualityEnum.MajorSixth]: '6',
+  [ChordQualityEnum.MinorSixth]: 'm6',
+  [ChordQualityEnum.MajorSixthNinth]: '6/9',
+  [ChordQualityEnum.MajorNinth]: '9',
+  [ChordQualityEnum.MinorNinth]: 'b9',
+  [ChordQualityEnum.MajorEleventh]: '11',
+  [ChordQualityEnum.AugmentedEleventh]: '#11',
+  [ChordQualityEnum.MajorThirteenth]: '13',
+  [ChordQualityEnum.MinorThirteenth]: 'b13',
+}
+
+export const CHORD_QUALITIES: Record<ChordQualityEnum, Interval[]> = {
+  [ChordQualityEnum.Power]: [Interval.Tonic, Interval.Fifth],
+  [ChordQualityEnum.Major]: [Interval.Tonic, Interval.MajorThird, Interval.Fifth],
+  [ChordQualityEnum.Minor]: [Interval.Tonic, Interval.MinorThird, Interval.Fifth],
+  [ChordQualityEnum.MajorSeventh]: [
     Interval.Tonic,
     Interval.MajorThird,
     Interval.Fifth,
     Interval.MajorSeventh,
   ],
-  [ChordQuality.MinorSeventh]: [
+  [ChordQualityEnum.MinorSeventh]: [
     Interval.Tonic,
     Interval.MinorThird,
     Interval.Fifth,
     Interval.MinorSeventh,
   ],
-  [ChordQuality.DominantSeventh]: [
+  [ChordQualityEnum.DominantSeventh]: [
     Interval.Tonic,
     Interval.MajorThird,
     Interval.Fifth,
     Interval.MinorSeventh,
   ],
-  [ChordQuality.HalfDiminished]: [
+  [ChordQualityEnum.HalfDiminished]: [
     Interval.Tonic,
     Interval.MinorThird,
     Interval.DiminishedFifth,
     Interval.MinorSeventh,
   ],
-  [ChordQuality.SuspendedSecond]: [Interval.Tonic, Interval.Second, Interval.Fifth],
-  [ChordQuality.SeventhSuspendedSecond]: [
+  [ChordQualityEnum.SuspendedSecond]: [Interval.Tonic, Interval.Second, Interval.Fifth],
+  [ChordQualityEnum.SeventhSuspendedSecond]: [
     Interval.Tonic,
     Interval.Second,
     Interval.Fifth,
     Interval.MinorSeventh,
   ],
-  [ChordQuality.SuspendedFourth]: [Interval.Tonic, Interval.Fourth, Interval.Fifth],
-  [ChordQuality.SeventhSuspendedFourth]: [
+  [ChordQualityEnum.SuspendedFourth]: [Interval.Tonic, Interval.Fourth, Interval.Fifth],
+  [ChordQualityEnum.SeventhSuspendedFourth]: [
     Interval.Tonic,
     Interval.Fourth,
     Interval.Fifth,
     Interval.MinorSeventh,
   ],
-  [ChordQuality.NinthSuspendedFourth]: [
+  [ChordQualityEnum.NinthSuspendedFourth]: [
     Interval.Tonic,
     Interval.Fourth,
     Interval.Fifth,
     Interval.MinorSeventh,
-    Interval.Second,
+    Interval.Ninth,
   ],
-  [ChordQuality.MajorSixth]: [Interval.Tonic, Interval.MajorThird, Interval.MajorSixth],
-  [ChordQuality.MinorSixth]: [Interval.Tonic, Interval.MinorThird, Interval.MajorSixth],
-  [ChordQuality.MajorSixthNinth]: [
+  [ChordQualityEnum.MajorSixth]: [Interval.Tonic, Interval.MajorThird, Interval.MajorSixth],
+  [ChordQualityEnum.MinorSixth]: [Interval.Tonic, Interval.MinorThird, Interval.MajorSixth],
+  [ChordQualityEnum.MajorSixthNinth]: [
     Interval.Tonic,
     Interval.MajorThird,
     Interval.MajorSixth,
-    Interval.Second,
+    Interval.Ninth,
   ],
-  [ChordQuality.MajorNinth]: [
+  [ChordQualityEnum.MajorNinth]: [
     Interval.Tonic,
     Interval.MajorThird,
     Interval.Fifth,
     Interval.MinorSeventh,
-    Interval.Second,
+    Interval.Ninth,
   ],
-  [ChordQuality.MinorNinth]: [
+  [ChordQualityEnum.MinorNinth]: [
     Interval.Tonic,
     Interval.MinorThird,
     Interval.Fifth,
     Interval.MinorSeventh,
-    Interval.Second,
+    Interval.Ninth,
   ],
-  [ChordQuality.MajorEleventh]: [
+  [ChordQualityEnum.MajorEleventh]: [
     Interval.Tonic,
     Interval.MajorThird,
     Interval.Fifth,
     Interval.MinorSeventh,
-    Interval.Second,
-    Interval.Fourth,
+    Interval.Ninth,
+    Interval.Eleventh,
   ],
-  [ChordQuality.AugmentedEleventh]: [
+  [ChordQualityEnum.AugmentedEleventh]: [
     Interval.Tonic,
     Interval.MinorThird,
     Interval.Fifth,
     Interval.MinorSeventh,
-    Interval.Second,
-    Interval.Fourth, // todo augmented fourth
+    Interval.Ninth,
+    Interval.AugmentedEleventh, // todo augmented fourth
   ],
-  [ChordQuality.MajorThirteenth]: [
+  [ChordQualityEnum.MajorThirteenth]: [
     Interval.Tonic,
     Interval.MajorThird,
     Interval.Fifth,
     Interval.MinorSeventh,
-    Interval.Second,
-    Interval.Fourth,
-    Interval.MajorSixth,
+    Interval.Ninth,
+    Interval.Eleventh,
+    Interval.Thirteenth,
   ],
-  [ChordQuality.MinorThirteenth]: [
+  [ChordQualityEnum.MinorThirteenth]: [
     Interval.Tonic,
     Interval.MinorThird,
     Interval.Fifth,
     Interval.MinorSeventh,
-    Interval.Second,
-    Interval.Fourth,
-    Interval.MajorSixth,
+    Interval.Ninth,
+    Interval.Eleventh,
+    Interval.Thirteenth,
   ],
 }

@@ -21,6 +21,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@vueuse/core": "^12.0.0",
     "bootstrap": "^5.3.3",
+    "smplr": "^0.20.0",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5"
   },
