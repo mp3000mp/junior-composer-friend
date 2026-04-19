@@ -1,48 +1,35 @@
-# junior-composer-friend
+# Junior Composer Friend
 
-## Project Setup
+A small interactive music theory tool to explore chords and scales on a virtual piano.
 
-```sh
-npm install
-```
+![License](https://img.shields.io/github/license/mp3000mp/junior-composer-friend)
+[![CI](https://github.com/mp3000mp/junior-composer-friend/actions/workflows/ci.yml/badge.svg)](https://github.com/mp3000mp/junior-composer-friend/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/mp3000mp/junior-composer-friend/branch/main/graph/badge.svg)](https://codecov.io/gh/mp3000mp/junior-composer-friend)
 
-### Compile and Hot-Reload for Development
 
-```sh
-npm run dev
-```
+## Demo
 
-### Type-Check, Compile and Minify for Production
+**Live app:** https://jcf.mp3000.fr/
 
-```sh
-npm run build
-```
+<table>
+  <tr>
+    <td align="center"><b>By notation</b><br>Type any chord name to see it on the piano<br><br><img src="docs/screenshots/Screenshot_1.png" alt="By notation — D6/9 chord"></td>
+    <td align="center"><b>By scale degree</b><br>Pick a root, scale, degree and chord type<br><br><img src="docs/screenshots/Screenshot_2.png" alt="By scale degree — Eb9 in A mixolydian"></td>
+  </tr>
+</table>
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
 
-```sh
-npm run test:unit
-# summary report
-npm run test:cov
-# full report
-npm run test:cov:html
-ff coverage/index.html
-```
+## Features
 
-### Check type
+- **By scale degree** — pick a root note, a scale (Ionian, Dorian, Mixolydian…), a degree (I–VII), and a chord type (triad or tetrad). The resulting chord is named and highlighted on the piano.
+- **By notation** — type any chord name (e.g. `Dm7`, `Fmaj9`) and see it displayed on the piano.
 
-```sh
-npm run type-check
-```
 
-### Format with prettier
+## Contributing
 
-```sh
-npm run format
-```
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-### Lint with [ESLint](https://eslint.org/)
 
-```sh
-npm run lint
-```
+## License
+
+[MIT](LICENSE)

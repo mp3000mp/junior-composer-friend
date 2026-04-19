@@ -56,7 +56,10 @@ export function transposeNoteByInterval(note: Note, interval: Interval): Note {
   const naturalNewSemitones = LETTER_INTERVALS_FROM_C[newLetter]
   let alterationSemitones = targetSemitones - naturalNewSemitones
   if (alterationSemitones > 2) alterationSemitones -= SEMITONES_PER_OCTAVE
-  if (alterationSemitones < -2) alterationSemitones += SEMITONES_PER_OCTAVE
+  else if (alterationSemitones < -2) alterationSemitones += SEMITONES_PER_OCTAVE
+  if (alterationSemitones > 2 || alterationSemitones < -2) {
+    return { letter: newLetter, alteration: '' as Alteration }
+  }
   const alteration = (
     alterationSemitones === 0
       ? ''

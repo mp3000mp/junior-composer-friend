@@ -7,6 +7,12 @@ export type PlayerMock = {
   initEager?: ReturnType<typeof vi.fn>
 }
 
-export function createPlayerMock(playerMock: PlayerMock) {
-  return playerMock
+export function createPlayerMock(playerMock: PlayerMock): PlayerMock {
+  return {
+    playNote: vi.fn(),
+    playChord: vi.fn(),
+    setVolume: vi.fn(),
+    initEager: vi.fn(),
+    ...playerMock,
+  }
 }

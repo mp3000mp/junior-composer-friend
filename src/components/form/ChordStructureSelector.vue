@@ -15,11 +15,7 @@ const localValue = computed({
 
 <template>
   <select class="form-select" v-model="localValue">
-    <option
-      v-for="value in Object.values(ChordStructureEnum)"
-      :key="value"
-      :value="value"
-    >
+    <option v-for="value in Object.values(ChordStructureEnum)" :key="value" :value="value">
       {{ ChordStructureLabels[value] }}
     </option>
   </select>

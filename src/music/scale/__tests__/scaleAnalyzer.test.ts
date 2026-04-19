@@ -47,7 +47,15 @@ describe('music/scaleAnalyzer.ts', () => {
         makeNote('B'),
       ],
       rootNote: null,
-      expected: [{ rootScale: makeNote('C'), scale: ScaleEnum.HarmonicMinor, similarity: 1 }],
+      expected: [
+        { rootScale: makeNote('C'), scale: ScaleEnum.HarmonicMinor, similarity: 1 },
+        { rootScale: makeNote('D'), scale: ScaleEnum.LocrianSharp6, similarity: 1 },
+        { rootScale: makeNote('E', 'b'), scale: ScaleEnum.IonianSharp5, similarity: 1 },
+        { rootScale: makeNote('F'), scale: ScaleEnum.DorianSharp4, similarity: 1 },
+        { rootScale: makeNote('G'), scale: ScaleEnum.PhrygianDominant, similarity: 1 },
+        { rootScale: makeNote('A', 'b'), scale: ScaleEnum.LydianSharp2, similarity: 1 },
+        { rootScale: makeNote('B'), scale: ScaleEnum.Ultralocrian, similarity: 1 },
+      ],
     },
     {
       notes: [
@@ -62,10 +70,7 @@ describe('music/scaleAnalyzer.ts', () => {
         makeNote('B', 'b'),
       ],
       rootNote: makeNote('C'),
-      expected: [
-        { rootScale: makeNote('C'), scale: ScaleEnum.Phrygian, similarity: 0.89 },
-        { rootScale: makeNote('C'), scale: ScaleEnum.Dorian, similarity: 0.78 },
-      ],
+      expected: [{ rootScale: makeNote('C'), scale: ScaleEnum.DorianB2, similarity: 1 }],
     },
     {
       notes: [

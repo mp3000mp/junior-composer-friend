@@ -8,6 +8,7 @@ const stubs = ['font-aw']
 let playerMock: PlayerMock
 vi.mock('@/music/player', () => ({
   usePlayer: () => playerMock,
+  pianoLoadProgress: { value: null },
 }))
 
 describe('ScaleDegreeForm.vue', () => {

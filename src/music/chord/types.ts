@@ -105,11 +105,7 @@ export const CHORD_STRUCTURES: Record<ChordStructureEnum, StructuredChord> = {
     OrderedNote.Fifth,
     OrderedNote.Ninth,
   ],
-  [ChordStructureEnum.SuspendedSecond]: [
-    OrderedNote.Tonic,
-    OrderedNote.Second,
-    OrderedNote.Fifth,
-  ],
+  [ChordStructureEnum.SuspendedSecond]: [OrderedNote.Tonic, OrderedNote.Second, OrderedNote.Fifth],
   [ChordStructureEnum.SeventhSuspendedSecond]: [
     OrderedNote.Tonic,
     OrderedNote.Second,
@@ -130,11 +126,7 @@ export const CHORD_STRUCTURES: Record<ChordStructureEnum, StructuredChord> = {
     OrderedNote.Fifth,
     OrderedNote.Eleventh,
   ],
-  [ChordStructureEnum.SuspendedFourth]: [
-    OrderedNote.Tonic,
-    OrderedNote.Fourth,
-    OrderedNote.Fifth,
-  ],
+  [ChordStructureEnum.SuspendedFourth]: [OrderedNote.Tonic, OrderedNote.Fourth, OrderedNote.Fifth],
   [ChordStructureEnum.SeventhSuspendedFourth]: [
     OrderedNote.Tonic,
     OrderedNote.Fourth,

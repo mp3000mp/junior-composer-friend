@@ -7,12 +7,7 @@ import {
   ORDERED_DEGREES,
   ScaleEnum,
 } from '@/music/scale/types'
-import {
-  type Chord,
-  CHORD_STRUCTURES,
-  ChordStructureEnum,
-  Interval,
-} from '@/music/chord/types'
+import { type Chord, CHORD_STRUCTURES, ChordStructureEnum, Interval } from '@/music/chord/types'
 
 export function getScaleInterval(
   scaleIntervals: ScaleIntervals,

@@ -101,7 +101,7 @@ export const SCALE_INTERVALS: Record<ScaleEnum, ScaleIntervals> = {
   [ScaleEnum.GypsyMinor]: [2, 1, 3, 1, 1, 3, 1],
   [ScaleEnum.DoubleHarmonicMinor]: [1, 3, 1, 2, 1, 3, 1],
   [ScaleEnum.NeapolitanMinor]: [1, 2, 2, 2, 1, 3, 1],
-  [ScaleEnum.NeapolitanMajor]: [1, 2, 2, 2, 2, 1, 2],
+  [ScaleEnum.NeapolitanMajor]: [1, 2, 2, 2, 2, 2, 1],
   [ScaleEnum.Persian]: [1, 3, 1, 1, 2, 3, 1],
   [ScaleEnum.Enigmatic]: [1, 3, 2, 2, 2, 1, 1],
 }

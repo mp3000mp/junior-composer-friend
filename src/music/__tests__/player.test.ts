@@ -12,11 +12,9 @@ describe('player.ts', () => {
   beforeEach(async () => {
     mockStart = vi.fn()
     const { SplendidGrandPiano } = await import('smplr')
-    vi.mocked(SplendidGrandPiano).mockImplementation(
-      function () {
-        return { start: mockStart }
-      } as any,
-    )
+    vi.mocked(SplendidGrandPiano).mockImplementation(function () {
+      return { start: mockStart } as unknown as InstanceType<typeof SplendidGrandPiano>
+    })
 
     const player = usePlayer()
     player.isInitialized = false
