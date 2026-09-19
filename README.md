@@ -2,9 +2,10 @@
 
 A small interactive music theory tool to explore chords and scales on a virtual piano.
 
-![License](https://img.shields.io/github/license/mp3000mp/junior-composer-friend)
 [![CI](https://github.com/mp3000mp/junior-composer-friend/actions/workflows/ci.yml/badge.svg)](https://github.com/mp3000mp/junior-composer-friend/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/mp3000mp/junior-composer-friend/branch/main/graph/badge.svg)](https://codecov.io/gh/mp3000mp/junior-composer-friend)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js 22](https://img.shields.io/badge/Node.js-22-green.svg)](https://nodejs.org/)
 
 
 ## Demo

@@ -3,6 +3,7 @@
     path: '{{ playbook_dir }}/../../dist'
   register: dist_stat
   delegate_to: localhost
+  become: false
 
 - name: Fail if dist directory does not exist
   fail:
