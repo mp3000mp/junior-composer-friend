@@ -126,6 +126,8 @@ describe('music/chordGenerator.ts', () => {
     expect(getCustomQualityWarnings('Am77777')).toEqual(['Ignored "7777" in quality'])
     expect(getCustomQualityWarnings('D1134')).toEqual(['Ignored "1" in quality'])
     expect(getCustomQualityWarnings('Cmaj7')).toEqual([])
+    expect(getCustomQualityWarnings('Cm(maj7)')).toEqual([])
+    expect(getCustomQualityWarnings('CmMaj7')).toEqual([])
     expect(getCustomQualityWarnings('')).toEqual([])
   })
 
@@ -211,7 +213,27 @@ describe('music/chordGenerator.ts', () => {
       expected: [makeNote('C'), makeNote('E', 'b'), makeNote('G', 'b'), makeNote('B', 'b')],
     },
     {
+      customQuality: 'Cm(maj7)',
+      expected: [makeNote('C'), makeNote('E', 'b'), makeNote('G'), makeNote('B')],
+    },
+    {
+      customQuality: 'CmMaj7',
+      expected: [makeNote('C'), makeNote('E', 'b'), makeNote('G'), makeNote('B')],
+    },
+    {
+      customQuality: 'Cdim7',
+      expected: [makeNote('C'), makeNote('E', 'b'), makeNote('G', 'b'), makeNote('B', 'bb')],
+    },
+    {
       customQuality: 'C°7',
+      expected: [makeNote('C'), makeNote('E', 'b'), makeNote('G', 'b'), makeNote('B', 'bb')],
+    },
+    {
+      customQuality: 'Co7',
+      expected: [makeNote('C'), makeNote('E', 'b'), makeNote('G', 'b'), makeNote('B', 'bb')],
+    },
+    {
+      customQuality: 'Cø7',
       expected: [makeNote('C'), makeNote('E', 'b'), makeNote('G', 'b'), makeNote('B', 'b')],
     },
     {

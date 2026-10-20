@@ -1,14 +1,12 @@
-- name: Check dist directory exists
-  stat:
-    path: '{{ playbook_dir }}/../../dist'
-  register: dist_stat
+# The front is built HERE, right before the rsync, so the bundle shipped is always the one of the
+# working copy — never a stale dist/.
+- name: Build the frontend locally
+  command:
+    cmd: ./local_build.sh
+    chdir: "{{ playbook_dir }}"
   delegate_to: localhost
   become: false
-
-- name: Fail if dist directory does not exist
-  fail:
-    msg: "dist/ directory not found. Run local_build.sh first."
-  when: not dist_stat.stat.exists
+  changed_when: true
 
 - name: Create frontend directories
   become_user: "{{ maintainer_user }}"

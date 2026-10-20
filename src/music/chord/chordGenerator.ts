@@ -55,7 +55,7 @@ export function generateChordFromScaleDegree(
   return chord
 }
 
-type noteQuality = null | '' | 'b' | '#'
+type noteQuality = null | '' | 'b' | 'bb' | '#'
 type DegreeKey =
   | 'second'
   | 'third'
@@ -129,10 +129,11 @@ const QUALITY_RULES: QualityRule[] = [
 
   // Seventh (explicit — must come after cascades to allow maj to override b7)
   { tokens: ['7', 'ø', 'Ø'], sets: { seventh: 'b' } },
-  { tokens: ['maj', 'M', 'Δ'], sets: { seventh: '' } },
+  { tokens: ['maj', 'Maj', 'M', 'Δ'], sets: { seventh: '' } },
+  { tokens: ['dim7', '°7', 'o7'], sets: { seventh: 'bb' } },
 
   // Notation characters (recognized but no effect on degrees)
-  { tokens: ['/'], sets: {} },
+  { tokens: ['/', '(', ')'], sets: {} },
 ]
 
 const QUALITY_TOKENS_SORTED = [...new Set(QUALITY_RULES.flatMap((r) => r.tokens))].sort(
@@ -183,8 +184,9 @@ export function generateChordIntervalsFromCustomQuality(qualityStr: string): Int
   else if (d.fifth === '#') intervals.push(Interval.AugmentedFifth)
   else intervals.push(Interval.Fifth)
   if (d.sixth !== null) intervals.push(Interval.MajorSixth)
-  if (d.seventh !== null)
-    intervals.push(d.seventh === 'b' ? Interval.MinorSeventh : Interval.MajorSeventh)
+  if (d.seventh === 'bb') intervals.push(Interval.DiminishedSeventh)
+  else if (d.seventh === 'b') intervals.push(Interval.MinorSeventh)
+  else if (d.seventh === '') intervals.push(Interval.MajorSeventh)
   if (d.ninth !== null) {
     if (d.ninth === 'b') intervals.push(Interval.DiminishedNinth)
     else if (d.ninth === '#') intervals.push(Interval.AugmentedNinth)
