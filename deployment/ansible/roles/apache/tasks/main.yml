@@ -5,7 +5,7 @@
   loop:
     - ssl
     - rewrite
-  notify: restart apache2
+  notify: reload apache2
 
 - name: Create vhosts frontend
   template:
@@ -14,16 +14,7 @@
     owner: root
     group: root
     mode: '0644'
-  notify: restart apache2
-
-- name: Create vhosts ssl
-  template:
-    src: "templates/vhost_frontend-le-ssl.conf.j2"
-    dest: "/etc/apache2/sites-available/{{ frontend_server_name }}-le-ssl.conf"
-    owner: root
-    group: root
-    mode: '0644'
-  notify: restart apache2
+  notify: reload apache2
 
 - name: Enable site
   command:
@@ -31,13 +22,17 @@
     creates: "/etc/apache2/sites-enabled/{{ item }}.conf"
   loop:
     - "{{ frontend_server_name }}"
-  notify: restart apache2
+  notify: reload apache2
 
+# Certbot needs the http vhost to be live to answer the challenge
+- name: Apply apache changes before certbot
+  meta: flush_handlers
+
+# certonly: certbot must not write its own ssl vhost, ours comes from the template below
 - name: Certbot
-  shell:
+  command:
     creates: "/etc/letsencrypt/live/{{ item }}"
-    cmd: "certbot --apache --agree-tos --non-interactive -d {{ item }} -m {{ admin_email }}"
-  notify: restart apache2
+    cmd: "certbot certonly --apache --agree-tos --non-interactive -d {{ item }} -m {{ admin_email }}"
   loop:
     - "{{ frontend_server_name }}"
 
@@ -50,6 +45,17 @@
     weekday: "1"
     user: root
 
+# certonly installs nothing in apache: reload it after any renewal (cron above or distro timer)
+- name: Reload apache after Certbot renewal
+  copy:
+    dest: /etc/letsencrypt/renewal-hooks/deploy/reload-apache.sh
+    content: |
+      #!/bin/sh
+      systemctl reload apache2
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Ensure correct ownership of Certbot directories
   file:
     path: "{{ item }}"
@@ -61,12 +67,34 @@
     - "/etc/letsencrypt/archive/{{ frontend_server_name }}"
     - "/etc/letsencrypt/live/{{ frontend_server_name }}"
 
-- name: Ensure correct permissions on Certbot certificates
+- name: Ensure correct permissions on Certbot certificate
   file:
-    path: "{{ item }}"
+    path: "/etc/letsencrypt/live/{{ frontend_server_name }}/fullchain.pem"
     owner: root
     group: www-data
     mode: "0640"
+
+# Apache reads the private key as root before dropping privileges
+- name: Ensure correct permissions on Certbot private key
+  file:
+    path: "/etc/letsencrypt/live/{{ frontend_server_name }}/privkey.pem"
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Create vhosts ssl
+  template:
+    src: "templates/vhost_frontend-le-ssl.conf.j2"
+    dest: "/etc/apache2/sites-available/{{ frontend_server_name }}-le-ssl.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload apache2
+
+- name: Enable ssl site
+  command:
+    cmd: a2ensite {{ item }}
+    creates: "/etc/apache2/sites-enabled/{{ item }}.conf"
   loop:
-    - "/etc/letsencrypt/live/{{ frontend_server_name }}/fullchain.pem"
-    - "/etc/letsencrypt/live/{{ frontend_server_name }}/privkey.pem"
+    - "{{ frontend_server_name }}-le-ssl"
+  notify: reload apache2

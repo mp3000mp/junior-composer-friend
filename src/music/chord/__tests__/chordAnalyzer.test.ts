@@ -44,6 +44,119 @@ describe('music/chordAnalyzer.ts', () => {
       chord: [makeNote('G', '#'), makeNote('B'), makeNote('D'), makeNote('F')],
       expected: [ChordQualityEnum.DiminishedSeventh],
     },
+    {
+      chord: [makeNote('C'), makeNote('E'), makeNote('G'), makeNote('A')],
+      expected: [ChordQualityEnum.MajorSixth],
+    },
+    {
+      chord: [makeNote('A'), makeNote('C'), makeNote('E'), makeNote('F', '#')],
+      expected: [ChordQualityEnum.MinorSixth],
+    },
+    {
+      chord: [makeNote('C'), makeNote('E'), makeNote('G'), makeNote('A'), makeNote('D')],
+      expected: [ChordQualityEnum.MajorSixthNinth],
+    },
+    {
+      chord: [
+        makeNote('C'),
+        makeNote('E', 'b'),
+        makeNote('G'),
+        makeNote('B', 'b'),
+        makeNote('D'),
+      ],
+      expected: [ChordQualityEnum.MinorNinth],
+    },
+    {
+      chord: [makeNote('C'), makeNote('E'), makeNote('G'), makeNote('B'), makeNote('D')],
+      expected: [ChordQualityEnum.MajorNinth],
+    },
+    {
+      chord: [
+        makeNote('C'),
+        makeNote('E'),
+        makeNote('G'),
+        makeNote('B', 'b'),
+        makeNote('D', 'b'),
+      ],
+      expected: [ChordQualityEnum.DominantSeventhFlatNinth],
+    },
+    {
+      chord: [makeNote('C'), makeNote('E'), makeNote('G'), makeNote('D')],
+      expected: [ChordQualityEnum.AddedNinth],
+    },
+    {
+      chord: [makeNote('C'), makeNote('E', 'b'), makeNote('G'), makeNote('D')],
+      expected: [ChordQualityEnum.MinorAddedNinth],
+    },
+    {
+      chord: [makeNote('C'), makeNote('E'), makeNote('G'), makeNote('F')],
+      expected: [ChordQualityEnum.AddedEleventh],
+    },
+    {
+      chord: [makeNote('C'), makeNote('E', 'b'), makeNote('G'), makeNote('F')],
+      expected: [ChordQualityEnum.MinorAddedEleventh],
+    },
+    {
+      chord: [
+        makeNote('D'),
+        makeNote('F'),
+        makeNote('A'),
+        makeNote('C'),
+        makeNote('E'),
+        makeNote('G'),
+      ],
+      expected: [ChordQualityEnum.MinorEleventh],
+    },
+    {
+      chord: [
+        makeNote('C'),
+        makeNote('E'),
+        makeNote('G'),
+        makeNote('B', 'b'),
+        makeNote('D'),
+        makeNote('F', '#'),
+      ],
+      expected: [ChordQualityEnum.AugmentedEleventh],
+    },
+    {
+      chord: [makeNote('G'), makeNote('B'), makeNote('D'), makeNote('F'), makeNote('A')],
+      expected: [ChordQualityEnum.DominantNinth],
+    },
+    {
+      chord: [
+        makeNote('C'),
+        makeNote('E'),
+        makeNote('G'),
+        makeNote('B', 'b'),
+        makeNote('D'),
+        makeNote('F'),
+      ],
+      expected: [ChordQualityEnum.DominantEleventh],
+    },
+    {
+      chord: [
+        makeNote('C'),
+        makeNote('E'),
+        makeNote('G'),
+        makeNote('B', 'b'),
+        makeNote('D'),
+        makeNote('F'),
+        makeNote('A'),
+      ],
+      expected: [ChordQualityEnum.DominantThirteenth],
+    },
+    {
+      chord: [
+        makeNote('A'),
+        makeNote('C'),
+        makeNote('E'),
+        makeNote('G'),
+        makeNote('B'),
+        makeNote('D'),
+        makeNote('F', '#'),
+      ],
+      expected: [ChordQualityEnum.MinorThirteenth],
+    },
   ]
   getEligibleChordQualitiesTestCases.forEach(({ chord, expected }) => {
     test(`getEligibleChordQualities with ${chord.join(' ')}`, () => {

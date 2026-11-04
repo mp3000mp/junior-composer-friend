@@ -177,7 +177,7 @@ export function generateChordIntervalsFromCustomQuality(qualityStr: string): Int
   const d = applyRules(qualityStr)
   const intervals: Interval[] = [Interval.Tonic]
 
-  if (d.second !== null) intervals.push(Interval.Second)
+  if (d.second !== null) intervals.push(Interval.MajorSecond)
   if (d.third !== null) intervals.push(d.third === 'b' ? Interval.MinorThird : Interval.MajorThird)
   if (d.fourth !== null) intervals.push(Interval.Fourth)
   if (d.fifth === 'b') intervals.push(Interval.DiminishedFifth)
@@ -188,14 +188,14 @@ export function generateChordIntervalsFromCustomQuality(qualityStr: string): Int
   else if (d.seventh === 'b') intervals.push(Interval.MinorSeventh)
   else if (d.seventh === '') intervals.push(Interval.MajorSeventh)
   if (d.ninth !== null) {
-    if (d.ninth === 'b') intervals.push(Interval.DiminishedNinth)
+    if (d.ninth === 'b') intervals.push(Interval.MinorNinth)
     else if (d.ninth === '#') intervals.push(Interval.AugmentedNinth)
-    else intervals.push(Interval.Ninth)
+    else intervals.push(Interval.MajorNinth)
   }
   if (d.eleventh !== null)
     intervals.push(d.eleventh === '#' ? Interval.AugmentedEleventh : Interval.Eleventh)
   if (d.thirteenth !== null)
-    intervals.push(d.thirteenth === 'b' ? Interval.DiminishedThirteenth : Interval.Thirteenth)
+    intervals.push(d.thirteenth === 'b' ? Interval.MinorThirteenth : Interval.MajorThirteenth)
 
   return intervals
 }
