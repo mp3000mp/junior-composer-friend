@@ -1,27 +1,32 @@
 import { SplendidGrandPiano } from 'smplr'
-import { ref } from 'vue'
-import { BASE_OCTAVE } from '@/music/player/types'
-import { type Note } from '@/music/types'
+import { computed, ref } from 'vue'
+import { KEYBOARD_MIDI_MAX, KEYBOARD_MIDI_MIN } from '@/music/player/types'
 import { type Chord } from '@/music/chord/types'
-import { getIntervalFromC } from '@/music/utils'
-
-const PIANO_OCTAVE_MIN = BASE_OCTAVE - 1
-const PIANO_OCTAVE_MAX = BASE_OCTAVE + 1
-const MIDI_MIN = (PIANO_OCTAVE_MIN + 1) * 12
-const MIDI_MAX = (PIANO_OCTAVE_MAX + 1) * 12 + 11
+import { chordToMidi } from '@/music/utils'
 
 const NOTES_TO_LOAD = {
-  notes: Array.from({ length: MIDI_MAX - MIDI_MIN + 1 }, (_, i) => MIDI_MIN + i),
+  notes: Array.from(
+    { length: KEYBOARD_MIDI_MAX - KEYBOARD_MIDI_MIN + 1 },
+    (_, i) => KEYBOARD_MIDI_MIN + i,
+  ),
   velocityRange: [0, 127] as [number, number],
 }
 
 export const pianoLoadProgress = ref<{ loaded: number; total: number } | null>(null)
+export const isPianoLoaded = computed(
+  () =>
+    pianoLoadProgress.value !== null &&
+    pianoLoadProgress.value.loaded >= pianoLoadProgress.value.total,
+)
+export const pianoLoadPercent = computed(() => {
+  if (!pianoLoadProgress.value || pianoLoadProgress.value.total === 0) return 0
+  return Math.round((pianoLoadProgress.value.loaded / pianoLoadProgress.value.total) * 100)
+})
 
 class Player {
   context: AudioContext | null = null
   piano: SplendidGrandPiano | null = null
   isInitialized: boolean = false
-  startTime: number | null = null
   volume: number = 0.7
 
   private initialize() {
@@ -38,7 +43,8 @@ class Player {
     this.isInitialized = true
   }
 
-  public initEager() {
+  /** Starts loading the samples without waiting for the first note. */
+  public preload() {
     this.initialize()
   }
 
@@ -46,40 +52,31 @@ class Player {
     this.volume = volume
   }
 
-  private resetStartTime() {
-    this.startTime = null
-  }
-
-  private noteToMidi(note: Note, octave: number): number {
-    const semitone = ((getIntervalFromC(note) % 12) + 12) % 12
-    return (octave + 1) * 12 + semitone
-  }
-
-  private play(note: Note, octave: number, durationMs: number, delayMs: number = 0) {
+  private play(midis: number[], durationMs: (index: number) => number, delayMs: number) {
     this.initialize()
-    if (!this.piano || !this.context) return
+    const { piano, context } = this
+    if (!piano || !context) return
 
-    if (this.context.state === 'suspended') {
-      this.context.resume()
+    if (context.state === 'suspended') {
+      context.resume()
     }
 
-    if (this.startTime === null) {
-      this.startTime = this.context.currentTime
-    }
-
-    this.piano.start({
-      note: this.noteToMidi(note, octave),
-      velocity: Math.round(Math.sqrt(this.volume) * 127),
-      duration: durationMs / 1000,
-      time: this.startTime + delayMs / 1000,
+    const startTime = context.currentTime
+    midis.forEach((midi, i) => {
+      piano.start({
+        note: midi,
+        velocity: Math.round(Math.sqrt(this.volume) * 127),
+        duration: durationMs(i) / 1000,
+        time: startTime + (delayMs * i) / 1000,
+      })
     })
   }
 
-  public playNote(note: Note, octave: number, durationMs: number, delayMs: number = 0) {
-    this.resetStartTime()
-    this.play(note, octave, durationMs, delayMs)
+  public playMidi(midi: number, durationMs: number) {
+    this.play([midi], () => durationMs, 0)
   }
 
+  /** Plays the chord as placed by chordToMidi; a delay > 0 arpeggiates it. */
   public playChord(chord: Chord, delayMs: number = 0) {
     if (chord.length === 0) {
       return
@@ -88,17 +85,7 @@ class Player {
     const playedChordDurationMs = 0 === delayMs ? 1000 : delayMs
     const totalDurationMs = chord.length * delayMs + playedChordDurationMs
 
-    this.resetStartTime()
-    let currentOctave = BASE_OCTAVE
-    let previousNoteIndex = getIntervalFromC(chord[0])
-    for (let i = 0; i < chord.length; i++) {
-      const currentNoteIndex = getIntervalFromC(chord[i])
-      if (currentNoteIndex < previousNoteIndex) {
-        currentOctave++
-      }
-      this.play(chord[i], currentOctave, totalDurationMs - delayMs * i, delayMs * i)
-      previousNoteIndex = currentNoteIndex
-    }
+    this.play(chordToMidi(chord), (i) => totalDurationMs - delayMs * i, delayMs)
   }
 }
 

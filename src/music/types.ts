@@ -8,7 +8,6 @@ export type Note = {
 }
 
 export const NOTE_LETTERS: NoteLetter[] = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
-// export const ALTERATIONS: Alteration[] = ['bb', 'b', '', '#', '##']
 export const LETTER_INTERVALS_FROM_C: Record<NoteLetter, number> = {
   C: 0,
   D: 2,
@@ -26,7 +25,6 @@ export const ALTERATION_INTERVALS: Record<Alteration, number> = {
   '##': 2,
 }
 
-// Nombre de demi-tons dans une octave
 export const SEMITONES_PER_OCTAVE = 12
 
 export const WHOLE_TONE_LETTERS: Record<NoteLetter, boolean> = {

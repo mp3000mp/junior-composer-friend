@@ -5,10 +5,6 @@ set -eox pipefail
 (
 cd ../..
 
-# get version
-version=$(node -p "require('./package.json').version")
-
-# build front
-echo "VITE_VERSION=$version" > .env.production.local
+# build front (version is injected from package.json by vite.config.ts)
 npm run build
 )

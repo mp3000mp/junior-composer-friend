@@ -292,18 +292,3 @@ export function parseCustomQuality(input: string): ChordParseResult {
     inputSegments: buildInputSegments(parsed.root, parsed.qualityStr),
   }
 }
-
-export function getCustomQualityWarnings(input: string): string[] {
-  const { inputSegments } = parseCustomQuality(input)
-  const ignored = inputSegments
-    .filter((s) => s.ignored)
-    .map((s) => s.text)
-    .join('')
-  return ignored ? [`Ignored "${ignored}" in quality`] : []
-}
-
-export function generateChordFromCustomQuality(customQuality: string): Chord {
-  const result = parseCustomQuality(customQuality)
-  if (result.error !== null) throw new Error(result.error)
-  return result.chord
-}

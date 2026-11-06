@@ -1,20 +1,11 @@
 <script setup lang="ts">
 import { ScaleEnum, ScaleLabels } from '@/music/scale/types'
-import { computed } from 'vue'
 
-const emit = defineEmits(['update:modelValue'])
-const props = defineProps<{
-  modelValue: ScaleEnum
-}>()
-
-const localValue = computed({
-  get: () => props.modelValue,
-  set: (value: ScaleEnum) => emit('update:modelValue', value),
-})
+const model = defineModel<ScaleEnum>({ required: true })
 </script>
 
 <template>
-  <select class="form-select" v-model="localValue">
+  <select class="form-select" v-model="model">
     <option v-for="scale in Object.values(ScaleEnum)" :key="scale" :value="scale">
       {{ ScaleLabels[scale] }}
     </option>

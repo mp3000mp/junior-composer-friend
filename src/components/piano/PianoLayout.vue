@@ -1,23 +1,13 @@
 <script setup lang="ts">
+import { computed, onMounted, onUnmounted, type Ref, ref, watch } from 'vue'
+import { onClickOutside } from '@vueuse/core'
 import PianoKey from '@/components/piano/PianoKey.vue'
 import { type Note, SEMITONES_PER_OCTAVE } from '@/music/types'
-import { BASE_OCTAVE } from '@/music/player/types'
+import { KEYBOARD_OCTAVE_MAX, KEYBOARD_OCTAVE_MIN } from '@/music/player/types'
 import { type Chord } from '@/music/chord/types'
 import { type Scale } from '@/music/scale/types'
-import { computed, onMounted, onUnmounted, type Ref, ref, watch } from 'vue'
-
-const isLoaded = computed(
-  () =>
-    pianoLoadProgress.value !== null &&
-    pianoLoadProgress.value.loaded >= pianoLoadProgress.value.total,
-)
-const loadPercent = computed(() => {
-  if (!pianoLoadProgress.value || pianoLoadProgress.value.total === 0) return 0
-  return Math.round((pianoLoadProgress.value.loaded / pianoLoadProgress.value.total) * 100)
-})
-import { pianoLoadProgress, usePlayer } from '@/music/player'
-import { getIntervalFromC, indexToNote, noteAreEquals, noteToString } from '@/music/utils'
-import { onClickOutside } from '@vueuse/core'
+import { isPianoLoaded, pianoLoadPercent, pianoLoadProgress, usePlayer } from '@/music/player'
+import { chordToMidi, getPitchClass, indexToNote, noteAreEquals } from '@/music/utils'
 
 const player = usePlayer()
 
@@ -35,43 +25,39 @@ type KeyNote = {
   isScaleRoot: boolean
   isBlack: boolean
   note: Note
-  octave: number
+  midi: number
 }
 
-const scaleIntervalsFromC = computed(() => props.scale.map((note) => getIntervalFromC(note)))
+const scalePitchClasses = computed(() => props.scale.map(getPitchClass))
+
+// midi -> spelled chord note, placed exactly where the player will play it
+const chordNotesByMidi = computed(() => {
+  const midis = chordToMidi(props.chord)
+  return new Map(midis.map((midi, i) => [midi, props.chord[i]]))
+})
 
 const pianoNotes = computed(() => {
   const keyNotes: KeyNote[] = []
-  let chordCursor = 0
-  for (let i = BASE_OCTAVE - 1; i < BASE_OCTAVE + 2; i++) {
+  for (let octave = KEYBOARD_OCTAVE_MIN; octave <= KEYBOARD_OCTAVE_MAX; octave++) {
     for (let semitone = 0; semitone < SEMITONES_PER_OCTAVE; semitone++) {
       const chromaticNote = indexToNote(semitone)
-      const intervalFromC = getIntervalFromC(chromaticNote)
-      let isPlayed = false
-      let note = chromaticNote
-      if (
-        chordCursor < props.chord.length &&
-        noteAreEquals(props.chord[chordCursor], chromaticNote)
-      ) {
-        isPlayed = true
-        note = props.chord[chordCursor]
-        chordCursor++
-      }
+      const midi = (octave + 1) * SEMITONES_PER_OCTAVE + semitone
+      const chordNote = chordNotesByMidi.value.get(midi)
       keyNotes.push({
-        isHighlighted: scaleIntervalsFromC.value.includes(intervalFromC),
-        isPlayed,
+        isHighlighted: scalePitchClasses.value.includes(semitone),
+        isPlayed: chordNote !== undefined,
         isChordRoot: props.chord.length > 0 && noteAreEquals(chromaticNote, props.chord[0]),
         isScaleRoot: props.scale.length > 0 && noteAreEquals(chromaticNote, props.scale[0]),
         isBlack: chromaticNote.alteration === '#',
-        note,
-        octave: i,
+        note: chordNote ?? chromaticNote,
+        midi,
       })
     }
   }
   return keyNotes
 })
 
-function playPlatedChord() {
+function playPlainChord() {
   player.playChord(props.chord)
 }
 function playArpeggiatedChord() {
@@ -97,7 +83,7 @@ function handleKeypress(e: KeyboardEvent) {
   }
 }
 onMounted(() => {
-  player.initEager()
+  player.preload()
   window.addEventListener('keydown', handleKeypress)
 })
 onUnmounted(() => {
@@ -111,36 +97,36 @@ onClickOutside(volumeContainer, () => hideVolumeSlider())
 <template>
   <div class="piano-layout">
     <div class="piano-keyboard-scroll">
-      <div class="piano-keyboard" :class="{ loading: !isLoaded }">
+      <div class="piano-keyboard" :class="{ loading: !isPianoLoaded }">
         <piano-key
           v-for="keyNote in pianoNotes"
-          :key="noteToString(keyNote.note) + keyNote.octave"
+          :key="keyNote.midi"
           :is-highlighted="keyNote.isHighlighted"
           :is-played="keyNote.isPlayed"
           :is-chord-root="keyNote.isChordRoot"
           :is-scale-root="keyNote.isScaleRoot"
           :is-black="keyNote.isBlack"
           :note="keyNote.note"
-          :octave="keyNote.octave"
+          :midi="keyNote.midi"
         />
       </div>
     </div>
     <div class="piano-controls mt-2">
-      <template v-if="!isLoaded">
+      <template v-if="!isPianoLoaded">
         <div class="piano-load-progress">
           <div class="progress" style="height: 6px">
             <div
               class="progress-bar progress-bar-striped progress-bar-animated"
-              :style="{ width: loadPercent + '%' }"
+              :style="{ width: pianoLoadPercent + '%' }"
             />
           </div>
           <div class="text-center text-muted" style="font-size: 0.7rem">
-            Loading piano{{ pianoLoadProgress ? ` ${loadPercent}%` : '...' }}
+            Loading piano{{ pianoLoadProgress ? ` ${pianoLoadPercent}%` : '...' }}
           </div>
         </div>
       </template>
       <template v-else>
-        <button class="btn btn-sm btn-outline-secondary" @click="playPlatedChord" title="Chord">
+        <button class="btn btn-sm btn-outline-secondary" @click="playPlainChord" title="Chord">
           <font-aw icon="play" />
         </button>
         <button
@@ -165,7 +151,7 @@ onClickOutside(volumeContainer, () => hideVolumeSlider())
 
 <style lang="scss">
 @use 'sass:color';
-@import '../../assets/style/bootstrap/vars-override';
+@use '../../assets/style/bootstrap/vars-override' as *;
 
 $highlightedColor: color.adjust($white, $lightness: -5%, $space: hsl);
 

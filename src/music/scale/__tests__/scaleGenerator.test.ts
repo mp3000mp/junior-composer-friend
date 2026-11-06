@@ -13,7 +13,7 @@ describe('music/scaleGenerator.ts', () => {
   }[] = [
     {
       scaleRoot: makeNote('A'),
-      intervals: SCALE_INTERVALS[ScaleEnum.Eolian],
+      intervals: SCALE_INTERVALS[ScaleEnum.Aeolian],
       expected: [
         makeNote('A'),
         makeNote('B'),

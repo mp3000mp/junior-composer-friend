@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Note } from '@/music/types'
 import { usePlayer } from '@/music/player'
-import { noteToString } from '../../music/utils'
+import { noteToString } from '@/music/utils'
 
 const player = usePlayer()
 
@@ -12,13 +12,13 @@ export type PianoKeyProps = {
   isChordRoot: boolean
   isScaleRoot: boolean
   note: Note
-  octave: number
+  midi: number
 }
 
 const props = defineProps<PianoKeyProps>()
 
 function play() {
-  player.playNote(props.note, props.octave, 500)
+  player.playMidi(props.midi, 500)
 }
 </script>
 

@@ -32,7 +32,7 @@ describe('music/scaleAnalyzer.ts', () => {
         { rootScale: makeNote('E'), scale: ScaleEnum.Phrygian, similarity: 1 },
         { rootScale: makeNote('F'), scale: ScaleEnum.Lydian, similarity: 1 },
         { rootScale: makeNote('G'), scale: ScaleEnum.Mixolydian, similarity: 1 },
-        { rootScale: makeNote('A'), scale: ScaleEnum.Eolian, similarity: 1 },
+        { rootScale: makeNote('A'), scale: ScaleEnum.Aeolian, similarity: 1 },
         { rootScale: makeNote('B'), scale: ScaleEnum.Locrian, similarity: 1 },
       ],
     },
@@ -83,7 +83,7 @@ describe('music/scaleAnalyzer.ts', () => {
         makeNote('A', 'b'),
       ],
       rootNote: makeNote('B', 'b'),
-      expected: [{ rootScale: makeNote('B', 'b'), scale: ScaleEnum.Eolian, similarity: 1 }],
+      expected: [{ rootScale: makeNote('B', 'b'), scale: ScaleEnum.Aeolian, similarity: 1 }],
     },
     {
       notes: [
@@ -109,7 +109,7 @@ describe('music/scaleAnalyzer.ts', () => {
         makeNote('B', 'bb'),
       ],
       rootNote: makeNote('C', 'b'),
-      expected: [{ rootScale: makeNote('C', 'b'), scale: ScaleEnum.Eolian, similarity: 1 }],
+      expected: [{ rootScale: makeNote('C', 'b'), scale: ScaleEnum.Aeolian, similarity: 1 }],
     },
     {
       notes: [
@@ -122,12 +122,16 @@ describe('music/scaleAnalyzer.ts', () => {
         makeNote('F', 'b'),
       ],
       rootNote: null,
+      // all 7 modes; Fb lydian and Cb ionian come out as their enharmonics E and B
+      // because candidate roots are only spelled with naturals or single flats
       expected: [
         { rootScale: makeNote('D', 'b'), scale: ScaleEnum.Dorian, similarity: 1 },
         { rootScale: makeNote('E', 'b'), scale: ScaleEnum.Phrygian, similarity: 1 },
+        { rootScale: makeNote('E'), scale: ScaleEnum.Lydian, similarity: 1 },
         { rootScale: makeNote('G', 'b'), scale: ScaleEnum.Mixolydian, similarity: 1 },
-        { rootScale: makeNote('A', 'b'), scale: ScaleEnum.Eolian, similarity: 1 },
+        { rootScale: makeNote('A', 'b'), scale: ScaleEnum.Aeolian, similarity: 1 },
         { rootScale: makeNote('B', 'b'), scale: ScaleEnum.Locrian, similarity: 1 },
+        { rootScale: makeNote('B'), scale: ScaleEnum.Ionian, similarity: 1 },
       ],
     },
   ]

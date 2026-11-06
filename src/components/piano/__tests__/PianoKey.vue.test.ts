@@ -13,7 +13,7 @@ describe('PianoKey.vue', () => {
   let defaultProps: PianoKeyProps
   beforeEach(() => {
     playerMock = createPlayerMock({
-      playNote: vi.fn(),
+      playMidi: vi.fn(),
     })
     defaultProps = {
       isBlack: false,
@@ -22,7 +22,7 @@ describe('PianoKey.vue', () => {
       isChordRoot: false,
       isScaleRoot: false,
       note: makeNote('C'),
-      octave: 4,
+      midi: 60,
     }
   })
 
@@ -47,6 +47,6 @@ describe('PianoKey.vue', () => {
     const parent = wrapper.find('div')
     await parent.trigger('click')
     await parent.trigger('click')
-    expect(playerMock.playNote).toHaveBeenCalledTimes(2)
+    expect(playerMock.playMidi).toHaveBeenCalledTimes(2)
   })
 })

@@ -1,18 +1,15 @@
 import { type Note, SEMITONES_PER_OCTAVE } from '@/music/types'
 import { type Chord, CHORD_QUALITIES, ChordQualityEnum } from '@/music/chord/types'
-import { getIntervalFromC } from '@/music/utils'
+import { getPitchClass } from '@/music/utils'
 
 function getNotesInterval(fromNote: Note, toNote: Note): number {
-  const fromIndex = getIntervalFromC(fromNote)
-  const toIndex = getIntervalFromC(toNote)
-  if (fromIndex <= toIndex) {
-    return toIndex - fromIndex
-  }
-  return toIndex - fromIndex + SEMITONES_PER_OCTAVE
+  return (
+    (getPitchClass(toNote) - getPitchClass(fromNote) + SEMITONES_PER_OCTAVE) % SEMITONES_PER_OCTAVE
+  )
 }
 
 export function getEligibleChordQualities(chord: Chord): ChordQualityEnum[] {
-  // todo: gérer les accords renversés
+  // todo: handle inverted chords
   const tonic = chord[0]
   const chordIntervals: number[] = []
   for (let i = 0; i < chord.length; i++) {

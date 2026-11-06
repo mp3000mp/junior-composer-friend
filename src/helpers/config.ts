@@ -1,5 +1,5 @@
 const config = {
-  version: import.meta.env.VITE_VERSION,
+  version: __APP_VERSION__,
 }
 
 export function useConfig() {

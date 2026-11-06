@@ -57,13 +57,7 @@ describe('music/chordAnalyzer.ts', () => {
       expected: [ChordQualityEnum.MajorSixthNinth],
     },
     {
-      chord: [
-        makeNote('C'),
-        makeNote('E', 'b'),
-        makeNote('G'),
-        makeNote('B', 'b'),
-        makeNote('D'),
-      ],
+      chord: [makeNote('C'), makeNote('E', 'b'), makeNote('G'), makeNote('B', 'b'), makeNote('D')],
       expected: [ChordQualityEnum.MinorNinth],
     },
     {
@@ -71,13 +65,7 @@ describe('music/chordAnalyzer.ts', () => {
       expected: [ChordQualityEnum.MajorNinth],
     },
     {
-      chord: [
-        makeNote('C'),
-        makeNote('E'),
-        makeNote('G'),
-        makeNote('B', 'b'),
-        makeNote('D', 'b'),
-      ],
+      chord: [makeNote('C'), makeNote('E'), makeNote('G'), makeNote('B', 'b'), makeNote('D', 'b')],
       expected: [ChordQualityEnum.DominantSeventhFlatNinth],
     },
     {

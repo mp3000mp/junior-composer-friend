@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { ref } from 'vue'
 import Component from '@/views/HomePage.vue'
 import { mount } from '@vue/test-utils'
 import { createRouter, createMemoryHistory } from 'vue-router'
@@ -9,13 +10,15 @@ const stubs = ['font-aw']
 let playerMock: PlayerMock
 vi.mock('@/music/player', () => ({
   usePlayer: () => playerMock,
-  pianoLoadProgress: { value: null },
+  pianoLoadProgress: ref(null),
+  isPianoLoaded: ref(false),
+  pianoLoadPercent: ref(0),
 }))
 
 describe('HomePage.vue', () => {
   beforeEach(() => {
     playerMock = createPlayerMock({
-      playNote: vi.fn(),
+      playMidi: vi.fn(),
     })
   })
 
